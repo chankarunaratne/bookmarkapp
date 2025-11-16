@@ -62,14 +62,8 @@ struct OCRReviewView: View {
                     }
                 }
             } else {
+                // Full text in a selectable, scrollable view on a clean white background.
                 VStack(spacing: 0) {
-                    // Simple search field for future enhancement
-                    TextField("Search lines…", text: $search)
-                        .textFieldStyle(.roundedBorder)
-                        .padding(.horizontal)
-                        .padding(.vertical, 8)
-
-                    // Full text in a selectable, scrollable view
                     SelectableTextView(
                         text: fullText,
                         selectedText: $selectedText,
@@ -78,15 +72,18 @@ struct OCRReviewView: View {
                     )
                 }
 
-                // Floating Save button when there is a selection
+                // Floating primary button when there is a selection
                 if hasSelection,
                    !selectedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     VStack {
                         Spacer()
                         Button {
+                            // Clear the visual selection before moving to the next step.
+                            clearSelectionID &+= 1
+                            hasSelection = false
                             showingBookPicker = true
                         } label: {
-                            Text("Save")
+                            Text("Save highlight")
                                 .font(.headline)
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -102,21 +99,24 @@ struct OCRReviewView: View {
                 }
             }
         }
+        .background(Color.white)
         .sheet(isPresented: $showingBookPicker) {
             BookPickerView { book in
                 save(to: book)
             }
         }
-        .navigationTitle("Review Text")
+        .navigationTitle("Select highlight")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark")
+                if let onRescan {
+                    Button {
+                        onRescan()
+                    } label: {
+                        Image(systemName: "camera.viewfinder")
+                    }
+                    .accessibilityLabel("Retake photo")
                 }
-                .accessibilityLabel("Close")
             }
         }
     }

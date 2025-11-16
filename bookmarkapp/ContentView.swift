@@ -6,15 +6,14 @@
 //
 
 import SwiftUI
-import UIKit
 import SwiftData
+import UIKit
 
 struct ContentView: View {
     @State private var showSourceDialog: Bool = false
     @State private var showCamera: Bool = false
     @State private var showPhotoPicker: Bool = false
     @State private var ocrImageItem: OCRImageItem?
-
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
@@ -34,28 +33,27 @@ struct ContentView: View {
                 scanBookButton
             }
             .background(Color(.systemGroupedBackground))
+            // Present OCR review as a navigation destination instead of a modal sheet.
+            .navigationDestination(item: $ocrImageItem) { item in
+                OCRReviewView(
+                    image: item.image,
+                    onRescan: {
+                        // Pop back to the home screen and reopen the source selector.
+                        ocrImageItem = nil
+                        showSourceDialog = true
+                    }
+                )
+            }
         }
         .sheet(isPresented: $showCamera) {
             CameraPicker { img in
-                // Drive the OCR sheet directly from the captured image.
+                // Drive the OCR review directly from the captured image.
                 ocrImageItem = OCRImageItem(image: img)
             }
         }
         .sheet(isPresented: $showPhotoPicker) {
             PhotoPicker { img in
                 ocrImageItem = OCRImageItem(image: img)
-            }
-        }
-        .sheet(item: $ocrImageItem, onDismiss: { ocrImageItem = nil }) { item in
-            NavigationStack {
-                OCRReviewView(
-                    image: item.image,
-                    onRescan: {
-                        // Dismiss current OCR sheet and reopen source selection.
-                        ocrImageItem = nil
-                        showSourceDialog = true
-                    }
-                )
             }
         }
     }
@@ -130,11 +128,19 @@ struct ContentView: View {
     }
 }
 
-/// Identifiable wrapper so the OCR sheet is only presented when
-/// there is a concrete image, avoiding empty sheet content.
-private struct OCRImageItem: Identifiable {
+/// Identifiable & Hashable wrapper so the OCR destination is only presented when
+/// there is a concrete image, avoiding empty navigation state.
+private struct OCRImageItem: Identifiable, Hashable {
     let id = UUID()
     let image: UIImage
+
+    static func == (lhs: OCRImageItem, rhs: OCRImageItem) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 #Preview {

@@ -13,9 +13,21 @@ struct SelectableTextView: UIViewRepresentable {
         let textView = UITextView()
         textView.isEditable = false
         textView.isSelectable = true
-        textView.font = UIFont.systemFont(ofSize: 17)
+        
+        // System serif font and comfortable reading size similar to Instapaper.
+        let baseFont = UIFont.preferredFont(forTextStyle: .body)
+        if let serifDescriptor = baseFont.fontDescriptor.withDesign(.serif) {
+            textView.font = UIFont(descriptor: serifDescriptor, size: 18)
+        } else {
+            textView.font = UIFont.systemFont(ofSize: 18)
+        }
+        
         textView.backgroundColor = .clear
-        textView.textContainerInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        textView.textContainerInset = UIEdgeInsets(top: 20, left: 18, bottom: 32, right: 18)
+        
+        // Use a yellow highlight color instead of the default blue selection tint.
+        textView.tintColor = .systemYellow
+        
         textView.delegate = context.coordinator
         return textView
     }
