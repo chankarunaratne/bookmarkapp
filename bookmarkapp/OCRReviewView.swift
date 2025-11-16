@@ -103,6 +103,9 @@ struct OCRReviewView: View {
         .sheet(isPresented: $showingBookPicker) {
             BookPickerView { book in
                 save(to: book)
+                // Close the picker and return all the way to the home screen.
+                showingBookPicker = false
+                dismiss()
             }
         }
         .navigationTitle("Select highlight")

@@ -9,12 +9,14 @@ struct BooksListView: View {
         GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16)
     ]
-
-    var filtered: [Book] {
+    
+    private var filtered: [Book] {
         guard !searchText.isEmpty else { return books }
-        return books.filter { $0.title.localizedCaseInsensitiveContains(searchText) || ($0.author ?? "").localizedCaseInsensitiveContains(searchText) }
+        return books.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText)
+        }
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             if !books.isEmpty {
@@ -35,7 +37,7 @@ struct BooksListView: View {
             }
             
             if books.isEmpty {
-                Text("No folders yet. Use Save flow to create one.")
+                Text("No books yet. Use Save flow to create one.")
                     .foregroundStyle(.secondary)
                     .padding(.top, 8)
             } else {
@@ -55,20 +57,25 @@ struct BooksListView: View {
 struct BookDetailView: View {
     @Bindable var book: Book
     @State private var query: String = ""
-
-    var filteredQuotes: [Quote] {
+    
+    private var filteredQuotes: [Quote] {
         guard !query.isEmpty else { return book.quotes.sorted { $0.createdAt > $1.createdAt } }
-        return book.quotes.filter { $0.text.localizedCaseInsensitiveContains(query) || ($0.note ?? "").localizedCaseInsensitiveContains(query) }
-            .sorted { $0.createdAt > $1.createdAt }
+        return book.quotes.filter {
+            $0.text.localizedCaseInsensitiveContains(query)
+            || ($0.note ?? "").localizedCaseInsensitiveContains(query)
+        }
+        .sorted { $0.createdAt > $1.createdAt }
     }
-
+    
     var body: some View {
         List {
             ForEach(filteredQuotes) { quote in
                 VStack(alignment: .leading, spacing: 6) {
                     Text(quote.text)
                     if let note = quote.note, !note.isEmpty {
-                        Text(note).font(.callout).foregroundStyle(.secondary)
+                        Text(note)
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
                     }
                     HStack {
                         if let page = quote.page, !page.isEmpty {
@@ -88,7 +95,8 @@ struct BookDetailView: View {
     }
 }
 
-struct BookTileView: View {
+/// Shared book thumbnail used on the home grid and in the picker rows.
+struct BookThumbnailView: View {
     let book: Book
     
     private var initial: String {
@@ -98,28 +106,35 @@ struct BookTileView: View {
     }
     
     private var accentColor: Color {
-        // Deterministic but varied color based on title hash
         let palette: [Color] = [
-            Color(red: 0.96, green: 0.90, blue: 0.79), // warm beige
-            Color(red: 0.94, green: 0.83, blue: 0.83), // soft rose
-            Color(red: 0.84, green: 0.89, blue: 0.95), // muted blue
-            Color(red: 0.96, green: 0.86, blue: 0.93)  // light pink
+            Color(red: 0.96, green: 0.90, blue: 0.79),
+            Color(red: 0.94, green: 0.83, blue: 0.83),
+            Color(red: 0.84, green: 0.89, blue: 0.95),
+            Color(red: 0.96, green: 0.86, blue: 0.93)
         ]
         let idx = abs(book.title.hashValue) % palette.count
         return palette[idx]
     }
     
     var body: some View {
+        RoundedRectangle(cornerRadius: 18, style: .continuous)
+            .fill(accentColor)
+            .overlay(
+                Text(initial)
+                    .font(.system(size: 40, weight: .semibold, design: .serif))
+                    .foregroundStyle(Color.white.opacity(0.9))
+            )
+    }
+}
+
+struct BookTileView: View {
+    let book: Book
+    
+    var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack(alignment: .topTrailing) {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(accentColor)
+                BookThumbnailView(book: book)
                     .frame(height: 110)
-                    .overlay(
-                        Text(initial)
-                            .font(.system(size: 40, weight: .semibold, design: .serif))
-                            .foregroundStyle(Color.white.opacity(0.9))
-                    )
                 
                 if book.quotesCount > 0 {
                     HStack(spacing: 4) {
@@ -155,5 +170,3 @@ struct BookTileView: View {
         )
     }
 }
-
-
