@@ -12,7 +12,7 @@ import SwiftData
 struct bookmarkappApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootTabView()
         }
         .modelContainer(for: [Book.self, Quote.self])
     }

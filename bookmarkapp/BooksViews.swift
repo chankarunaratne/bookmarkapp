@@ -1,6 +1,33 @@
 import SwiftUI
 import SwiftData
 
+struct MyBooksView: View {
+    @State private var isPresentingNewBook: Bool = false
+    
+    var body: some View {
+        NavigationStack {
+            BooksListView()
+                .padding(.horizontal)
+                .navigationTitle("My Books")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            isPresentingNewBook = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                        .accessibilityLabel("Add new book")
+                    }
+                }
+        }
+        .sheet(isPresented: $isPresentingNewBook) {
+            NavigationStack {
+                NewBookView()
+            }
+        }
+    }
+}
+
 struct BooksListView: View {
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
     @State private var searchText: String = ""
