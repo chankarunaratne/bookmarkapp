@@ -6,7 +6,7 @@ struct MyBooksView: View {
     
     var body: some View {
         NavigationStack {
-            BooksListView()
+            BooksListView(showsActionsMenu: true)
                 .padding(.horizontal)
                 .navigationTitle("My Books")
                 .toolbar {
@@ -31,6 +31,7 @@ struct MyBooksView: View {
 struct BooksListView: View {
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
     @State private var searchText: String = ""
+    var showsActionsMenu: Bool = false
     
     private let gridColumns: [GridItem] = [
         GridItem(.flexible(), spacing: 16),
@@ -69,14 +70,70 @@ struct BooksListView: View {
                     .padding(.top, 8)
             } else {
                 LazyVGrid(columns: gridColumns, spacing: 16) {
-                    ForEach(filtered) { book in
-                        NavigationLink(destination: BookDetailView(book: book)) {
-                            BookTileView(book: book)
+                    if showsActionsMenu {
+                        ForEach(filtered) { book in
+                            BookTileWithActions(book: book)
                         }
-                        .buttonStyle(.plain)
+                    } else {
+                        ForEach(filtered) { book in
+                            NavigationLink(destination: BookDetailView(book: book)) {
+                                BookTileView(book: book)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+struct BookTileWithActions: View {
+    let book: Book
+    
+    @Environment(\.modelContext) private var modelContext
+    @State private var isShowingActions: Bool = false
+    @State private var isShowingRename: Bool = false
+    @State private var isShowingDeleteConfirm: Bool = false
+    
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            NavigationLink(destination: BookDetailView(book: book)) {
+                BookTileView(book: book)
+            }
+            .buttonStyle(.plain)
+            
+            Button {
+                isShowingActions = true
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.title3)
+                    .padding(.trailing, 10)
+                    .padding(.bottom, 8)
+            }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
+        }
+        .confirmationDialog("Book actions", isPresented: $isShowingActions, titleVisibility: .visible) {
+            Button("Rename") {
+                isShowingRename = true
+            }
+            Button("Delete", role: .destructive) {
+                isShowingDeleteConfirm = true
+            }
+        }
+        .sheet(isPresented: $isShowingRename) {
+            NavigationStack {
+                RenameBookView(book: book)
+            }
+        }
+        .alert("Delete this book?", isPresented: $isShowingDeleteConfirm) {
+            Button("Delete", role: .destructive) {
+                modelContext.delete(book)
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will delete the book and all of its quotes. This action cannot be undone.")
         }
     }
 }
@@ -195,5 +252,47 @@ struct BookTileView: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
         )
+    }
+}
+
+struct RenameBookView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Bindable var book: Book
+    @State private var draftTitle: String
+    
+    init(book: Book) {
+        self.book = book
+        _draftTitle = State(initialValue: book.title)
+    }
+    
+    var body: some View {
+        Form {
+            Section(header: Text("Title")) {
+                TextField("Book title", text: $draftTitle)
+                    .textInputAutocapitalization(.words)
+            }
+        }
+        .navigationTitle("Rename Book")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Cancel") {
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Save") {
+                    save()
+                }
+                .disabled(draftTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+    }
+    
+    private func save() {
+        let trimmed = draftTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        book.title = trimmed
+        dismiss()
     }
 }
