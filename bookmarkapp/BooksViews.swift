@@ -141,6 +141,9 @@ struct BookTileWithActions: View {
 struct BookDetailView: View {
     @Bindable var book: Book
     @State private var query: String = ""
+    @Environment(\.modelContext) private var modelContext
+    @State private var quotePendingDeletion: Quote?
+    @State private var isShowingDeleteConfirm: Bool = false
     
     private var filteredQuotes: [Quote] {
         guard !query.isEmpty else { return book.quotes.sorted { $0.createdAt > $1.createdAt } }
@@ -154,7 +157,7 @@ struct BookDetailView: View {
     var body: some View {
         List {
             ForEach(filteredQuotes) { quote in
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     Text(quote.text)
                     if let note = quote.note, !note.isEmpty {
                         Text(note)
@@ -169,13 +172,46 @@ struct BookDetailView: View {
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    
+                    HStack(spacing: 12) {
+                        Button(action: {}) {
+                            Label("share", systemImage: "square.and.arrow.up")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .allowsHitTesting(false)
+                        
+                        Button(role: .destructive) {
+                            quotePendingDeletion = quote
+                            isShowingDeleteConfirm = true
+                        } label: {
+                            Label("delete", systemImage: "trash")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .padding(.top, 6)
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
             }
         }
         .searchable(text: $query)
         .navigationTitle(book.title)
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Delete this quote?", isPresented: $isShowingDeleteConfirm) {
+            Button("Delete", role: .destructive) {
+                if let quote = quotePendingDeletion {
+                    modelContext.delete(quote)
+                    quotePendingDeletion = nil
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                quotePendingDeletion = nil
+            }
+        } message: {
+            Text("This will delete the quote permanently. This action cannot be undone.")
+        }
     }
 }
 
