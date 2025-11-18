@@ -60,7 +60,7 @@ struct ContentView: View {
     
     private var header: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center, spacing: 16) {
+                HStack(alignment: .center, spacing: 16) {
                 HStack(spacing: 10) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -81,8 +81,10 @@ struct ContentView: View {
                 }
                 
                 Spacer()
-                
-                Button(action: {}) {
+
+                NavigationLink {
+                    SettingsMenuView()
+                } label: {
                     Image(systemName: "line.3.horizontal")
                         .font(.title3.weight(.medium))
                         .foregroundStyle(.primary)
