@@ -7,6 +7,7 @@ struct BookPickerView: View {
     
     @State private var isShowingNewBookSheet: Bool = false
     @State private var newTitle: String = ""
+    @State private var newAuthor: String = ""
     
     var onPicked: (Book) -> Void
     
@@ -42,6 +43,7 @@ struct BookPickerView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         newTitle = ""
+                        newAuthor = ""
                         isShowingNewBookSheet = true
                     } label: {
                         Image(systemName: "plus")
@@ -52,11 +54,15 @@ struct BookPickerView: View {
             }
             // Sheet close button is provided by the system; no custom close button here.
             .sheet(isPresented: $isShowingNewBookSheet) {
-                NewBookSheet(title: $newTitle) { title in
+                NewBookSheet(title: $newTitle, author: $newAuthor) { title, author in
                     let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard !trimmedTitle.isEmpty else { return }
+                    let trimmedAuthor = author.trimmingCharacters(in: .whitespacesAndNewlines)
                     
-                    let book = Book(title: trimmedTitle)
+                    let book = Book(
+                        title: trimmedTitle,
+                        author: trimmedAuthor.isEmpty ? nil : trimmedAuthor
+                    )
                     modelContext.insert(book)
                     
                     // Immediately treat the newly created book as selected.
@@ -126,7 +132,8 @@ struct NewBookSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     @Binding var title: String
-    var onCreate: (String) -> Void
+    @Binding var author: String
+    var onCreate: (String, String) -> Void
     
     private var isSaveDisabled: Bool {
         title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -137,6 +144,8 @@ struct NewBookSheet: View {
             Form {
                 Section {
                     TextField("Book title", text: $title)
+                    TextField("Author (optional)", text: $author)
+                        .textInputAutocapitalization(.words)
                 }
             }
             .navigationTitle("New Book")
@@ -149,7 +158,7 @@ struct NewBookSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        onCreate(title)
+                        onCreate(title, author)
                         dismiss()
                     }
                     .disabled(isSaveDisabled)

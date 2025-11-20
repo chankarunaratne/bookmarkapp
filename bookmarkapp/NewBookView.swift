@@ -13,6 +13,7 @@ struct NewBookView: View {
     @Environment(\.modelContext) private var modelContext
     
     @State private var title: String = ""
+    @State private var author: String = ""
     
     private var isCreateDisabled: Bool {
         title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -23,6 +24,9 @@ struct NewBookView: View {
             Form {
                 Section(header: Text("Book Name")) {
                     TextField("Enter book name", text: $title)
+                        .textInputAutocapitalization(.words)
+                    
+                    TextField("Author (optional)", text: $author)
                         .textInputAutocapitalization(.words)
                 }
             }
@@ -48,8 +52,12 @@ struct NewBookView: View {
     private func createBook() {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else { return }
+        let trimmedAuthor = author.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        let book = Book(title: trimmedTitle)
+        let book = Book(
+            title: trimmedTitle,
+            author: trimmedAuthor.isEmpty ? nil : trimmedAuthor
+        )
         modelContext.insert(book)
         
         dismiss()

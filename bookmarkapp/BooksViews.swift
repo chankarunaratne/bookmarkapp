@@ -32,6 +32,7 @@ struct BooksListView: View {
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
     @State private var searchText: String = ""
     var showsActionsMenu: Bool = false
+    var showsSearchField: Bool = true
     
     private let gridColumns: [GridItem] = [
         GridItem(.flexible(), spacing: 16),
@@ -47,7 +48,7 @@ struct BooksListView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if !books.isEmpty {
+            if !books.isEmpty && showsSearchField {
                 TextField("Search books", text: $searchText)
                     .textFieldStyle(.roundedBorder)
                     .font(.subheadline)
@@ -277,7 +278,7 @@ struct BookTileView: View {
                     .foregroundStyle(.primary)
                     .lineLimit(2)
                 
-                Text(book.lastUpdatedAt, style: .relative)
+                Text((book.author?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { !$0.isEmpty ? $0 : nil } ?? "Unknown author")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

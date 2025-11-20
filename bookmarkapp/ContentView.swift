@@ -23,7 +23,7 @@ struct ContentView: View {
                             .padding(.horizontal)
                             .padding(.top, 8)
                         
-                        BooksListView()
+                        BooksListView(showsSearchField: false)
                             .padding(.horizontal)
                     }
                     .padding(.bottom, 120) // space for floating button
@@ -81,22 +81,6 @@ struct ContentView: View {
                 }
                 
                 Spacer()
-
-                NavigationLink {
-                    SettingsMenuView()
-                } label: {
-                    Image(systemName: "line.3.horizontal")
-                        .font(.title3.weight(.medium))
-                        .foregroundStyle(.primary)
-                        .padding(10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(Color(.systemBackground))
-                                .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
-                        )
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Menu")
             }
         }
     }
