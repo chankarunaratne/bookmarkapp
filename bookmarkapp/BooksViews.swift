@@ -33,6 +33,7 @@ struct BooksListView: View {
     @State private var searchText: String = ""
     var showsActionsMenu: Bool = false
     var showsSearchField: Bool = true
+    var showsSectionHeader: Bool = true
     
     private let gridColumns: [GridItem] = [
         GridItem(.flexible(), spacing: 16),
@@ -54,15 +55,17 @@ struct BooksListView: View {
                     .font(.subheadline)
             }
             
-            HStack(alignment: .firstTextBaseline) {
-                Text("MY BOOKS")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .textCase(.uppercase)
-                Spacer()
-                Text("\(filtered.count)")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+            if showsSectionHeader {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("MY BOOKS")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
+                    Spacer()
+                    Text("\(filtered.count)")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
             }
             
             if books.isEmpty {
@@ -220,30 +223,46 @@ struct BookDetailView: View {
 struct BookThumbnailView: View {
     let book: Book
     
+    private struct ThumbnailPalette {
+        let background: Color
+        let initialColor: Color
+    }
+    
     private var initial: String {
         let trimmed = book.title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let first = trimmed.first else { return "#" }
         return String(first).uppercased()
     }
     
-    private var accentColor: Color {
-        let palette: [Color] = [
-            Color(red: 0.96, green: 0.90, blue: 0.79),
-            Color(red: 0.94, green: 0.83, blue: 0.83),
-            Color(red: 0.84, green: 0.89, blue: 0.95),
-            Color(red: 0.96, green: 0.86, blue: 0.93)
+    private var palette: ThumbnailPalette {
+        let palettes: [ThumbnailPalette] = [
+            // Soft pink – Cobalt Red
+            ThumbnailPalette(
+                background: Color(red: 1.0, green: 0.88, blue: 0.88),      // #FFE0E0
+                initialColor: Color(red: 0.632, green: 0.553, blue: 0.553) // #A18D8D
+            ),
+            // Soft cream – Chip War
+            ThumbnailPalette(
+                background: Color(red: 1.0, green: 0.96, blue: 0.89),      // #FFF5E3
+                initialColor: Color(red: 0.632, green: 0.553, blue: 0.553) // #A18D8D
+            ),
+            // Soft blue – Second World War
+            ThumbnailPalette(
+                background: Color(red: 0.89, green: 0.97, blue: 1.0),      // #E3F9FF
+                initialColor: Color(red: 0.535, green: 0.584, blue: 0.6)   // #889599
+            )
         ]
-        let idx = abs(book.title.hashValue) % palette.count
-        return palette[idx]
+        let idx = abs(book.title.hashValue) % palettes.count
+        return palettes[idx]
     }
     
     var body: some View {
         RoundedRectangle(cornerRadius: 18, style: .continuous)
-            .fill(accentColor)
+            .fill(palette.background)
             .overlay(
                 Text(initial)
-                    .font(.system(size: 40, weight: .semibold, design: .serif))
-                    .foregroundStyle(Color.white.opacity(0.9))
+                    .font(AppFont.bookInitial)
+                    .foregroundStyle(palette.initialColor)
             )
     }
 }
@@ -258,36 +277,43 @@ struct BookTileView: View {
                     .frame(height: 110)
                 
                 if book.quotesCount > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: "quote.opening")
-                            .font(.caption2)
-                        Text("\(book.quotesCount)")
-                            .font(.caption2.weight(.semibold))
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(.ultraThickMaterial)
-                    .clipShape(Capsule())
-                    .padding(8)
+                    Text("\(book.quotesCount)")
+                        .font(AppFont.quoteBadge)
+                        .foregroundStyle(Color.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                .fill(AppColor.quoteBadge)
+                        )
+                        .padding(.trailing, 10)
+                        .padding(.top, 8)
                 }
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
-                    .font(.system(size: 16, weight: .semibold, design: .serif))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                    .font(AppFont.bookTitle)
+                    .foregroundStyle(AppColor.textPrimary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                 
                 Text((book.author?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { !$0.isEmpty ? $0 : nil } ?? "Unknown author")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(AppFont.bookAuthor)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
         }
-        .padding(10)
+        .padding(12)
+        .frame(maxWidth: .infinity, minHeight: 190, maxHeight: 190, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
+                .stroke(AppColor.cardBorder, lineWidth: 1)
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(Color.white)
+                )
         )
     }
 }

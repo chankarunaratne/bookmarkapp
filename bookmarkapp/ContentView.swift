@@ -7,7 +7,9 @@
 
 import SwiftUI
 import SwiftData
+#if canImport(UIKit)
 import UIKit
+#endif
 
 struct ContentView: View {
     @State private var showSourceDialog: Bool = false
@@ -20,19 +22,19 @@ struct ContentView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
                         header
-                            .padding(.horizontal)
-                            .padding(.top, 8)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 24)
                         
-                        BooksListView(showsSearchField: false)
-                            .padding(.horizontal)
+                        BooksListView(showsSearchField: false, showsSectionHeader: false)
+                            .padding(.horizontal, 20)
                     }
                     .padding(.bottom, 120) // space for floating button
                 }
-                .background(Color(.systemGroupedBackground))
+                .background(AppColor.background.ignoresSafeArea())
                 
                 scanBookButton
             }
-            .background(Color(.systemGroupedBackground))
+            .background(AppColor.background.ignoresSafeArea())
             // Present OCR review as a navigation destination instead of a modal sheet.
             .navigationDestination(item: $ocrImageItem) { item in
                 OCRReviewView(
@@ -59,29 +61,15 @@ struct ContentView: View {
     }
     
     private var header: some View {
-        VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .center, spacing: 16) {
-                HStack(spacing: 10) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.12))
-                            .frame(width: 40, height: 40)
-                        Image(systemName: "bookmark.fill")
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(Color.accentColor)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Bookmarks")
-                            .font(.system(size: 26, weight: .semibold, design: .serif))
-                        Text("Your collection of quotes")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                
-                Spacer()
-            }
+        VStack(spacing: 16) {
+            Text("Booklights")
+                .font(AppFont.screenTitle)
+                .foregroundStyle(AppColor.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .center)
+            
+            Rectangle()
+                .fill(AppColor.cardBorder)
+                .frame(height: 1)
         }
     }
     
