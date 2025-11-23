@@ -41,6 +41,14 @@ enum AppFont {
     
     /// Quote count badge number.
     static let quoteBadge = Font.system(size: 12, weight: .semibold, design: .serif)
+    
+    /// Section titles on home such as "My books" / "Recent highlights"
+    /// – SF Pro Text Medium 16.
+    static let sectionTitle = Font.system(size: 16, weight: .medium, design: .default)
+    
+    /// Body text for quote content on the home "Recent highlights" cards
+    /// – New York Regular 16.
+    static let quoteBody = Font.system(size: 16, weight: .regular, design: .serif)
 }
 
 
