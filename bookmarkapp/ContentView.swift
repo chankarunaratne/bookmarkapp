@@ -92,7 +92,10 @@ private struct HomeContentView: View {
                     .font(AppFont.sectionTitle)
                     .foregroundStyle(AppColor.textSecondary)
                 
+                // Let the trailing card visually extend past the screen edge
+                // while keeping the leading edge aligned with the section title.
                 MyBooksCarouselView(books: books)
+                    .padding(.trailing, -20)
             }
             
             // Recent highlights
@@ -130,9 +133,6 @@ private struct MyBooksCarouselView: View {
                 }
             }
             .padding(.vertical, 4)
-            // Let the trailing card sit flush with the screen edge while
-            // the leading card aligns with the section text.
-            .padding(.trailing, 20)
         }
     }
 }
@@ -177,7 +177,7 @@ private struct HomeBookCardView: View {
             }
         }
         .padding(10)
-        .frame(width: 124, height: 130, alignment: .topLeading)
+        .frame(width: 148, height: 154, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .stroke(AppColor.cardBorder, lineWidth: 1)
@@ -195,6 +195,12 @@ private struct RecentHighlightCardView: View {
     let quoteText: String
     
     var body: some View {
+        // Figma effects:
+        // 1) Drop shadow:   X 0, Y 0, Blur 0, Spread 1, Color #091948 @ 13%
+        // 2) Drop shadow:   X 0, Y 1, Blur 2, Spread 0, Color #123769 @ 8%
+        let subtleBorderShadow = Color(red: 9 / 255, green: 25 / 255, blue: 72 / 255).opacity(0.13)
+        let softDropShadow = Color(red: 18 / 255, green: 55 / 255, blue: 105 / 255).opacity(0.08)
+        
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image("card-book-icon")
@@ -212,6 +218,7 @@ private struct RecentHighlightCardView: View {
             Text(quoteText)
                 .font(AppFont.quoteBody)
                 .foregroundStyle(AppColor.textPrimary)
+                .lineSpacing(10)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(20)
@@ -219,12 +226,11 @@ private struct RecentHighlightCardView: View {
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(Color.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .stroke(AppColor.cardBorder, lineWidth: 1)
-                )
         )
-        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 1)
+        // Figma effect #1 – very subtle 1px "border" shadow.
+        .shadow(color: subtleBorderShadow, radius: 0, x: 0, y: 0)
+        // Figma effect #2 – soft drop shadow under the card.
+        .shadow(color: softDropShadow, radius: 2, x: 0, y: 1)
         // View-only: no interaction on the card itself.
         .allowsHitTesting(false)
     }

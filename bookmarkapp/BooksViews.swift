@@ -224,7 +224,7 @@ struct BookThumbnailView: View {
     let book: Book
     
     private struct ThumbnailPalette {
-        let background: Color
+        let background: LinearGradient
         let initialColor: Color
     }
     
@@ -235,21 +235,44 @@ struct BookThumbnailView: View {
     }
     
     private var palette: ThumbnailPalette {
+        // Pink gradient based on Figma:
+        // 0%  #FFE0E0, 100% #EC9F9F
+        let softPinkStart = Color(red: 1.0, green: 0.88, blue: 0.88)                     // #FFE0E0
+        let softPinkEnd = Color(red: 236.0 / 255.0, green: 159.0 / 255.0, blue: 159.0 / 255.0) // #EC9F9F
+        
         let palettes: [ThumbnailPalette] = [
-            // Soft pink – Cobalt Red
+            // Soft pink – uses true gradient from Figma.
             ThumbnailPalette(
-                background: Color(red: 1.0, green: 0.88, blue: 0.88),      // #FFE0E0
+                background: LinearGradient(
+                    gradient: Gradient(colors: [softPinkStart, softPinkEnd]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
                 initialColor: Color(red: 0.632, green: 0.553, blue: 0.553) // #A18D8D
             ),
-            // Soft cream – Chip War
+            // Soft cream – subtle diagonal gradient for a soft card look.
             ThumbnailPalette(
-                background: Color(red: 1.0, green: 0.96, blue: 0.89),      // #FFF5E3
+                background: LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 1.0, green: 0.97, blue: 0.91), // slightly lighter cream
+                        Color(red: 1.0, green: 0.93, blue: 0.82)  // slightly warmer base
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
                 initialColor: Color(red: 0.632, green: 0.553, blue: 0.553) // #A18D8D
             ),
-            // Soft blue – Second World War
+            // Soft blue – subtle diagonal gradient for a soft card look.
             ThumbnailPalette(
-                background: Color(red: 0.89, green: 0.97, blue: 1.0),      // #E3F9FF
-                initialColor: Color(red: 0.535, green: 0.584, blue: 0.6)   // #889599
+                background: LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.92, green: 0.98, blue: 1.0), // slightly lighter blue
+                        Color(red: 0.83, green: 0.95, blue: 1.0)  // slightly richer blue
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                initialColor: Color(red: 0.535, green: 0.584, blue: 0.6) // #889599
             )
         ]
         let idx = abs(book.title.hashValue) % palettes.count
