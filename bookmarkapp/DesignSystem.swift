@@ -26,6 +26,15 @@ enum AppColor {
 
     /// Book thumbnail monogram – #26668F
     static let bookThumbnailLetter = Color(red: 0.149, green: 0.400, blue: 0.561)
+    
+    /// Text/Loud [900] – #0D0D12 (used for quote card book titles)
+    static let textLoud = Color(red: 0.051, green: 0.051, blue: 0.071)
+    
+    /// Text/Subdued [400] – #818898 (used for quote card timestamps)
+    static let textSubdued = Color(red: 0.506, green: 0.533, blue: 0.596)
+    
+    /// Stronger card border – #DFE1E7 (used for quote cards)
+    static let cardBorderStrong = Color(red: 0.875, green: 0.882, blue: 0.906)
 }
 
 /// Shared gradients derived from the Figma design.
@@ -75,8 +84,17 @@ enum AppFont {
     static let sectionTitle = Font.system(size: 16, weight: .medium, design: .default)
     
     /// Body text for quote content on the home "Recent highlights" cards
-    /// – New York Regular 16.
+    /// – New York Regular 16 (legacy style, kept for compatibility).
     static let quoteBody = Font.system(size: 16, weight: .regular, design: .serif)
+    
+    /// Quote card book title – New York Regular 16, line height 26.
+    static let quoteCardTitle = Font.system(size: 16, weight: .regular, design: .serif)
+    
+    /// Quote card timestamp – Inter Regular 14, line height 26.
+    static let quoteCardTimestamp = Font.system(size: 14, weight: .regular, design: .default)
+    
+    /// Quote card body – Inter Regular 16, line height 28.
+    static let quoteCardBody = Font.system(size: 16, weight: .regular, design: .default)
 }
 
 

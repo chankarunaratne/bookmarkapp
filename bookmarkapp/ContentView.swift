@@ -109,7 +109,8 @@ private struct HomeContentView: View {
                         ForEach(highlights, id: \.quote.id) { item in
                             RecentHighlightCardView(
                                 bookTitle: item.book.title,
-                                quoteText: item.quote.text
+                                quoteText: item.quote.text,
+                                createdAt: item.quote.createdAt
                             )
                         }
                     }
@@ -146,9 +147,6 @@ private struct HomeBookCardView: View {
                 BookThumbnailView(book: book)
                     .frame(height: 74)
                     .frame(maxWidth: .infinity)
-                    // Make the thumbnail background bleed to the card edges while only
-                    // rounding the top corners, so the join with the white bottom section
-                    // is a straight line (no inner bottom corner radius).
                     .clipShape(
                         UnevenRoundedRectangle(
                             cornerRadii: RectangleCornerRadii(
@@ -159,20 +157,6 @@ private struct HomeBookCardView: View {
                             )
                         )
                     )
-                
-                if book.quotesCount > 0 {
-                    Text("\(book.quotesCount)")
-                        .font(AppFont.quoteBadge)
-                        .foregroundStyle(Color.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                .fill(AppColor.quoteBadge)
-                        )
-                        .padding(.trailing, 6)
-                        .padding(.top, 6)
-                }
             }
             
             VStack(alignment: .leading, spacing: 4) {
@@ -208,30 +192,40 @@ private struct HomeBookCardView: View {
 private struct RecentHighlightCardView: View {
     let bookTitle: String
     let quoteText: String
+    let createdAt: Date
+    
+    /// Shared relative date formatter for the "Added X ago" timestamp.
+    private static let relativeFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter
+    }()
+    
+    private var addedTimestampText: String {
+        let relative = Self.relativeFormatter.localizedString(for: createdAt, relativeTo: Date())
+        return "Added \(relative)"
+    }
     
     var body: some View {
-        // Figma effects:
-        // 1) Drop shadow:   X 0, Y 0, Blur 0, Spread 1, Color #091948 @ 13%
-        // 2) Drop shadow:   X 0, Y 1, Blur 2, Spread 0, Color #123769 @ 8%
-        let subtleBorderShadow = Color(red: 9 / 255, green: 25 / 255, blue: 72 / 255).opacity(0.13)
-        let softDropShadow = Color(red: 18 / 255, green: 55 / 255, blue: 105 / 255).opacity(0.08)
-        
         VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Image("card-book-icon")
-                    .resizable()
-                    .renderingMode(.original)
-                    .frame(width: 16, height: 24)
-                
+            HStack(alignment: .firstTextBaseline) {
                 Text(bookTitle)
-                    .font(AppFont.sectionTitle)
-                    .foregroundStyle(AppColor.textSecondary)
+                    .font(AppFont.quoteCardTitle)
+                    .foregroundStyle(AppColor.textLoud)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                
+                Spacer(minLength: 8)
+                
+                Text(addedTimestampText)
+                    .font(AppFont.quoteCardTimestamp)
+                    .foregroundStyle(AppColor.textSubdued)
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
             
             Text(quoteText)
-                .font(AppFont.quoteBody)
+                .font(AppFont.quoteCardBody)
                 .foregroundStyle(AppColor.textPrimary)
                 .lineSpacing(10)
                 .fixedSize(horizontal: false, vertical: true)
@@ -240,12 +234,12 @@ private struct RecentHighlightCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color.white)
+                .stroke(AppColor.cardBorderStrong, lineWidth: 1)
+                .background(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .fill(Color.white)
+                )
         )
-        // Figma effect #1 – very subtle 1px "border" shadow.
-        .shadow(color: subtleBorderShadow, radius: 0, x: 0, y: 0)
-        // Figma effect #2 – soft drop shadow under the card.
-        .shadow(color: softDropShadow, radius: 2, x: 0, y: 1)
         // View-only: no interaction on the card itself.
         .allowsHitTesting(false)
     }
