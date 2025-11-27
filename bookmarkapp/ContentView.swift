@@ -141,11 +141,24 @@ private struct HomeBookCardView: View {
     let book: Book
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .topTrailing) {
                 BookThumbnailView(book: book)
-                    .frame(maxWidth: .infinity, minHeight: 74, maxHeight: 74)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .frame(height: 74)
+                    .frame(maxWidth: .infinity)
+                    // Make the thumbnail background bleed to the card edges while only
+                    // rounding the top corners, so the join with the white bottom section
+                    // is a straight line (no inner bottom corner radius).
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            cornerRadii: RectangleCornerRadii(
+                                topLeading: 24,
+                                bottomLeading: 0,
+                                bottomTrailing: 0,
+                                topTrailing: 24
+                            )
+                        )
+                    )
                 
                 if book.quotesCount > 0 {
                     Text("\(book.quotesCount)")
@@ -175,9 +188,11 @@ private struct HomeBookCardView: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
+            .padding(.horizontal, 10)
+            .padding(.top, 12)
+            .padding(.bottom, 10)
         }
-        .padding(10)
-        .frame(width: 148, height: 154, alignment: .topLeading)
+        .frame(width: 148, height: 138, alignment: .topLeading)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .stroke(AppColor.cardBorder, lineWidth: 1)

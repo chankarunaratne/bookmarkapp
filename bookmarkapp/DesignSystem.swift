@@ -23,6 +23,9 @@ enum AppColor {
     
     /// Quote badge background – #DBC1C1
     static let quoteBadge = Color(red: 0.859, green: 0.757, blue: 0.757)
+
+    /// Book thumbnail monogram – #26668F
+    static let bookThumbnailLetter = Color(red: 0.149, green: 0.400, blue: 0.561)
 }
 
 /// Shared font helpers for Apple New York and SF Pro.
@@ -30,8 +33,8 @@ enum AppFont {
     /// Screen title – "Booklights"
     static let screenTitle = Font.system(size: 24, weight: .medium, design: .serif)
     
-    /// Book thumbnail initial.
-    static let bookInitial = Font.system(size: 36, weight: .regular, design: .serif)
+    /// Book thumbnail initial – New York Regular 28.
+    static let bookInitial = Font.system(size: 28, weight: .regular, design: .serif)
     
     /// Book title on card.
     static let bookTitle = Font.system(size: 16, weight: .medium, design: .serif)

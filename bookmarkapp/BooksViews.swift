@@ -224,8 +224,7 @@ struct BookThumbnailView: View {
     let book: Book
     
     private struct ThumbnailPalette {
-        let background: LinearGradient
-        let initialColor: Color
+        let background: Color
     }
     
     private var initial: String {
@@ -235,44 +234,17 @@ struct BookThumbnailView: View {
     }
     
     private var palette: ThumbnailPalette {
-        // Pink gradient based on Figma:
-        // 0%  #FFE0E0, 100% #EC9F9F
-        let softPinkStart = Color(red: 1.0, green: 0.88, blue: 0.88)                     // #FFE0E0
-        let softPinkEnd = Color(red: 236.0 / 255.0, green: 159.0 / 255.0, blue: 159.0 / 255.0) // #EC9F9F
-        
+        // Soft flat backgrounds derived from the previous gradients (no gradients per spec).
+        let softPink = Color(red: 1.0, green: 0.88, blue: 0.88) // #FFE0E0
         let palettes: [ThumbnailPalette] = [
-            // Soft pink – uses true gradient from Figma.
             ThumbnailPalette(
-                background: LinearGradient(
-                    gradient: Gradient(colors: [softPinkStart, softPinkEnd]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                initialColor: Color(red: 0.632, green: 0.553, blue: 0.553) // #A18D8D
+                background: softPink
             ),
-            // Soft cream – subtle diagonal gradient for a soft card look.
             ThumbnailPalette(
-                background: LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color(red: 1.0, green: 0.97, blue: 0.91), // slightly lighter cream
-                        Color(red: 1.0, green: 0.93, blue: 0.82)  // slightly warmer base
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                initialColor: Color(red: 0.632, green: 0.553, blue: 0.553) // #A18D8D
+                background: Color(red: 1.0, green: 0.97, blue: 0.91)
             ),
-            // Soft blue – subtle diagonal gradient for a soft card look.
             ThumbnailPalette(
-                background: LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color(red: 0.92, green: 0.98, blue: 1.0), // slightly lighter blue
-                        Color(red: 0.83, green: 0.95, blue: 1.0)  // slightly richer blue
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                initialColor: Color(red: 0.535, green: 0.584, blue: 0.6) // #889599
+                background: Color(red: 0.92, green: 0.98, blue: 1.0)
             )
         ]
         let idx = abs(book.title.hashValue) % palettes.count
@@ -280,13 +252,44 @@ struct BookThumbnailView: View {
     }
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 18, style: .continuous)
+        Rectangle()
             .fill(palette.background)
-            .overlay(
-                Text(initial)
-                    .font(AppFont.bookInitial)
-                    .foregroundStyle(palette.initialColor)
-            )
+            .overlay {
+                GeometryReader { proxy in
+                    // Small top inset so the colored background is visible above the book,
+                    // matching the Figma spec (≈16pt on a 74pt-tall background).
+                    let topPadding: CGFloat = proxy.size.height * 0.08
+                    let bookWidth: CGFloat = min(67, proxy.size.width * 0.75) // keep around 67pt, maintain aspect ratio
+                    let letterOffset: CGFloat = 16 // distance from top of the book area (slightly higher for better visibility)
+                    // Shift the entire book/letter stack downward so that the lower
+                    // portion of the book is clipped by the bottom edge of the thumbnail,
+                    // creating the effect of the book emerging from behind the white section.
+                    let contentOffsetY: CGFloat = proxy.size.height * 0.18
+                    
+                    ZStack(alignment: .top) {
+                        // Book illustration, anchored to the top with a small inset so the
+                        // background color is visible above it. The view itself clips the
+                        // bottom of the book so only the upper portion is shown.
+                        Image("book-thumbnail-icon")
+                            .resizable()
+                            .renderingMode(.original)
+                            .scaledToFit()
+                            .frame(width: bookWidth)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, topPadding)
+                        
+                        // First letter of the book title, centered horizontally and offset
+                        // by ~20pt from the top of the book.
+                        Text(initial)
+                            .font(AppFont.bookInitial)
+                            .foregroundStyle(AppColor.bookThumbnailLetter)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, topPadding + letterOffset)
+                    }
+                    .offset(y: contentOffsetY)
+                    .clipped()
+                }
+            }
     }
 }
 
