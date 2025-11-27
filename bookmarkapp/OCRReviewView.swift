@@ -17,6 +17,10 @@ struct OCRReviewView: View {
     @State private var showingBookPicker: Bool = false
     @State private var isLoading: Bool = true
     @State private var ocrErrorMessage: String? = nil
+    /// Snapshot of the user's selected text at the time they tap "Save highlight".
+    /// This avoids losing the selection when we clear the UI highlight before
+    /// the user picks a book.
+    @State private var pendingSelectedText: String = ""
 
     var body: some View {
         ZStack {
@@ -78,6 +82,13 @@ struct OCRReviewView: View {
                     VStack {
                         Spacer()
                         Button {
+                            // Take a snapshot of the current selection so we can
+                            // safely clear the UI highlight before the user picks
+                            // a book in the next step.
+                            let trimmed = selectedText.trimmingCharacters(in: .whitespacesAndNewlines)
+                            guard !trimmed.isEmpty else { return }
+                            pendingSelectedText = trimmed
+
                             // Clear the visual selection before moving to the next step.
                             clearSelectionID &+= 1
                             hasSelection = false
@@ -236,7 +247,10 @@ struct OCRReviewView: View {
     }
 
     private func save(to book: Book) {
-        let trimmed = selectedText.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Prefer the captured selection taken when the user tapped
+        // "Save highlight", falling back to the live binding if needed.
+        let baseText = pendingSelectedText.isEmpty ? selectedText : pendingSelectedText
+        let trimmed = baseText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
         let quote = Quote(
@@ -251,6 +265,7 @@ struct OCRReviewView: View {
 
         // Clear selection so the user can select a new portion.
         selectedText = ""
+        pendingSelectedText = ""
         hasSelection = false
         clearSelectionID &+= 1
     }

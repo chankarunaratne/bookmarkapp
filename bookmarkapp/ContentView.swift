@@ -50,12 +50,19 @@ struct ContentView: View {
                         BooksListView(showsSearchField: false, showsSectionHeader: false)
                             .padding(.horizontal, 20)
                     } else {
-                        HomeContentView(
-                            books: books,
-                            highlights: recentHighlights
-                        )
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Spacer()
+                                ProfileIconButton()
+                            }
+                            
+                            HomeContentView(
+                                books: books,
+                                highlights: recentHighlights
+                            )
+                        }
                         .padding(.horizontal, 20)
-                        .padding(.top, 24)
+                        .padding(.top, 32)
                     }
                 }
                 .padding(.bottom, 40)
@@ -89,8 +96,11 @@ private struct HomeContentView: View {
             // My books
             VStack(alignment: .leading, spacing: 12) {
                 Text("My books")
-                    .font(AppFont.sectionTitle)
-                    .foregroundStyle(AppColor.textSecondary)
+                    // Match Figma "heading-container": Inter Regular 16, Text/Loud [900],
+                    // with a slight inset from the left.
+                    .font(.system(size: 16, weight: .regular, design: .default))
+                    .foregroundStyle(AppColor.textLoud)
+                    .padding(.leading, 12)
                 
                 // Let the trailing card visually extend past the screen edge
                 // while keeping the leading edge aligned with the section title.
@@ -101,9 +111,42 @@ private struct HomeContentView: View {
             // Recent highlights
             if !highlights.isEmpty {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Recent highlights")
-                        .font(AppFont.sectionTitle)
-                        .foregroundStyle(AppColor.textSecondary)
+                    HStack {
+                        Text("Recent highlights")
+                            // Match Figma "heading-container": Inter Regular 16, Text/Loud [900],
+                            // with the same 12pt left inset as the "My books" header.
+                            .font(.system(size: 16, weight: .regular, design: .default))
+                            .foregroundStyle(AppColor.textLoud)
+                            .padding(.leading, 12)
+                        
+                        Spacer()
+                        
+                        Button(action: {}) {
+                            HStack(spacing: 6) {
+                                Text("Sort")
+                                    // Label/Small – Inter Medium 14
+                                    .font(.system(size: 14, weight: .medium, design: .default))
+                                    .foregroundStyle(AppColor.textPrimary)
+                                
+                                Image(systemName: "chevron.down")
+                                    .font(.system(size: 12, weight: .semibold, design: .default))
+                                    .foregroundStyle(AppColor.textSecondary)
+                            }
+                            .padding(.leading, 14)
+                            .padding(.trailing, 8)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule(style: .continuous)
+                                    .fill(Color.white)
+                            )
+                            .overlay(
+                                Capsule(style: .continuous)
+                                    .stroke(Color.black.opacity(0.04), lineWidth: 1)
+                            )
+                            .shadow(color: Color.black.opacity(0.12), radius: 2, x: 0, y: 1)
+                        }
+                        .buttonStyle(.plain)
+                    }
                     
                     VStack(spacing: 12) {
                         ForEach(highlights, id: \.quote.id) { item in
@@ -257,6 +300,35 @@ struct OCRImageItem: Identifiable, Hashable {
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+}
+
+// MARK: - Profile icon button (home, top-right)
+
+/// Circular profile icon used at the top-right of the home screen.
+/// Matches the Figma ellipse with a single-letter monogram. The action
+/// is intentionally empty for now and will later open the profile menu.
+private struct ProfileIconButton: View {
+    var body: some View {
+        Button(action: {
+            // Placeholder – will be wired to a profile / settings menu later.
+        }) {
+            ZStack {
+                Circle()
+                    .fill(AppGradient.profileIcon)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white.opacity(0.9), lineWidth: 2)
+                    )
+                
+                Text("C")
+                    .font(AppFont.profileInitial)
+                    .foregroundStyle(Color.white)
+            }
+            .frame(width: 40, height: 40)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Profile")
     }
 }
 

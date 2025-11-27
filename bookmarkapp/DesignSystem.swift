@@ -60,6 +60,17 @@ enum AppGradient {
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+
+    /// Profile icon background – soft violet circle used for the user initial
+    /// on the home screen. Derived from the Figma ellipse styling.
+    static let profileIcon = LinearGradient(
+        gradient: Gradient(colors: [
+            Color(red: 0.75, green: 0.67, blue: 0.99),
+            Color(red: 0.63, green: 0.50, blue: 0.96)
+        ]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
 }
 
 /// Shared font helpers for Apple New York and SF Pro.
@@ -95,6 +106,10 @@ enum AppFont {
     
     /// Quote card body – Inter Regular 16, line height 28.
     static let quoteCardBody = Font.system(size: 16, weight: .regular, design: .default)
+
+    /// Profile icon initial – New York Semibold 20, used for the single-letter
+    /// monogram inside the circular profile icon on the home screen.
+    static let profileInitial = Font.system(size: 20, weight: .semibold, design: .serif)
 }
 
 
