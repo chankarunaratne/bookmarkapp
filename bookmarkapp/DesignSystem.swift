@@ -40,6 +40,17 @@ enum AppGradient {
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
+    
+    /// Book thumbnail background – soft gold diagonal gradient
+    /// from #FFF5E3 to #EBD09D, used for alternate book thumbnails.
+    static let bookThumbnailGold = LinearGradient(
+        gradient: Gradient(colors: [
+            Color(red: 1.0, green: 0.96, blue: 0.89),                    // #FFF5E3
+            Color(red: 235.0 / 255.0, green: 208.0 / 255.0, blue: 157.0 / 255.0) // #EBD09D
+        ]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
 }
 
 /// Shared font helpers for Apple New York and SF Pro.
