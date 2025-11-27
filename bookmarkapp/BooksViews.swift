@@ -224,7 +224,7 @@ struct BookThumbnailView: View {
     let book: Book
     
     private struct ThumbnailPalette {
-        let background: Color
+        let background: LinearGradient
     }
     
     private var initial: String {
@@ -234,17 +234,15 @@ struct BookThumbnailView: View {
     }
     
     private var palette: ThumbnailPalette {
-        // Soft flat backgrounds derived from the previous gradients (no gradients per spec).
-        let softPink = Color(red: 1.0, green: 0.88, blue: 0.88) // #FFE0E0
         let palettes: [ThumbnailPalette] = [
             ThumbnailPalette(
-                background: softPink
+                background: AppGradient.bookThumbnailPink
             ),
             ThumbnailPalette(
-                background: Color(red: 1.0, green: 0.97, blue: 0.91)
+                background: AppGradient.bookThumbnailPink
             ),
             ThumbnailPalette(
-                background: Color(red: 0.92, green: 0.98, blue: 1.0)
+                background: AppGradient.bookThumbnailPink
             )
         ]
         let idx = abs(book.title.hashValue) % palettes.count

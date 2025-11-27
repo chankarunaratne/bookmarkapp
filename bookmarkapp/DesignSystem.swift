@@ -28,6 +28,20 @@ enum AppColor {
     static let bookThumbnailLetter = Color(red: 0.149, green: 0.400, blue: 0.561)
 }
 
+/// Shared gradients derived from the Figma design.
+enum AppGradient {
+    /// Book thumbnail background – soft pink diagonal gradient
+    /// from #FFE0E0 to #EC9F9F, matching the home "My books" cards.
+    static let bookThumbnailPink = LinearGradient(
+        gradient: Gradient(colors: [
+            Color(red: 1.0, green: 0.88, blue: 0.88),                    // #FFE0E0
+            Color(red: 236.0 / 255.0, green: 159.0 / 255.0, blue: 159.0 / 255.0) // #EC9F9F
+        ]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+}
+
 /// Shared font helpers for Apple New York and SF Pro.
 enum AppFont {
     /// Screen title – "Booklights"
