@@ -3,22 +3,87 @@ import SwiftData
 
 struct MyBooksView: View {
     @State private var isPresentingNewBook: Bool = false
+    @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
+    @State private var searchText: String = ""
+    
+    private var filtered: [Book] {
+        guard !searchText.isEmpty else { return books }
+        return books.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+    
+    private let gridColumns: [GridItem] = [
+        GridItem(.flexible(), spacing: 14),
+        GridItem(.flexible(), spacing: 14)
+    ]
     
     var body: some View {
         NavigationStack {
-            BooksListView(showsActionsMenu: true)
-                .padding(.horizontal)
-                .navigationTitle("My Books")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            isPresentingNewBook = true
-                        } label: {
-                            Image(systemName: "plus")
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Header: "My library" + buttons
+                    HStack(alignment: .center) {
+                        Text("My library")
+                            .font(AppFont.largeTitle)
+                            .foregroundStyle(AppColor.textLoud)
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 12) {
+                            // Three-dot menu button (placeholder)
+                            GlassIconButton(sfSymbol: "ellipsis") {
+                                // Placeholder action – sort/filter in future
+                            }
+                            
+                            // Plus button – opens add book modal
+                            GlassIconButton(sfSymbol: "plus") {
+                                isPresentingNewBook = true
+                            }
+                            .accessibilityLabel("Add new book")
                         }
-                        .accessibilityLabel("Add new book")
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
+                    
+                    // Book grid
+                    if books.isEmpty {
+                        VStack(spacing: 24) {
+                            Spacer().frame(height: 80)
+                            
+                            Image(systemName: "books.vertical")
+                                .font(.system(size: 48, weight: .light))
+                                .foregroundStyle(AppColor.textSubdued)
+                            
+                            VStack(spacing: 8) {
+                                Text("No books yet")
+                                    .font(AppFont.emptyStateTitle)
+                                    .foregroundStyle(AppColor.textPrimary)
+                                
+                                Text("Tap the + button to add your first book.")
+                                    .font(AppFont.emptyStateBody)
+                                    .foregroundStyle(AppColor.textSecondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 40)
+                    } else {
+                        LazyVGrid(columns: gridColumns, spacing: 14) {
+                            ForEach(filtered) { book in
+                                NavigationLink(destination: BookDetailView(book: book)) {
+                                    LibraryBookCardView(book: book)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 28)
                     }
                 }
+                .padding(.bottom, 40)
+            }
+            .background(Color.white.ignoresSafeArea())
         }
         .sheet(isPresented: $isPresentingNewBook) {
             NavigationStack {
@@ -27,6 +92,161 @@ struct MyBooksView: View {
         }
     }
 }
+
+// MARK: - Glass Icon Button (matches Figma "Button - Liquid Glass - Symbol")
+
+/// Frosted-glass circle button used in the My Library header.
+struct GlassIconButton: View {
+    let sfSymbol: String
+    var action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: sfSymbol)
+                .font(.system(size: 19, weight: .semibold))
+                .foregroundStyle(AppColor.glassIconForeground)
+                .frame(width: 48, height: 48)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Library Book Card (matches Figma design for My Library grid)
+
+/// Book card used on the My Library screen.
+/// Top area: gray (#F3F5F7) with book cover centered, rounded top corners (24pt).
+/// Bottom area: white with title + author, rounded bottom corners (24pt).
+struct LibraryBookCardView: View {
+    let book: Book
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Thumbnail area – gray background with book cover centered
+            ZStack {
+                // Gray background with rounded top corners
+                UnevenRoundedRectangle(
+                    cornerRadii: RectangleCornerRadii(
+                        topLeading: 24,
+                        bottomLeading: 0,
+                        bottomTrailing: 0,
+                        topTrailing: 24
+                    )
+                )
+                .fill(Color(red: 0.953, green: 0.961, blue: 0.969)) // #F3F5F7
+                .frame(height: 110)
+                .overlay(
+                    UnevenRoundedRectangle(
+                        cornerRadii: RectangleCornerRadii(
+                            topLeading: 24,
+                            bottomLeading: 0,
+                            bottomTrailing: 0,
+                            topTrailing: 24
+                        )
+                    )
+                    .stroke(AppColor.cardBorder, lineWidth: 0.5)
+                )
+                
+                // Book cover image or monogram icon
+                LibraryBookIconView(book: book)
+                    .frame(width: 72, height: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+                    .offset(y: 12)
+            }
+            .frame(height: 110)
+            .clipped()
+            
+            // Book details area
+            VStack(alignment: .leading, spacing: 4) {
+                Text(book.title)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(AppColor.textLoud)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                
+                Text((book.author?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { !$0.isEmpty ? $0 : nil } ?? "Unknown author")
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundStyle(AppColor.textNormal)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+            .padding(12)
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color.white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(AppColor.cardBorder, lineWidth: 0.5)
+        )
+        .shadow(color: Color(red: 0.071, green: 0.216, blue: 0.412).opacity(0.08), radius: 1, x: 0, y: 1)
+        .shadow(color: Color(red: 0.035, green: 0.098, blue: 0.282).opacity(0.13), radius: 0, x: 0, y: 0)
+    }
+}
+
+// MARK: - Library Book Icon View (cover image or monogram for library cards)
+
+/// Displays the book cover (from URL) or a monogram placeholder.
+/// Sized for the library card (72×100).
+private struct LibraryBookIconView: View {
+    let book: Book
+    
+    private var initial: String {
+        let trimmed = book.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let first = trimmed.first else { return "#" }
+        return String(first).uppercased()
+    }
+    
+    var body: some View {
+        if let urlString = book.coverURL, let url = URL(string: urlString) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    monogramView
+                case .empty:
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(AppColor.background)
+                        .overlay {
+                            ProgressView()
+                                .tint(AppColor.textSubdued)
+                        }
+                @unknown default:
+                    monogramView
+                }
+            }
+        } else {
+            monogramView
+        }
+    }
+    
+    private var monogramView: some View {
+        GeometryReader { proxy in
+            let bookWidth = proxy.size.width
+            
+            ZStack {
+                Image("book-thumbnail-icon")
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: bookWidth)
+                
+                Text(initial)
+                    .font(AppFont.bookInitial)
+                    .foregroundStyle(AppColor.bookThumbnailLetter)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+    }
+}
+
+// MARK: - BooksListView (used by other parts of the app, e.g. BookPicker)
 
 struct BooksListView: View {
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]

@@ -31,9 +31,7 @@ struct RootTabView: View {
                     }
                     .tag(Tab.home)
                 
-                NavigationStack {
-                    MyBooksView()
-                }
+                MyBooksView()
                 .tabItem {
                     Image(systemName: "books.vertical")
                     Text("My library")
