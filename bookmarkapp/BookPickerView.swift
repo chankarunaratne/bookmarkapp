@@ -294,19 +294,23 @@ struct AddBookView: View {
                 .fill(AppColor.background)
                 .frame(height: 155)
                 .overlay {
-                    ZStack(alignment: .top) {
-                        Image("book-thumbnail-icon")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 114)
-                            .padding(.top, 28)
+                    ZStack(alignment: .bottom) {
+                        ZStack(alignment: .top) {
+                            Image("book-thumbnail-icon")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 114)
 
-                        if !titleInitial.isEmpty {
-                            Text(titleInitial)
-                                .font(.system(size: 44, weight: .regular, design: .serif))
-                                .foregroundStyle(AppColor.bookThumbnailLetter)
-                                .padding(.top, 59)
+                            if !titleInitial.isEmpty {
+                                Text(titleInitial)
+                                    .font(.system(size: 44, weight: .regular, design: .serif))
+                                    .foregroundStyle(AppColor.bookThumbnailLetter)
+                                    .padding(.top, 31)
+                            }
                         }
+                        // Push the book down so it overflows the container and gets clipped
+                        // by the rounded preview, instead of leaving empty space at the bottom.
+                        .padding(.bottom, -34)
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
@@ -430,14 +434,16 @@ private struct CoverColorCircle: View {
 private struct SearchBannerView: View {
     var body: some View {
         HStack(spacing: 0) {
-            ZStack {
+            ZStack(alignment: .bottom) {
                 Image("book-search-banner")
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 65)
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 72, height: 102)
                     .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .offset(y: 12)
             }
             .frame(width: 110, height: 102)
+            .clipped()
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Search to auto-fill book details")
