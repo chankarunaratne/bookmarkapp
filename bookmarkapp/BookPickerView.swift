@@ -177,8 +177,9 @@ struct AddBookView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    @StateObject private var searchService = OpenLibraryService()
+
     @State private var selectedTab: Int = 0
-    @State private var searchTitle: String = ""
     @State private var manualTitle: String = ""
     @State private var manualAuthor: String = ""
     @State private var selectedColorIndex: Int = 0
@@ -186,7 +187,7 @@ struct AddBookView: View {
     var onBookAdded: (Book) -> Void
 
     private var isSaveDisabled: Bool {
-        if selectedTab == 0 { return true }
+        if selectedTab == 0 { return true }   // Search tab uses row taps, not the save button
         return manualTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
@@ -227,15 +228,17 @@ struct AddBookView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        createBook()
-                    } label: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 28))
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(.blue)
+                    if selectedTab == 1 {
+                        Button {
+                            createManualBook()
+                        } label: {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 28))
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundStyle(.blue)
+                        }
+                        .disabled(isSaveDisabled)
                     }
-                    .disabled(isSaveDisabled)
                 }
             }
         }
@@ -244,18 +247,65 @@ struct AddBookView: View {
     // MARK: - Search Tab
 
     private var searchTabContent: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                SearchBannerView()
-
-                AddBookTextField(
-                    label: "Title",
-                    placeholder: "Enter book title",
-                    text: $searchTitle
-                )
-            }
+        VStack(spacing: 0) {
+            // Search field
+            AddBookTextField(
+                label: "Title",
+                placeholder: "Search by book title or author",
+                text: $searchService.searchText
+            )
             .padding(.horizontal, 20)
-            .padding(.top, 24)
+            .padding(.top, 20)
+
+            // Results / States
+            if searchService.searchText.trimmingCharacters(in: .whitespacesAndNewlines).count < 2 {
+                // Initial state – show banner
+                ScrollView {
+                    SearchBannerView()
+                        .padding(.horizontal, 20)
+                        .padding(.top, 20)
+                }
+            } else if searchService.isSearching {
+                Spacer()
+                ProgressView()
+                    .tint(AppColor.textSecondary)
+                Spacer()
+            } else if searchService.results.isEmpty {
+                Spacer()
+                VStack(spacing: 8) {
+                    Image(systemName: "book.closed")
+                        .font(.system(size: 36, weight: .light))
+                        .foregroundStyle(AppColor.textSubdued)
+                    Text("No results found")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text("Try a different search or add your book manually")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundStyle(AppColor.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 40)
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        ForEach(searchService.results) { result in
+                            SearchResultRow(result: result) {
+                                createBookFromSearch(result)
+                            }
+
+                            // Divider between rows (except after last)
+                            if result.id != searchService.results.last?.id {
+                                Divider()
+                                    .padding(.leading, 76)
+                                    .padding(.trailing, 20)
+                            }
+                        }
+                    }
+                    .padding(.top, 12)
+                    .padding(.bottom, 20)
+                }
+            }
         }
     }
 
@@ -348,7 +398,9 @@ struct AddBookView: View {
         }
     }
 
-    private func createBook() {
+    // MARK: - Book Creation
+
+    private func createManualBook() {
         let trimmedTitle = manualTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else { return }
         let trimmedAuthor = manualAuthor.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -360,6 +412,90 @@ struct AddBookView: View {
         modelContext.insert(book)
         onBookAdded(book)
         dismiss()
+    }
+
+    private func createBookFromSearch(_ result: OpenLibrarySearchResult) {
+        let book = Book(
+            title: result.title,
+            author: result.author,
+            coverURL: result.coverURL?.absoluteString
+        )
+        modelContext.insert(book)
+        onBookAdded(book)
+        dismiss()
+    }
+}
+
+// MARK: - Search Result Row
+
+private struct SearchResultRow: View {
+    let result: OpenLibrarySearchResult
+    var onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack(spacing: 12) {
+                // Cover thumbnail
+                if let coverURL = result.coverURL {
+                    AsyncImage(url: coverURL) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 44, height: 64)
+                                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        case .failure:
+                            coverPlaceholder
+                        case .empty:
+                            ProgressView()
+                                .frame(width: 44, height: 64)
+                        @unknown default:
+                            coverPlaceholder
+                        }
+                    }
+                } else {
+                    coverPlaceholder
+                }
+
+                // Title + Author
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(result.title)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(AppColor.textPrimary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+
+                    if let author = result.author {
+                        Text(author)
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundStyle(AppColor.textSecondary)
+                            .lineLimit(1)
+                    }
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: "plus.circle")
+                    .font(.system(size: 24, weight: .light))
+                    .foregroundStyle(AppColor.cardBorderStrong)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Add \(result.title)")
+    }
+
+    private var coverPlaceholder: some View {
+        RoundedRectangle(cornerRadius: 6, style: .continuous)
+            .fill(AppColor.background)
+            .frame(width: 44, height: 64)
+            .overlay {
+                Image(systemName: "book.closed.fill")
+                    .font(.system(size: 18, weight: .light))
+                    .foregroundStyle(AppColor.textSubdued)
+            }
     }
 }
 

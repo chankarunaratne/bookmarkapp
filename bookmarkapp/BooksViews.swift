@@ -254,6 +254,33 @@ struct BookThumbnailView: View {
     }
     
     var body: some View {
+        if let urlString = book.coverURL, let url = URL(string: urlString) {
+            // Remote cover from Open Library
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    monogramView
+                case .empty:
+                    Rectangle()
+                        .fill(AppColor.background)
+                        .overlay {
+                            ProgressView()
+                                .tint(AppColor.textSubdued)
+                        }
+                @unknown default:
+                    monogramView
+                }
+            }
+        } else {
+            monogramView
+        }
+    }
+    
+    private var monogramView: some View {
         Rectangle()
             .fill(palette.background)
             .overlay {

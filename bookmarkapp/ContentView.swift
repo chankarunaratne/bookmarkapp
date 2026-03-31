@@ -291,6 +291,33 @@ private struct BookIconView: View {
     }
     
     var body: some View {
+        if let urlString = book.coverURL, let url = URL(string: urlString) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                case .failure:
+                    monogramView
+                case .empty:
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(AppColor.background)
+                        .overlay {
+                            ProgressView()
+                                .tint(AppColor.textSubdued)
+                        }
+                @unknown default:
+                    monogramView
+                }
+            }
+        } else {
+            monogramView
+        }
+    }
+    
+    private var monogramView: some View {
         GeometryReader { proxy in
             let bookWidth = proxy.size.width
             

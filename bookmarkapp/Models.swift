@@ -6,13 +6,15 @@ final class Book {
     var id: UUID
     var title: String
     var author: String?
+    var coverURL: String?
     var createdAt: Date
     var quotes: [Quote]
 
-    init(id: UUID = UUID(), title: String, author: String? = nil, createdAt: Date = Date(), quotes: [Quote] = []) {
+    init(id: UUID = UUID(), title: String, author: String? = nil, coverURL: String? = nil, createdAt: Date = Date(), quotes: [Quote] = []) {
         self.id = id
         self.title = title
         self.author = author
+        self.coverURL = coverURL
         self.createdAt = createdAt
         self.quotes = quotes
     }
