@@ -35,6 +35,15 @@ enum AppColor {
     
     /// Stronger card border – #DFE1E7 (used for quote cards)
     static let cardBorderStrong = Color(red: 0.875, green: 0.882, blue: 0.906)
+    
+    /// Dark button fill – #1B1D20 (used for CTA buttons)
+    static let buttonDark = Color(red: 0.106, green: 0.114, blue: 0.125)
+    
+    /// Gold accent – #EBC658 at 80% opacity (used for floating Add button)
+    static let addButtonGold = Color(red: 235.0 / 255.0, green: 198.0 / 255.0, blue: 88.0 / 255.0)
+    
+    /// Glass icon foreground – #404040
+    static let glassIconForeground = Color(red: 0.251, green: 0.251, blue: 0.251)
 }
 
 /// Shared gradients derived from the Figma design.
@@ -110,6 +119,18 @@ enum AppFont {
     /// Profile icon initial – New York Semibold 20, used for the single-letter
     /// monogram inside the circular profile icon on the home screen.
     static let profileInitial = Font.system(size: 20, weight: .semibold, design: .serif)
+    
+    /// Large screen title – 32pt Semibold (e.g. "Home")
+    static let largeTitle = Font.system(size: 32, weight: .semibold, design: .default)
+    
+    /// Empty state heading – 22pt Semibold
+    static let emptyStateTitle = Font.system(size: 22, weight: .semibold, design: .default)
+    
+    /// Empty state body – 16pt Regular
+    static let emptyStateBody = Font.system(size: 16, weight: .regular, design: .default)
+    
+    /// CTA button label – 16pt Medium
+    static let buttonLabel = Font.system(size: 16, weight: .medium, design: .default)
 }
 
 

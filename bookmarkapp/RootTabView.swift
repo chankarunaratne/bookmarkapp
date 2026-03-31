@@ -11,63 +11,57 @@ import SwiftData
 struct RootTabView: View {
     private enum Tab: Hashable {
         case home
-        case add
         case library
     }
     
     @State private var selectedTab: Tab = .home
-    @State private var lastNonAddTab: Tab = .home
     
-    // Shared scan / OCR state for the Add action.
     @State private var showSourcePanel: Bool = false
     @State private var showCamera: Bool = false
     @State private var showPhotoPicker: Bool = false
     @State private var ocrImageItem: OCRImageItem?
     
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack(alignment: .bottomTrailing) {
             TabView(selection: $selectedTab) {
-                // Home
-                ContentView()
+                ContentView(onSaveHighlight: { showSourcePanel = true })
                     .tabItem {
-                        Image("tabbar-home")
+                        Image(systemName: "house.fill")
                         Text("Home")
                     }
                     .tag(Tab.home)
                 
-                // Add / Scan – behaves like an action, not its own page.
-                Color.clear
-                    .tabItem {
-                        Image("tabbar-add")
-                        Text("Add")
-                    }
-                    .tag(Tab.add)
-                
-                // Library
                 NavigationStack {
                     MyBooksView()
                 }
                 .tabItem {
-                    Image("tabbar-library")
+                    Image(systemName: "books.vertical")
                     Text("My library")
                 }
                 .tag(Tab.library)
-                
-                // NOTE: Settings and Search views are kept in the codebase but
-                // intentionally hidden from the tab bar for now.
-                //
-                // NavigationStack { SettingsMenuView() }
-                //     .tabItem {
-                //         Image(systemName: "gearshape.fill")
-                //         Text("Settings")
-                //     }
-                //
-                // NavigationStack { SearchPlaceholderView() }
-                //     .tabItem {
-                //         Image(systemName: "magnifyingglass")
-                //         Text("Search")
-                //     }
             }
+            .tint(AppColor.textPrimary)
+            
+            // Floating golden Add button
+            Button(action: {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    showSourcePanel = true
+                }
+            }) {
+                Image(systemName: "plus")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(AppColor.glassIconForeground)
+                    .frame(width: 48, height: 48)
+                    .background(
+                        Circle()
+                            .fill(AppColor.addButtonGold.opacity(0.8))
+                            .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+                    )
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing, 25)
+            .padding(.bottom, 16)
+            .accessibilityLabel("Add highlight")
             
             if showSourcePanel {
                 SourceSelectionPanel(
@@ -83,23 +77,13 @@ struct RootTabView: View {
                         showSourcePanel = false
                     }
                 )
-                .padding(.bottom, 72) // slightly above the tab bar / Add icon
+                .padding(.bottom, 72)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-        }
-        .background(AppColor.background.ignoresSafeArea())
-        .onChange(of: selectedTab) { newValue in
-            // Make the middle tab act like a quick action instead of a real page.
-            if newValue == .add {
-                selectedTab = lastNonAddTab
-                showSourcePanel = true
-            } else {
-                lastNonAddTab = newValue
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
         }
         .sheet(isPresented: $showCamera) {
             CameraPicker { img in
-                // Drive the OCR review directly from the captured image.
                 ocrImageItem = OCRImageItem(image: img)
             }
         }
@@ -113,8 +97,6 @@ struct RootTabView: View {
                 OCRReviewView(
                     image: item.image,
                     onRescan: {
-                        // Dismiss and reopen the source selector so the user
-                        // can quickly rescan from the Add action.
                         ocrImageItem = nil
                         showSourcePanel = true
                     }

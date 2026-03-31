@@ -12,7 +12,8 @@ import UIKit
 #endif
 
 struct ContentView: View {
-    // Home data
+    var onSaveHighlight: (() -> Void)?
+    
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
     @Query(sort: \Quote.createdAt, order: .reverse) private var quotes: [Quote]
     
@@ -29,7 +30,6 @@ struct ContentView: View {
             seenBookIDs.insert(bookID)
             result.append((book, quote))
             
-            // Limit to a reasonable number for the home screen.
             if result.count >= 5 { break }
         }
         
@@ -38,18 +38,11 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 24) {
-                    if books.isEmpty {
-                        // Fallback to the original home layout when there are no books yet,
-                        // so the onboarding / empty state behaviour remains unchanged.
-                        header
-                            .padding(.horizontal, 20)
-                            .padding(.top, 24)
-                        
-                        BooksListView(showsSearchField: false, showsSectionHeader: false)
-                            .padding(.horizontal, 20)
-                    } else {
+            if books.isEmpty {
+                emptyStateView
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 24) {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 Spacer()
@@ -64,24 +57,71 @@ struct ContentView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 32)
                     }
+                    .padding(.bottom, 40)
                 }
-                .padding(.bottom, 40)
+                .background(AppColor.background.ignoresSafeArea())
             }
-            .background(AppColor.background.ignoresSafeArea())
         }
     }
     
-    private var header: some View {
-        VStack(spacing: 16) {
-            Text("Booklights")
-                .font(AppFont.screenTitle)
-                .foregroundStyle(AppColor.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .center)
+    private var emptyStateView: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .center) {
+                Text("Home")
+                    .font(AppFont.largeTitle)
+                    .foregroundStyle(AppColor.textLoud)
+                
+                Spacer()
+                
+                GlassProfileButton()
+            }
+            .padding(.horizontal, 28)
+            .padding(.top, 8)
             
-            Rectangle()
-                .fill(AppColor.cardBorder)
-                .frame(height: 1)
+            Spacer()
+            
+            VStack(spacing: 32) {
+                Image("no-books-image")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 170, height: 124)
+                
+                VStack(spacing: 24) {
+                    VStack(spacing: 8) {
+                        Text("Save your first highlight")
+                            .font(AppFont.emptyStateTitle)
+                            .foregroundStyle(AppColor.textPrimary)
+                        
+                        Text("This is where your book highlights will live.\nScan a page to start remembering what you read.")
+                            .font(AppFont.emptyStateBody)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                    }
+                    
+                    Button(action: { onSaveHighlight?() }) {
+                        Text("Save a highlight")
+                            .font(AppFont.buttonLabel)
+                            .foregroundStyle(.white)
+                            .frame(height: 36)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(AppColor.buttonDark)
+                                    .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                    .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(maxWidth: 324)
+            
+            Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.white.ignoresSafeArea())
     }
 }
 
@@ -303,16 +343,12 @@ struct OCRImageItem: Identifiable, Hashable {
     }
 }
 
-// MARK: - Profile icon button (home, top-right)
+// MARK: - Profile icon buttons
 
-/// Circular profile icon used at the top-right of the home screen.
-/// Matches the Figma ellipse with a single-letter monogram. The action
-/// is intentionally empty for now and will later open the profile menu.
+/// Gradient circle with initial letter – used on the home screen when books exist.
 private struct ProfileIconButton: View {
     var body: some View {
-        Button(action: {
-            // Placeholder – will be wired to a profile / settings menu later.
-        }) {
+        Button(action: {}) {
             ZStack {
                 Circle()
                     .fill(AppGradient.profileIcon)
@@ -332,7 +368,22 @@ private struct ProfileIconButton: View {
     }
 }
 
+/// Frosted-glass circle with person icon – used on the empty state home screen.
+private struct GlassProfileButton: View {
+    var body: some View {
+        Button(action: {}) {
+            Image(systemName: "person.fill")
+                .font(.system(size: 19, weight: .semibold))
+                .foregroundStyle(AppColor.glassIconForeground)
+                .frame(width: 48, height: 48)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Profile")
+    }
+}
+
 #Preview {
-    ContentView()
+    ContentView(onSaveHighlight: {})
         .modelContainer(for: [Book.self, Quote.self], inMemory: true)
 }
