@@ -13,7 +13,6 @@ struct OCRReviewView: View {
     @State private var selectedText: String = ""
     @State private var hasSelection: Bool = false
     @State private var clearSelectionID: Int = 0
-    @State private var search: String = ""
     @State private var showingBookPicker: Bool = false
     @State private var isLoading: Bool = true
     @State private var ocrErrorMessage: String? = nil
@@ -66,8 +65,11 @@ struct OCRReviewView: View {
                     }
                 }
             } else {
-                // Full text in a selectable, scrollable view on a clean white background.
                 VStack(spacing: 0) {
+                    InstructionsBanner()
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
+
                     SelectableTextView(
                         text: fullText,
                         selectedText: $selectedText,
@@ -76,34 +78,33 @@ struct OCRReviewView: View {
                     )
                 }
 
-                // Floating primary button when there is a selection
                 if hasSelection,
                    !selectedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     VStack {
                         Spacer()
                         Button {
-                            // Take a snapshot of the current selection so we can
-                            // safely clear the UI highlight before the user picks
-                            // a book in the next step.
                             let trimmed = selectedText.trimmingCharacters(in: .whitespacesAndNewlines)
                             guard !trimmed.isEmpty else { return }
                             pendingSelectedText = trimmed
-
-                            // Clear the visual selection before moving to the next step.
                             clearSelectionID &+= 1
                             hasSelection = false
                             showingBookPicker = true
                         } label: {
                             Text("Save highlight")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.accentColor)
+                                .font(AppFont.buttonLabel)
                                 .foregroundStyle(.white)
-                                .cornerRadius(12)
-                                .padding(.horizontal)
-                                .padding(.bottom)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 48)
+                                .background(
+                                    Capsule()
+                                        .fill(AppColor.buttonDark)
+                                        .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                        .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                                )
                         }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 34)
                     }
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .animation(.easeInOut, value: hasSelection)
@@ -122,6 +123,15 @@ struct OCRReviewView: View {
         .navigationTitle("Select highlight")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundStyle(AppColor.glassIconForeground)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 if let onRescan {
                     Button {
@@ -247,8 +257,6 @@ struct OCRReviewView: View {
     }
 
     private func save(to book: Book) {
-        // Prefer the captured selection taken when the user tapped
-        // "Save highlight", falling back to the live binding if needed.
         let baseText = pendingSelectedText.isEmpty ? selectedText : pendingSelectedText
         let trimmed = baseText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -263,10 +271,68 @@ struct OCRReviewView: View {
         book.quotes.append(quote)
         try? modelContext.save()
 
-        // Clear selection so the user can select a new portion.
         selectedText = ""
         pendingSelectedText = ""
         hasSelection = false
         clearSelectionID &+= 1
+    }
+}
+
+// MARK: - Instructions Banner
+
+private struct InstructionsBanner: View {
+    private let highlightBlue = Color(red: 0, green: 0.533, blue: 1)
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 12) {
+                Image("hold-icon")
+                    .resizable()
+                    .renderingMode(.original)
+                    .frame(width: 28, height: 28)
+
+                Text("Hold and drag to select a quote to save")
+                    .font(.system(size: 16, weight: .medium, design: .default))
+                    .foregroundStyle(AppColor.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+            }
+
+            Text("You don\u{2019}t rise to the level of your goals, you fall to the level of your systems.")
+                .font(.system(size: 18, weight: .regular, design: .serif))
+                .foregroundStyle(.black)
+                .lineSpacing(11)
+                .overlay(
+                    highlightBlue
+                        .opacity(0.25)
+                        .blendMode(.multiply)
+                        .clipShape(RoundedRectangle(cornerRadius: 1))
+                        .padding(.horizontal, -2)
+                        .padding(.vertical, -3)
+                )
+                .overlay(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(highlightBlue)
+                        .frame(width: 2)
+                        .padding(.top, -4)
+                        .padding(.bottom, 0)
+                }
+                .overlay(alignment: .trailing) {
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(highlightBlue)
+                        .frame(width: 2)
+                        .padding(.top, 0)
+                        .padding(.bottom, -4)
+                }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(AppColor.background)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(AppColor.cardBorder, lineWidth: 1)
+        )
     }
 }

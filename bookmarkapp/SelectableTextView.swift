@@ -13,31 +13,36 @@ struct SelectableTextView: UIViewRepresentable {
         let textView = UITextView()
         textView.isEditable = false
         textView.isSelectable = true
-        
-        // System serif font and comfortable reading size similar to Instapaper.
-        let baseFont = UIFont.preferredFont(forTextStyle: .body)
-        if let serifDescriptor = baseFont.fontDescriptor.withDesign(.serif) {
-            textView.font = UIFont(descriptor: serifDescriptor, size: 18)
-        } else {
-            textView.font = UIFont.systemFont(ofSize: 18)
-        }
-        
         textView.backgroundColor = .clear
-        textView.textContainerInset = UIEdgeInsets(top: 20, left: 18, bottom: 32, right: 18)
-        
-        // Use a yellow highlight color instead of the default blue selection tint.
-        textView.tintColor = .systemYellow
-        
+        textView.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 100, right: 20)
+        textView.tintColor = .systemBlue
         textView.delegate = context.coordinator
         return textView
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
         if uiView.text != text {
-            uiView.text = text
+            let baseFont = UIFont.preferredFont(forTextStyle: .body)
+            let font: UIFont
+            if let serifDescriptor = baseFont.fontDescriptor.withDesign(.serif) {
+                font = UIFont(descriptor: serifDescriptor, size: 18)
+            } else {
+                font = UIFont.systemFont(ofSize: 18)
+            }
+
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 11
+            paragraphStyle.paragraphSpacing = 16
+
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: UIColor(red: 0.212, green: 0.224, blue: 0.290, alpha: 1),
+                .paragraphStyle: paragraphStyle
+            ]
+
+            uiView.attributedText = NSAttributedString(string: text, attributes: attributes)
         }
 
-        // Clear selection when requested by SwiftUI.
         if context.coordinator.lastClearSelectionID != clearSelectionID {
             uiView.selectedRange = NSRange(location: 0, length: 0)
             context.coordinator.lastClearSelectionID = clearSelectionID
