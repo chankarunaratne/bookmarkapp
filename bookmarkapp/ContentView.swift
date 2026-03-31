@@ -43,18 +43,12 @@ struct ContentView: View {
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
-                        // Header: "Home" + profile button
-                        HStack(alignment: .center) {
-                            Text("Home")
-                                .font(AppFont.largeTitle)
-                                .foregroundStyle(AppColor.textLoud)
-                            
-                            Spacer()
-                            
-                            GlassProfileButton()
-                        }
-                        .padding(.horizontal, 28)
-                        .padding(.top, 8)
+                        // Header title
+                        Text("Home")
+                            .font(AppFont.largeTitle)
+                            .foregroundStyle(AppColor.textLoud)
+                            .padding(.horizontal, 28)
+                            .padding(.top, 8)
                         
                         // Content sections
                         HomeContentView(
@@ -72,17 +66,12 @@ struct ContentView: View {
     
     private var emptyStateView: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .center) {
-                Text("Home")
-                    .font(AppFont.largeTitle)
-                    .foregroundStyle(AppColor.textLoud)
-                
-                Spacer()
-                
-                GlassProfileButton()
-            }
-            .padding(.horizontal, 28)
-            .padding(.top, 8)
+            Text("Home")
+                .font(AppFont.largeTitle)
+                .foregroundStyle(AppColor.textLoud)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 28)
+                .padding(.top, 8)
             
             Spacer()
             
@@ -419,45 +408,7 @@ struct OCRImageItem: Identifiable, Hashable {
     }
 }
 
-// MARK: - Profile icon buttons
 
-/// Gradient circle with initial letter – used on the home screen when books exist.
-private struct ProfileIconButton: View {
-    var body: some View {
-        Button(action: {}) {
-            ZStack {
-                Circle()
-                    .fill(AppGradient.profileIcon)
-                    .overlay(
-                        Circle()
-                            .stroke(Color.white.opacity(0.9), lineWidth: 2)
-                    )
-                
-                Text("C")
-                    .font(AppFont.profileInitial)
-                    .foregroundStyle(Color.white)
-            }
-            .frame(width: 40, height: 40)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Profile")
-    }
-}
-
-/// Frosted-glass circle with person icon – used on both empty state and content home screens.
-private struct GlassProfileButton: View {
-    var body: some View {
-        Button(action: {}) {
-            Image(systemName: "person.fill")
-                .font(.system(size: 19, weight: .semibold))
-                .foregroundStyle(AppColor.glassIconForeground)
-                .frame(width: 48, height: 48)
-                .background(.ultraThinMaterial, in: Circle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Profile")
-    }
-}
 
 #Preview {
     ContentView(onSaveHighlight: {})

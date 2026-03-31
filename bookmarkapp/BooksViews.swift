@@ -22,29 +22,12 @@ struct MyBooksView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
-                    // Header: "My library" + buttons
-                    HStack(alignment: .center) {
-                        Text("My library")
-                            .font(AppFont.largeTitle)
-                            .foregroundStyle(AppColor.textLoud)
-                        
-                        Spacer()
-                        
-                        HStack(spacing: 12) {
-                            // Three-dot menu button (placeholder)
-                            GlassIconButton(sfSymbol: "ellipsis") {
-                                // Placeholder action – sort/filter in future
-                            }
-                            
-                            // Plus button – opens add book modal
-                            GlassIconButton(sfSymbol: "plus") {
-                                isPresentingNewBook = true
-                            }
-                            .accessibilityLabel("Add new book")
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
+                    // Header title
+                    Text("My library")
+                        .font(AppFont.largeTitle)
+                        .foregroundStyle(AppColor.textLoud)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
                     
                     // Book grid
                     if books.isEmpty {
@@ -84,6 +67,23 @@ struct MyBooksView: View {
                 .padding(.bottom, 40)
             }
             .background(Color.white.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        // Placeholder action – sort/filter in future
+                    } label: {
+                        Image(systemName: "ellipsis")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isPresentingNewBook = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .accessibilityLabel("Add new book")
+                }
+            }
         }
         .sheet(isPresented: $isPresentingNewBook) {
             NavigationStack {
@@ -93,24 +93,7 @@ struct MyBooksView: View {
     }
 }
 
-// MARK: - Glass Icon Button (matches Figma "Button - Liquid Glass - Symbol")
 
-/// Frosted-glass circle button used in the My Library header.
-struct GlassIconButton: View {
-    let sfSymbol: String
-    var action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: sfSymbol)
-                .font(.system(size: 19, weight: .semibold))
-                .foregroundStyle(AppColor.glassIconForeground)
-                .frame(width: 48, height: 48)
-                .background(.ultraThinMaterial, in: Circle())
-        }
-        .buttonStyle(.plain)
-    }
-}
 
 // MARK: - Library Book Card (matches Figma design for My Library grid)
 
@@ -364,65 +347,66 @@ struct BookTileWithActions: View {
 
 struct BookDetailView: View {
     @Bindable var book: Book
-    @State private var query: String = ""
     @Environment(\.modelContext) private var modelContext
     @State private var quotePendingDeletion: Quote?
     @State private var isShowingDeleteConfirm: Bool = false
     
-    private var filteredQuotes: [Quote] {
-        guard !query.isEmpty else { return book.quotes.sorted { $0.createdAt > $1.createdAt } }
-        return book.quotes.filter {
-            $0.text.localizedCaseInsensitiveContains(query)
-            || ($0.note ?? "").localizedCaseInsensitiveContains(query)
-        }
-        .sorted { $0.createdAt > $1.createdAt }
+    private var sortedQuotes: [Quote] {
+        book.quotes.sorted { $0.createdAt > $1.createdAt }
     }
     
     var body: some View {
-        List {
-            ForEach(filteredQuotes) { quote in
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(quote.text)
-                    if let note = quote.note, !note.isEmpty {
-                        Text(note)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    HStack {
-                        if let page = quote.page, !page.isEmpty {
-                            Text("p. \(page)")
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 0) {
+                // MARK: – Book Header
+                BookDetailHeaderView(book: book)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                
+                // MARK: – Quotes List
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(sortedQuotes.enumerated()), id: \.element.id) { index, quote in
+                        // Divider before each quote (except the first)
+                        if index > 0 {
+                            Rectangle()
+                                .fill(AppColor.cardBorder)
+                                .frame(height: 1)
+                                .padding(.horizontal, 20)
                         }
-                        Text(quote.createdAt, style: .date)
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    
-                    HStack(spacing: 12) {
-                        Button(action: {}) {
-                            Label("share", systemImage: "square.and.arrow.up")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-                        .allowsHitTesting(false)
                         
-                        Button(role: .destructive) {
-                            quotePendingDeletion = quote
-                            isShowingDeleteConfirm = true
-                        } label: {
-                            Label("delete", systemImage: "trash")
-                                .frame(maxWidth: .infinity)
+                        NavigationLink(destination: QuoteDetailView(quote: quote)) {
+                            QuoteRowView(quote: quote, onDelete: {
+                                quotePendingDeletion = quote
+                                isShowingDeleteConfirm = true
+                            })
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 20)
+                        .padding(.top, index == 0 ? 24 : 20)
+                        .padding(.bottom, 20)
                     }
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.top, 6)
                 }
-                .padding(.vertical, 6)
+            }
+            .padding(.bottom, 40)
+        }
+        .background(Color.white.ignoresSafeArea())
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    // Add quote action – placeholder
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    // More options – placeholder
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
             }
         }
-        .searchable(text: $query)
-        .navigationTitle(book.title)
-        .navigationBarTitleDisplayMode(.inline)
         .alert("Delete this quote?", isPresented: $isShowingDeleteConfirm) {
             Button("Delete", role: .destructive) {
                 if let quote = quotePendingDeletion {
@@ -436,6 +420,237 @@ struct BookDetailView: View {
         } message: {
             Text("This will delete the quote permanently. This action cannot be undone.")
         }
+    }
+}
+
+// MARK: - Book Detail Header (cover + info)
+
+/// Matches the Figma "header" frame: cover image left, book info right.
+private struct BookDetailHeaderView: View {
+    let book: Book
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            // Book cover
+            BookDetailCoverView(book: book)
+                .frame(width: 123, height: 172)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .shadow(color: .black.opacity(0.10), radius: 6, x: 0, y: 3)
+            
+            // Book info
+            VStack(alignment: .leading, spacing: 8) {
+                Text(book.title)
+                    .font(.system(size: 32, weight: .regular, design: .default))
+                    .foregroundStyle(Color.black)
+                    .lineLimit(3)
+                    .padding(.top, 4)
+                
+                Text((book.author?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { !$0.isEmpty ? $0 : nil } ?? "Unknown author")
+                    .font(.system(size: 16, weight: .regular, design: .default))
+                    .foregroundStyle(AppColor.textNormal) // #666D80
+                    .lineLimit(2)
+                
+                // Highlights count badge
+                HStack(spacing: 4) {
+                    Text("\(book.quotesCount) highlight\(book.quotesCount == 1 ? "" : "s")")
+                        .font(.system(size: 16, weight: .regular, design: .default))
+                        .foregroundStyle(AppColor.textNormal) // #666D80
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(AppColor.background) // #F6F8FA
+                )
+            }
+            
+            Spacer(minLength: 0)
+        }
+    }
+}
+
+// MARK: - Book Detail Cover View
+
+/// Shows the book cover at the larger detail size, or falls back to a monogram.
+private struct BookDetailCoverView: View {
+    let book: Book
+    
+    private var initial: String {
+        let trimmed = book.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let first = trimmed.first else { return "#" }
+        return String(first).uppercased()
+    }
+    
+    var body: some View {
+        if let urlString = book.coverURL, let url = URL(string: urlString) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    monogramView
+                case .empty:
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(AppColor.background)
+                        .overlay {
+                            ProgressView()
+                                .tint(AppColor.textSubdued)
+                        }
+                @unknown default:
+                    monogramView
+                }
+            }
+        } else {
+            monogramView
+        }
+    }
+    
+    private var monogramView: some View {
+        GeometryReader { proxy in
+            let bookWidth = proxy.size.width
+            
+            ZStack {
+                Image("book-thumbnail-icon")
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: bookWidth)
+                
+                Text(initial)
+                    .font(.system(size: 36, weight: .regular, design: .serif))
+                    .foregroundStyle(AppColor.bookThumbnailLetter)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+    }
+}
+
+// MARK: - Quote Row View
+
+/// A single quote row matching the Figma design: timestamp + menu icon on top, quote body below.
+private struct QuoteRowView: View {
+    let quote: Quote
+    var onDelete: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Timestamp row
+            HStack {
+                Text(quote.createdAt.relativeDescription)
+                    .font(.system(size: 16, weight: .regular, design: .default))
+                    .foregroundStyle(AppColor.textSubdued) // #818898
+                
+                Spacer()
+                
+                Menu {
+                    Button(role: .destructive) {
+                        onDelete()
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    
+                    Button {
+                        UIPasteboard.general.string = quote.text
+                    } label: {
+                        Label("Copy", systemImage: "doc.on.doc")
+                    }
+                    
+                    ShareLink(item: quote.text) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(AppColor.textSubdued)
+                        .frame(width: 32, height: 32)
+                        .contentShape(Rectangle())
+                }
+            }
+            
+            // Quote body text
+            Text(quote.text)
+                .font(.system(size: 18, weight: .regular, design: .serif))
+                .foregroundStyle(AppColor.textMuted) // #36394A
+                .lineSpacing(8) // ~32pt line height for 18pt text
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+// MARK: - Quote Detail View
+
+/// Full-screen quote view matching Figma "5.3 in-quote" design.
+/// Shows the timestamp and full quote text with a native back button and ellipsis toolbar button.
+struct QuoteDetailView: View {
+    let quote: Quote
+    @Environment(\.modelContext) private var modelContext
+    @State private var isShowingDeleteConfirm: Bool = false
+    
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 8) {
+                // Timestamp
+                Text(quote.createdAt.relativeDescription)
+                    .font(.system(size: 16, weight: .regular, design: .default))
+                    .foregroundStyle(AppColor.textSubdued) // #818898
+                
+                // Full quote text
+                Text(quote.text)
+                    .font(.system(size: 18, weight: .regular, design: .serif))
+                    .foregroundStyle(AppColor.textMuted) // #36394A
+                    .lineSpacing(8) // ~32pt line height for 18pt text
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 40)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white.ignoresSafeArea())
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button {
+                        UIPasteboard.general.string = quote.text
+                    } label: {
+                        Label("Copy", systemImage: "doc.on.doc")
+                    }
+                    
+                    ShareLink(item: quote.text) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button(role: .destructive) {
+                        isShowingDeleteConfirm = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
+        }
+        .alert("Delete this quote?", isPresented: $isShowingDeleteConfirm) {
+            Button("Delete", role: .destructive) {
+                modelContext.delete(quote)
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will delete the quote permanently. This action cannot be undone.")
+        }
+    }
+}
+
+// MARK: - Date Extension for Relative Descriptions
+
+private extension Date {
+    var relativeDescription: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: self, relativeTo: Date())
     }
 }
 
