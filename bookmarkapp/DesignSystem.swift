@@ -44,6 +44,12 @@ enum AppColor {
     
     /// Glass icon foreground – #404040
     static let glassIconForeground = Color(red: 0.251, green: 0.251, blue: 0.251)
+    
+    /// Text/Normal [500] – #666D80 (used for book author on cards)
+    static let textNormal = Color(red: 0.400, green: 0.427, blue: 0.502)
+    
+    /// Text/Muted [600] – #36394A (used for quote body text)
+    static let textMuted = Color(red: 0.212, green: 0.224, blue: 0.290)
 }
 
 /// Shared gradients derived from the Figma design.
@@ -131,6 +137,9 @@ enum AppFont {
     
     /// CTA button label – 16pt Medium
     static let buttonLabel = Font.system(size: 16, weight: .medium, design: .default)
+    
+    /// Home section title – 22pt SemiBold (matches Figma "Overused Grotesk SemiBold")
+    static let homeSectionTitle = Font.system(size: 22, weight: .semibold, design: .default)
 }
 
 

@@ -42,24 +42,30 @@ struct ContentView: View {
                 emptyStateView
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 24) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Spacer()
-                                ProfileIconButton()
-                            }
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Header: "Home" + profile button
+                        HStack(alignment: .center) {
+                            Text("Home")
+                                .font(AppFont.largeTitle)
+                                .foregroundStyle(AppColor.textLoud)
                             
-                            HomeContentView(
-                                books: books,
-                                highlights: recentHighlights
-                            )
+                            Spacer()
+                            
+                            GlassProfileButton()
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 32)
+                        .padding(.horizontal, 28)
+                        .padding(.top, 8)
+                        
+                        // Content sections
+                        HomeContentView(
+                            books: books,
+                            highlights: recentHighlights
+                        )
+                        .padding(.top, 40)
                     }
                     .padding(.bottom, 40)
                 }
-                .background(AppColor.background.ignoresSafeArea())
+                .background(Color.white.ignoresSafeArea())
             }
         }
     }
@@ -125,7 +131,7 @@ struct ContentView: View {
     }
 }
 
-// MARK: - Home content (My books carousel + Recent highlights)
+// MARK: - Home content (Recent books carousel + Recent highlights)
 
 private struct HomeContentView: View {
     let books: [Book]
@@ -133,77 +139,51 @@ private struct HomeContentView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
-            // My books
-            VStack(alignment: .leading, spacing: 12) {
-                Text("My books")
-                    // Match Figma "heading-container": Inter Regular 16, Text/Loud [900],
-                    // with a slight inset from the left.
-                    .font(.system(size: 16, weight: .regular, design: .default))
-                    .foregroundStyle(AppColor.textLoud)
-                    .padding(.leading, 12)
+            // Recent books section
+            VStack(alignment: .leading, spacing: 16) {
+                // Section header with chevron
+                HStack(spacing: 2) {
+                    Text("Recent books")
+                        .font(AppFont.homeSectionTitle)
+                        .foregroundStyle(AppColor.textLoud)
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(AppColor.textLoud)
+                }
+                .padding(.leading, 32)
                 
-                // Let the trailing card visually extend past the screen edge
-                // while keeping the leading edge aligned with the section title.
-                MyBooksCarouselView(books: books)
-                    .padding(.trailing, -20)
+                // Carousel
+                RecentBooksCarouselView(books: books)
             }
             
-            // Recent highlights
+            // Recent highlights section
             if !highlights.isEmpty {
                 VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Text("Recent highlights")
-                            // Match Figma "heading-container": Inter Regular 16, Text/Loud [900],
-                            // with the same 12pt left inset as the "My books" header.
-                            .font(.system(size: 16, weight: .regular, design: .default))
-                            .foregroundStyle(AppColor.textLoud)
-                            .padding(.leading, 12)
-                        
-                        Spacer()
-                        
-                        Button(action: {}) {
-                            HStack(spacing: 6) {
-                                Text("Sort")
-                                    // Label/Small – Inter Medium 14
-                                    .font(.system(size: 14, weight: .medium, design: .default))
-                                    .foregroundStyle(AppColor.textPrimary)
-                                
-                                Image(systemName: "chevron.down")
-                                    .font(.system(size: 12, weight: .semibold, design: .default))
-                                    .foregroundStyle(AppColor.textSecondary)
-                            }
-                            .padding(.leading, 14)
-                            .padding(.trailing, 8)
-                            .padding(.vertical, 6)
-                            .background(
-                                Capsule(style: .continuous)
-                                    .fill(Color.white)
-                            )
-                            .overlay(
-                                Capsule(style: .continuous)
-                                    .stroke(Color.black.opacity(0.04), lineWidth: 1)
-                            )
-                            .shadow(color: Color.black.opacity(0.12), radius: 2, x: 0, y: 1)
-                        }
-                        .buttonStyle(.plain)
-                    }
+                    Text("Recent highlights")
+                        .font(AppFont.homeSectionTitle)
+                        .foregroundStyle(AppColor.textLoud)
+                        .padding(.leading, 32)
                     
-                    VStack(spacing: 12) {
+                    VStack(spacing: 20) {
                         ForEach(highlights, id: \.quote.id) { item in
                             RecentHighlightCardView(
-                                bookTitle: item.book.title,
+                                book: item.book,
                                 quoteText: item.quote.text,
                                 createdAt: item.quote.createdAt
                             )
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
             }
         }
     }
 }
 
-private struct MyBooksCarouselView: View {
+// MARK: - Recent Books Carousel
+
+private struct RecentBooksCarouselView: View {
     let books: [Book]
     
     var body: some View {
@@ -211,117 +191,186 @@ private struct MyBooksCarouselView: View {
             HStack(spacing: 12) {
                 ForEach(books) { book in
                     NavigationLink(destination: BookDetailView(book: book)) {
-                        HomeBookCardView(book: book)
+                        RecentBookCardView(book: book)
                     }
                     .buttonStyle(.plain)
                 }
             }
+            .padding(.horizontal, 20)
             .padding(.vertical, 4)
         }
     }
 }
 
-private struct HomeBookCardView: View {
+// MARK: - Recent Book Card (matches Figma 1.2 home design)
+
+private struct RecentBookCardView: View {
     let book: Book
+    
+    private var initial: String {
+        let trimmed = book.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let first = trimmed.first else { return "#" }
+        return String(first).uppercased()
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .topTrailing) {
-                BookThumbnailView(book: book)
-                    .frame(height: 74)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            cornerRadii: RectangleCornerRadii(
-                                topLeading: 24,
-                                bottomLeading: 0,
-                                bottomTrailing: 0,
-                                topTrailing: 24
-                            )
+            // Thumbnail area – gray background with book thumbnail centered
+            ZStack {
+                // Gray background with rounded top corners
+                UnevenRoundedRectangle(
+                    cornerRadii: RectangleCornerRadii(
+                        topLeading: 24,
+                        bottomLeading: 0,
+                        bottomTrailing: 0,
+                        topTrailing: 24
+                    )
+                )
+                .fill(Color(red: 0.953, green: 0.961, blue: 0.969)) // #F3F5F7
+                .frame(height: 88)
+                .overlay(
+                    UnevenRoundedRectangle(
+                        cornerRadii: RectangleCornerRadii(
+                            topLeading: 24,
+                            bottomLeading: 0,
+                            bottomTrailing: 0,
+                            topTrailing: 24
                         )
                     )
+                    .stroke(AppColor.cardBorder, lineWidth: 0.5)
+                )
+                
+                // Book icon with engraved initial (no gradient background)
+                BookIconView(book: book)
+                    .frame(width: 66, height: 92)
+                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    .offset(y: 18)
             }
+            .frame(height: 88)
+            .clipped()
             
+            // Book details
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
-                    .font(AppFont.bookTitle)
-                    .foregroundStyle(AppColor.textPrimary)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(AppColor.textLoud)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 
                 Text((book.author?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { !$0.isEmpty ? $0 : nil } ?? "Unknown author")
-                    .font(AppFont.bookAuthor)
-                    .foregroundStyle(AppColor.textSecondary)
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundStyle(AppColor.textNormal)
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
-            .padding(.horizontal, 10)
-            .padding(.top, 12)
-            .padding(.bottom, 10)
+            .padding(12)
         }
-        .frame(width: 148, height: 138, alignment: .topLeading)
+        .frame(width: 148)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(AppColor.cardBorder, lineWidth: 1)
-                .background(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(Color.white)
-                )
+                .fill(Color.white)
         )
-        .clipped()
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(AppColor.cardBorder, lineWidth: 0.5)
+        )
+        .shadow(color: Color(red: 0.071, green: 0.216, blue: 0.412).opacity(0.08), radius: 1, x: 0, y: 1)
+        .shadow(color: Color(red: 0.035, green: 0.098, blue: 0.282).opacity(0.13), radius: 0, x: 0, y: 0)
     }
 }
 
+// MARK: - Book Icon View (just the book-thumbnail-icon + engraved letter, no gradient background)
+
+private struct BookIconView: View {
+    let book: Book
+    
+    private var initial: String {
+        let trimmed = book.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let first = trimmed.first else { return "#" }
+        return String(first).uppercased()
+    }
+    
+    var body: some View {
+        GeometryReader { proxy in
+            let bookWidth = proxy.size.width
+            
+            ZStack {
+                Image("book-thumbnail-icon")
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: bookWidth)
+                
+                Text(initial)
+                    .font(AppFont.bookInitial)
+                    .foregroundStyle(AppColor.bookThumbnailLetter)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+    }
+}
+
+// MARK: - Recent Highlight Card (Figma design with book cover + quote)
+
 private struct RecentHighlightCardView: View {
-    let bookTitle: String
+    let book: Book
     let quoteText: String
     let createdAt: Date
     
-    /// Shared relative date formatter for the "Added X ago" timestamp.
+    /// Shared relative date formatter for the timestamp.
     private static let relativeFormatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter
     }()
     
-    private var addedTimestampText: String {
-        let relative = Self.relativeFormatter.localizedString(for: createdAt, relativeTo: Date())
-        return "Added \(relative)"
+    private var timestampText: String {
+        Self.relativeFormatter.localizedString(for: createdAt, relativeTo: Date())
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(bookTitle)
-                    .font(AppFont.quoteCardTitle)
+        VStack(alignment: .leading, spacing: 8) {
+            // Header: book title + timestamp
+            HStack(alignment: .lastTextBaseline) {
+                Text(book.title)
+                    .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(AppColor.textLoud)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 
                 Spacer(minLength: 8)
                 
-                Text(addedTimestampText)
-                    .font(AppFont.quoteCardTimestamp)
+                Text(timestampText)
+                    .font(.system(size: 14, weight: .regular))
                     .foregroundStyle(AppColor.textSubdued)
                     .lineLimit(1)
-                    .truncationMode(.tail)
             }
             
-            Text(quoteText)
-                .font(AppFont.quoteCardBody)
-                .foregroundStyle(AppColor.textPrimary)
-                .lineSpacing(10)
-                .fixedSize(horizontal: false, vertical: true)
+            // Body: book cover + quote text
+            HStack(alignment: .center, spacing: 16) {
+                // Book cover thumbnail (icon + engraved initial)
+                BookIconView(book: book)
+                    .frame(width: 72, height: 100)
+                
+                // Quote text
+                Text("\u{201C}\(quoteText)\u{201D}")
+                    .font(.system(size: 18, weight: .regular, design: .serif))
+                    .foregroundStyle(AppColor.textMuted)
+                    .lineSpacing(6)
+                    .lineLimit(4)
+                    .truncationMode(.tail)
+            }
         }
-        .padding(20)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(AppColor.cardBorderStrong, lineWidth: 1)
-                .background(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(Color.white)
-                )
+                .fill(Color.white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(AppColor.cardBorder, lineWidth: 1)
         )
         // View-only: no interaction on the card itself.
         .allowsHitTesting(false)
@@ -368,7 +417,7 @@ private struct ProfileIconButton: View {
     }
 }
 
-/// Frosted-glass circle with person icon – used on the empty state home screen.
+/// Frosted-glass circle with person icon – used on both empty state and content home screens.
 private struct GlassProfileButton: View {
     var body: some View {
         Button(action: {}) {
