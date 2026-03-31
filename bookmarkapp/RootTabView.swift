@@ -9,12 +9,13 @@ import SwiftUI
 import SwiftData
 
 struct RootTabView: View {
-    private enum Tab: Hashable {
+    private enum TabID: Hashable {
         case home
         case library
+        case add
     }
     
-    @State private var selectedTab: Tab = .home
+    @State private var selectedTab: TabID = .home
     
     @State private var showSourcePanel: Bool = false
     @State private var showCamera: Bool = false
@@ -22,44 +23,32 @@ struct RootTabView: View {
     @State private var ocrImageItem: OCRImageItem?
     
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
+        ZStack {
             TabView(selection: $selectedTab) {
-                ContentView(onSaveHighlight: { showSourcePanel = true })
-                    .tabItem {
-                        Image(systemName: "house.fill")
-                        Text("Home")
-                    }
-                    .tag(Tab.home)
-                
-                MyBooksView()
-                .tabItem {
-                    Image(systemName: "books.vertical")
-                    Text("My library")
+                Tab("Home", systemImage: "house.fill", value: .home) {
+                    ContentView(onSaveHighlight: { showSourcePanel = true })
                 }
-                .tag(Tab.library)
+                
+                Tab("My library", systemImage: "books.vertical", value: .library) {
+                    MyBooksView()
+                }
+                
+                // Uses the .search role so the system pins it separately on the right
+                Tab("Add highlight", systemImage: "plus", value: .add, role: .search) {
+                    Color.clear
+                }
             }
             .tint(AppColor.textPrimary)
-            
-            // Floating golden Add button
-            Button(action: {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                    showSourcePanel = true
+            .onChange(of: selectedTab) { oldValue, newValue in
+                if newValue == .add {
+                    // Revert to the previous real tab
+                    selectedTab = oldValue
+                    // Show the source panel
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        showSourcePanel = true
+                    }
                 }
-            }) {
-                Image(systemName: "plus")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(AppColor.glassIconForeground)
-                    .frame(width: 48, height: 48)
-                    .background(
-                        Circle()
-                            .fill(AppColor.addButtonGold.opacity(0.8))
-                            .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
-                    )
             }
-            .buttonStyle(.plain)
-            .padding(.trailing, 25)
-            .padding(.bottom, 16)
-            .accessibilityLabel("Add highlight")
             
             if showSourcePanel {
                 SourceSelectionPanel(
