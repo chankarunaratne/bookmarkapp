@@ -40,8 +40,8 @@ struct AddScanView: View {
                     )
                 }
         }
-        .sheet(isPresented: $showCamera) {
-            CameraPicker { img in
+        .fullScreenCover(isPresented: $showCamera) {
+            CustomCameraView { img in
                 // Drive the OCR review directly from the captured image.
                 ocrImageItem = OCRImageItem(image: img)
             }

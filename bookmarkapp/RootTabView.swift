@@ -70,8 +70,8 @@ struct RootTabView: View {
             .presentationDetents([.height(350)])
             .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showCamera) {
-            CameraPicker { img in
+        .fullScreenCover(isPresented: $showCamera) {
+            CustomCameraView { img in
                 ocrImageItem = OCRImageItem(image: img)
             }
         }
