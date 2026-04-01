@@ -27,7 +27,10 @@ struct RootTabView: View {
         ZStack {
             TabView(selection: $selectedTab) {
                 Tab("Home", systemImage: "house.fill", value: .home) {
-                    ContentView(onSaveHighlight: { showSourcePanel = true })
+                    ContentView(
+                        onSaveHighlight: { showSourcePanel = true },
+                        onTapMyLibrary: { selectedTab = .library }
+                    )
                 }
                 
                 Tab("My library", systemImage: "books.vertical", value: .library) {

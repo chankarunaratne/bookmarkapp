@@ -13,6 +13,7 @@ import UIKit
 
 struct ContentView: View {
     var onSaveHighlight: (() -> Void)?
+    var onTapMyLibrary: (() -> Void)?
     
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
     @Query(sort: \Quote.createdAt, order: .reverse) private var quotes: [Quote]
@@ -53,7 +54,8 @@ struct ContentView: View {
                         // Content sections
                         HomeContentView(
                             books: books,
-                            highlights: recentHighlights
+                            highlights: recentHighlights,
+                            onTapMyLibrary: onTapMyLibrary
                         )
                         .padding(.top, 40)
                     }
@@ -125,22 +127,26 @@ struct ContentView: View {
 private struct HomeContentView: View {
     let books: [Book]
     let highlights: [(book: Book, quote: Quote)]
+    var onTapMyLibrary: (() -> Void)?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             // Recent books section
             VStack(alignment: .leading, spacing: 16) {
                 // Section header with chevron
-                HStack(spacing: 2) {
-                    Text("Recent books")
-                        .font(AppFont.homeSectionTitle)
-                        .foregroundStyle(AppColor.textLoud)
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(AppColor.textLoud)
+                Button(action: { onTapMyLibrary?() }) {
+                    HStack(spacing: 2) {
+                        Text("My library")
+                            .font(AppFont.homeSectionTitle)
+                            .foregroundStyle(AppColor.textLoud)
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(AppColor.textLoud)
+                    }
+                    .padding(.leading, 32)
                 }
-                .padding(.leading, 32)
+                .buttonStyle(.plain)
                 
                 // Carousel
                 RecentBooksCarouselView(books: books)
@@ -411,6 +417,6 @@ struct OCRImageItem: Identifiable, Hashable {
 
 
 #Preview {
-    ContentView(onSaveHighlight: {})
+    ContentView(onSaveHighlight: {}, onTapMyLibrary: {})
         .modelContainer(for: [Book.self, Quote.self], inMemory: true)
 }
