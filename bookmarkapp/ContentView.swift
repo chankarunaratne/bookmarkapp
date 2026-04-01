@@ -45,11 +45,23 @@ struct ContentView: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
                         // Header title
-                        Text("Home")
-                            .font(AppFont.largeTitle)
-                            .foregroundStyle(AppColor.textLoud)
-                            .padding(.horizontal, 28)
-                            .padding(.top, 8)
+                        HStack {
+                            Text("Home")
+                                .font(AppFont.largeTitle)
+                                .foregroundStyle(AppColor.textLoud)
+                            
+                            Spacer()
+                            
+                            Button(action: {}) {
+                                Image(systemName: "person.fill")
+                                    .font(.system(size: 22))
+                                    .foregroundStyle(AppColor.glassIconForeground)
+                                    .frame(width: 48, height: 48)
+                                    .background(.ultraThinMaterial, in: Circle())
+                            }
+                        }
+                        .padding(.horizontal, 28)
+                        .padding(.top, 8)
                         
                         // Content sections
                         HomeContentView(
@@ -68,12 +80,23 @@ struct ContentView: View {
     
     private var emptyStateView: some View {
         VStack(spacing: 0) {
-            Text("Home")
-                .font(AppFont.largeTitle)
-                .foregroundStyle(AppColor.textLoud)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 28)
-                .padding(.top, 8)
+            HStack {
+                Text("Home")
+                    .font(AppFont.largeTitle)
+                    .foregroundStyle(AppColor.textLoud)
+                
+                Spacer()
+                
+                Button(action: {}) {
+                    Image(systemName: "person.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(AppColor.glassIconForeground)
+                        .frame(width: 48, height: 48)
+                        .background(.ultraThinMaterial, in: Circle())
+                }
+            }
+            .padding(.horizontal, 28)
+            .padding(.top, 8)
             
             Spacer()
             

@@ -33,7 +33,7 @@ struct RootTabView: View {
                     )
                 }
                 
-                Tab("My library", systemImage: "books.vertical", value: .library) {
+                Tab("My library", systemImage: "book.pages", value: .library) {
                     MyBooksView()
                 }
                 
