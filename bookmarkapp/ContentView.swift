@@ -287,7 +287,7 @@ private struct BookIconView: View {
     
     var body: some View {
         if let urlString = book.coverURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
+            CachedAsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
                     image
@@ -303,8 +303,6 @@ private struct BookIconView: View {
                             ProgressView()
                                 .tint(AppColor.textSubdued)
                         }
-                @unknown default:
-                    monogramView
                 }
             }
         } else {

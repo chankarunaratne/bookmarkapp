@@ -29,8 +29,8 @@ private struct SearchResponse: Decodable {
 }
 
 private struct SearchDoc: Decodable {
-    let key: String             // e.g. "/works/OL2163649W"
-    let title: String
+    let key: String?             // e.g. "/works/OL2163649W"
+    let title: String?
     let author_name: [String]?
     let cover_i: Int?           // Cover ID for covers.openlibrary.org
 }
@@ -69,7 +69,7 @@ final class OpenLibraryService: ObservableObject {
         defer { isSearching = false }
 
         guard let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "https://openlibrary.org/search.json?q=\(encoded)&limit=12&fields=key,title,author_name,cover_i")
+              let url = URL(string: "https://openlibrary.org/search.json?q=\(encoded)&limit=12")
         else {
             results = []
             return
@@ -79,20 +79,23 @@ final class OpenLibraryService: ObservableObject {
             let (data, _) = try await URLSession.shared.data(from: url)
             let response = try JSONDecoder().decode(SearchResponse.self, from: data)
 
-            results = response.docs.map { doc in
+            results = response.docs.compactMap { doc in
+                guard let title = doc.title, let key = doc.key else { return nil }
+                
                 let coverURL: URL? = {
                     guard let coverId = doc.cover_i else { return nil }
                     return URL(string: "https://covers.openlibrary.org/b/id/\(coverId)-M.jpg")
                 }()
 
                 return OpenLibrarySearchResult(
-                    id: doc.key,
-                    title: doc.title,
+                    id: key,
+                    title: title,
                     author: doc.author_name?.first,
                     coverURL: coverURL
                 )
             }
         } catch {
+            print("Search failed with error: \(error)")
             // Silently handle – user can still add manually
             results = []
         }

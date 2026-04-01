@@ -185,7 +185,7 @@ private struct LibraryBookIconView: View {
     
     var body: some View {
         if let urlString = book.coverURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
+            CachedAsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
                     image
@@ -200,8 +200,6 @@ private struct LibraryBookIconView: View {
                             ProgressView()
                                 .tint(AppColor.textSubdued)
                         }
-                @unknown default:
-                    monogramView
                 }
             }
         } else {
@@ -483,7 +481,7 @@ private struct BookDetailCoverView: View {
     
     var body: some View {
         if let urlString = book.coverURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
+            CachedAsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
                     image
@@ -498,8 +496,6 @@ private struct BookDetailCoverView: View {
                             ProgressView()
                                 .tint(AppColor.textSubdued)
                         }
-                @unknown default:
-                    monogramView
                 }
             }
         } else {
@@ -691,7 +687,7 @@ struct BookThumbnailView: View {
     var body: some View {
         if let urlString = book.coverURL, let url = URL(string: urlString) {
             // Remote cover from Open Library
-            AsyncImage(url: url) { phase in
+            CachedAsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):
                     image
@@ -706,8 +702,6 @@ struct BookThumbnailView: View {
                             ProgressView()
                                 .tint(AppColor.textSubdued)
                         }
-                @unknown default:
-                    monogramView
                 }
             }
         } else {

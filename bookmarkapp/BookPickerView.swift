@@ -437,7 +437,7 @@ private struct SearchResultRow: View {
             HStack(spacing: 12) {
                 // Cover thumbnail
                 if let coverURL = result.coverURL {
-                    AsyncImage(url: coverURL) { phase in
+                    CachedAsyncImage(url: coverURL) { phase in
                         switch phase {
                         case .success(let image):
                             image
@@ -450,8 +450,6 @@ private struct SearchResultRow: View {
                         case .empty:
                             ProgressView()
                                 .frame(width: 44, height: 64)
-                        @unknown default:
-                            coverPlaceholder
                         }
                     }
                 } else {
