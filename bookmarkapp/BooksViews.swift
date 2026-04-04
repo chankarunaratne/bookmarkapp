@@ -86,9 +86,7 @@ struct MyBooksView: View {
             }
         }
         .sheet(isPresented: $isPresentingNewBook) {
-            NavigationStack {
-                NewBookView()
-            }
+            AddBookView { _ in }
         }
     }
 }
