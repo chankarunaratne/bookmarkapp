@@ -51,12 +51,6 @@ struct MyBooksView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                    } label: {
-                        Image(systemName: "ellipsis")
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
                         isPresentingNewBook = true
                     } label: {
                         Image(systemName: "plus")

@@ -42,39 +42,42 @@ struct ContentView: View {
             if books.isEmpty {
                 emptyStateView
             } else {
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Header title
-                        HStack {
-                            Text("Home")
-                                .font(AppFont.largeTitle)
-                                .foregroundStyle(AppColor.textLoud)
-                            
-                            Spacer()
-                            
-                            Button(action: {}) {
-                                Image(systemName: "person.fill")
-                                    .font(.system(size: 22))
-                                    .foregroundStyle(AppColor.glassIconForeground)
-                                    .frame(width: 48, height: 48)
-                                    .background(.ultraThinMaterial, in: Circle())
+                GeometryReader { geometry in
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            // Header title
+                            HStack {
+                                Text("Home")
+                                    .font(AppFont.largeTitle)
+                                    .foregroundStyle(AppColor.textLoud)
+                                
+                                Spacer()
+                                
+                                Button(action: {}) {
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 22))
+                                        .foregroundStyle(AppColor.glassIconForeground)
+                                        .frame(width: 48, height: 48)
+                                        .background(.ultraThinMaterial, in: Circle())
+                                }
                             }
+                            .padding(.horizontal, 28)
+                            .padding(.top, 8)
+                            
+                            // Content sections
+                            HomeContentView(
+                                books: books,
+                                highlights: recentHighlights,
+                                onSaveHighlight: onSaveHighlight,
+                                onTapMyLibrary: onTapMyLibrary
+                            )
+                            .padding(.top, 40)
                         }
-                        .padding(.horizontal, 28)
-                        .padding(.top, 8)
-                        
-                        // Content sections
-                        HomeContentView(
-                            books: books,
-                            highlights: recentHighlights,
-                            onSaveHighlight: onSaveHighlight,
-                            onTapMyLibrary: onTapMyLibrary
-                        )
-                        .padding(.top, 40)
+                        .frame(minHeight: geometry.size.height)
+                        .padding(.bottom, recentHighlights.isEmpty ? 0 : 40)
                     }
-                    .padding(.bottom, 40)
+                    .background(Color.white.ignoresSafeArea())
                 }
-                .background(Color.white.ignoresSafeArea())
             }
         }
     }
@@ -183,10 +186,12 @@ private struct HomeContentView: View {
                 
                 RecentBooksCarouselView(books: books)
             }
+            .fixedSize(horizontal: false, vertical: true)
             
             // Recent highlights section
             if highlights.isEmpty {
                 highlightsEmptyStateView
+                    .padding(.top, -12)
             } else {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Recent highlights")
@@ -207,52 +212,60 @@ private struct HomeContentView: View {
                 }
             }
         }
+        .frame(maxHeight: highlights.isEmpty ? .infinity : nil)
     }
     
     private var highlightsEmptyStateView: some View {
-        VStack(spacing: 32) {
-            Image("open-book")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 142, height: 103)
+        VStack(spacing: 0) {
+            Spacer()
             
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
-                    Text("No highlights yet")
-                        .font(.system(size: 20, weight: .semibold, design: .default))
-                        .foregroundStyle(AppColor.textMuted)
-                    
-                    Text("This is where your book highlights will live.\nScan a page to start remembering what\nyou read.")
-                        .font(.system(size: 16, weight: .regular, design: .default))
-                        .foregroundStyle(AppColor.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(4)
-                }
+            VStack(spacing: 32) {
+                Image("open-book")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 142, height: 103)
                 
-                Button(action: { onSaveHighlight?() }) {
-                    Text("Save a highlight")
-                        .font(AppFont.buttonLabel)
-                        .foregroundStyle(.white)
-                        .frame(height: 36)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 6)
-                        .background(
-                            Capsule()
-                                .fill(AppColor.buttonDark)
-                                .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
-                                .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
-                        )
+                VStack(spacing: 24) {
+                    VStack(spacing: 8) {
+                        Text("No highlights yet")
+                            .font(.system(size: 20, weight: .semibold, design: .default))
+                            .foregroundStyle(AppColor.textMuted)
+                        
+                        Text("This is where your book highlights will live.\nScan a page to start remembering what\nyou read.")
+                            .font(.system(size: 16, weight: .regular, design: .default))
+                            .foregroundStyle(AppColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                    }
+                    
+                    Button(action: { onSaveHighlight?() }) {
+                        Text("Save a highlight")
+                            .font(AppFont.buttonLabel)
+                            .foregroundStyle(.white)
+                            .frame(height: 36)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(AppColor.buttonDark)
+                                    .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                    .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
+            .padding(.horizontal, 24)
+            
+            Spacer()
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 36)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(AppColor.background)
         )
         .padding(.horizontal, 20)
+        .padding(.bottom, 20)
     }
 }
 
