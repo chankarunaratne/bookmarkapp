@@ -25,7 +25,7 @@ struct OCRReviewView: View {
     var body: some View {
         ZStack {
             if isLoading {
-                ProgressView("Running OCR…")
+                ProgressView("Extracting text from the image.\nThis will only take a moment.")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .task { await runOCR() }
             } else if let message = ocrErrorMessage {
