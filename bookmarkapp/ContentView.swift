@@ -435,7 +435,7 @@ private struct BookIconView: View {
         GeometryReader { proxy in
             let bookWidth = proxy.size.width
             
-            ZStack {
+            ZStack(alignment: .top) {
                 Image("book-thumbnail-icon")
                     .resizable()
                     .renderingMode(.original)
@@ -445,6 +445,7 @@ private struct BookIconView: View {
                 Text(initial)
                     .font(AppFont.bookInitial)
                     .foregroundStyle(AppColor.bookThumbnailLetter)
+                    .padding(.top, bookWidth * 0.272)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
         }

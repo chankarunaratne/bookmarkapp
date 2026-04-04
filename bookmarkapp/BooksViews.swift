@@ -247,7 +247,7 @@ private struct LibraryBookIconView: View {
         GeometryReader { proxy in
             let bookWidth = proxy.size.width
             
-            ZStack {
+            ZStack(alignment: .top) {
                 Image("book-thumbnail-icon")
                     .resizable()
                     .renderingMode(.original)
@@ -257,6 +257,7 @@ private struct LibraryBookIconView: View {
                 Text(initial)
                     .font(AppFont.bookInitial)
                     .foregroundStyle(AppColor.bookThumbnailLetter)
+                    .padding(.top, bookWidth * 0.272)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
@@ -631,7 +632,7 @@ private struct BookDetailCoverView: View {
         GeometryReader { proxy in
             let bookWidth = proxy.size.width
             
-            ZStack {
+            ZStack(alignment: .top) {
                 Image("book-thumbnail-icon")
                     .resizable()
                     .renderingMode(.original)
@@ -641,6 +642,7 @@ private struct BookDetailCoverView: View {
                 Text(initial)
                     .font(.system(size: 36, weight: .regular, design: .serif))
                     .foregroundStyle(AppColor.bookThumbnailLetter)
+                    .padding(.top, bookWidth * 0.272)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
@@ -842,7 +844,7 @@ struct BookThumbnailView: View {
                     // matching the Figma spec (≈16pt on a 74pt-tall background).
                     let topPadding: CGFloat = proxy.size.height * 0.08
                     let bookWidth: CGFloat = min(67, proxy.size.width * 0.75) // keep around 67pt, maintain aspect ratio
-                    let letterOffset: CGFloat = 16 // distance from top of the book area (slightly higher for better visibility)
+                    let letterOffset: CGFloat = bookWidth * 0.272
                     // Shift the entire book/letter stack downward so that the lower
                     // portion of the book is clipped by the bottom edge of the thumbnail,
                     // creating the effect of the book emerging from behind the white section.
