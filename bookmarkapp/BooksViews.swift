@@ -20,57 +20,37 @@ struct MyBooksView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Header title
-                    Text("My library")
-                        .font(AppFont.largeTitle)
-                        .foregroundStyle(AppColor.textLoud)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
-                    
-                    // Book grid
-                    if books.isEmpty {
-                        VStack(spacing: 24) {
-                            Spacer().frame(height: 80)
+            Group {
+                if books.isEmpty {
+                    libraryEmptyStateView
+                } else {
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("My library")
+                                .font(AppFont.largeTitle)
+                                .foregroundStyle(AppColor.textLoud)
+                                .padding(.horizontal, 20)
+                                .padding(.top, 8)
                             
-                            Image(systemName: "books.vertical")
-                                .font(.system(size: 48, weight: .light))
-                                .foregroundStyle(AppColor.textSubdued)
-                            
-                            VStack(spacing: 8) {
-                                Text("No books yet")
-                                    .font(AppFont.emptyStateTitle)
-                                    .foregroundStyle(AppColor.textPrimary)
-                                
-                                Text("Tap the + button to add your first book.")
-                                    .font(AppFont.emptyStateBody)
-                                    .foregroundStyle(AppColor.textSecondary)
-                                    .multilineTextAlignment(.center)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 40)
-                    } else {
-                        LazyVGrid(columns: gridColumns, spacing: 14) {
-                            ForEach(filtered) { book in
-                                NavigationLink(destination: BookDetailView(book: book)) {
-                                    LibraryBookCardView(book: book)
+                            LazyVGrid(columns: gridColumns, spacing: 14) {
+                                ForEach(filtered) { book in
+                                    NavigationLink(destination: BookDetailView(book: book)) {
+                                        LibraryBookCardView(book: book)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
+                            .padding(.horizontal, 20)
+                            .padding(.top, 28)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 28)
+                        .padding(.bottom, 40)
                     }
+                    .background(Color.white.ignoresSafeArea())
                 }
-                .padding(.bottom, 40)
             }
-            .background(Color.white.ignoresSafeArea())
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        // Placeholder action – sort/filter in future
                     } label: {
                         Image(systemName: "ellipsis")
                     }
@@ -88,6 +68,61 @@ struct MyBooksView: View {
         .sheet(isPresented: $isPresentingNewBook) {
             AddBookView { _ in }
         }
+    }
+    
+    private var libraryEmptyStateView: some View {
+        VStack(spacing: 0) {
+            Text("My library")
+                .font(AppFont.largeTitle)
+                .foregroundStyle(AppColor.textLoud)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+            
+            Spacer()
+            
+            VStack(spacing: 32) {
+                Image("library-empty")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 170, height: 124)
+                
+                VStack(spacing: 24) {
+                    VStack(spacing: 8) {
+                        Text("Create your first book")
+                            .font(AppFont.emptyStateTitle)
+                            .foregroundStyle(AppColor.textPrimary)
+                        
+                        Text("This is where your books will live. Create a\nbook to save and group your highlights.")
+                            .font(AppFont.emptyStateBody)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                    }
+                    
+                    Button(action: { isPresentingNewBook = true }) {
+                        Text("Create a book")
+                            .font(AppFont.buttonLabel)
+                            .foregroundStyle(.white)
+                            .frame(height: 36)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(AppColor.buttonDark)
+                                    .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                    .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(maxWidth: 324)
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.white.ignoresSafeArea())
     }
 }
 
@@ -355,39 +390,94 @@ struct BookDetailView: View {
         book.quotes.sorted { $0.createdAt > $1.createdAt }
     }
     
-    var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
-                // MARK: – Book Header
-                BookDetailHeaderView(book: book)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
+    private var bookDetailEmptyStateView: some View {
+        VStack(spacing: 32) {
+            Image("open-book")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 142, height: 103)
+            
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Text("No highlights yet")
+                        .font(.system(size: 20, weight: .semibold, design: .default))
+                        .foregroundStyle(AppColor.textMuted)
+                    
+                    Text("This is where your book highlights will live.\nScan a page to start remembering what\nyou read.")
+                        .font(.system(size: 16, weight: .regular, design: .default))
+                        .foregroundStyle(AppColor.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                }
                 
-                // MARK: – Quotes List
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(Array(sortedQuotes.enumerated()), id: \.element.id) { index, quote in
-                        // Divider before each quote (except the first)
-                        if index > 0 {
-                            Rectangle()
-                                .fill(AppColor.cardBorder)
-                                .frame(height: 1)
-                                .padding(.horizontal, 20)
-                        }
-                        
-                        NavigationLink(destination: QuoteDetailView(quote: quote)) {
-                            QuoteRowView(quote: quote, onDelete: {
-                                quotePendingDeletion = quote
-                                isShowingDeleteConfirm = true
-                            })
-                        }
-                        .buttonStyle(.plain)
+                Button(action: { showCamera = true }) {
+                    Text("Save a highlight")
+                        .font(AppFont.buttonLabel)
+                        .foregroundStyle(.white)
+                        .frame(height: 36)
                         .padding(.horizontal, 20)
-                        .padding(.top, index == 0 ? 24 : 20)
-                        .padding(.bottom, 20)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(AppColor.buttonDark)
+                                .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.vertical, 36)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(AppColor.background)
+        )
+    }
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // MARK: – Book Header
+                    BookDetailHeaderView(book: book)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                    
+                    if sortedQuotes.isEmpty {
+                        // MARK: – Empty State
+                        bookDetailEmptyStateView
+                            .padding(.horizontal, 20)
+                            .padding(.top, 24)
+                            .padding(.bottom, 20)
+                    } else {
+                        // MARK: – Quotes List
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(Array(sortedQuotes.enumerated()), id: \.element.id) { index, quote in
+                                if index > 0 {
+                                    Rectangle()
+                                        .fill(AppColor.cardBorder)
+                                        .frame(height: 1)
+                                        .padding(.horizontal, 20)
+                                }
+                                
+                                NavigationLink(destination: QuoteDetailView(quote: quote)) {
+                                    QuoteRowView(quote: quote, onDelete: {
+                                        quotePendingDeletion = quote
+                                        isShowingDeleteConfirm = true
+                                    })
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal, 20)
+                                .padding(.top, index == 0 ? 24 : 20)
+                                .padding(.bottom, 20)
+                            }
+                        }
                     }
                 }
+                .frame(minHeight: sortedQuotes.isEmpty ? geometry.size.height : nil, alignment: .top)
+                .padding(.bottom, sortedQuotes.isEmpty ? 0 : 40)
             }
-            .padding(.bottom, 40)
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
@@ -480,11 +570,10 @@ private struct BookDetailHeaderView: View {
                     .foregroundStyle(AppColor.textNormal) // #666D80
                     .lineLimit(2)
                 
-                // Highlights count badge
                 HStack(spacing: 4) {
-                    Text("\(book.quotesCount) highlight\(book.quotesCount == 1 ? "" : "s")")
+                    Text(book.quotesCount == 0 ? "No highlights yet" : "\(book.quotesCount) highlight\(book.quotesCount == 1 ? "" : "s")")
                         .font(.system(size: 16, weight: .regular, design: .default))
-                        .foregroundStyle(AppColor.textNormal) // #666D80
+                        .foregroundStyle(AppColor.textNormal)
                 }
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
