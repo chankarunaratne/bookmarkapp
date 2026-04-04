@@ -8,6 +8,7 @@ struct OCRReviewView: View {
 
     let image: UIImage
     var onRescan: (() -> Void)? = nil
+    var preselectedBook: Book? = nil
 
     @State private var fullText: String = ""
     @State private var selectedText: String = ""
@@ -113,9 +114,8 @@ struct OCRReviewView: View {
         }
         .background(Color.white)
         .sheet(isPresented: $showingBookPicker) {
-            BookPickerView { book in
+            BookPickerView(preselectedBook: preselectedBook) { book in
                 save(to: book)
-                // Close the picker and return all the way to the home screen.
                 showingBookPicker = false
                 dismiss()
             }

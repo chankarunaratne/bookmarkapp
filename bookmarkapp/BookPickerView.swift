@@ -5,11 +5,13 @@ import SwiftData
 
 struct BookPickerView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
 
     @State private var searchQuery: String = ""
     @State private var isShowingAddBook: Bool = false
 
+    var preselectedBook: Book? = nil
     var onPicked: (Book) -> Void
 
     private var filteredBooks: [Book] {
@@ -20,11 +22,24 @@ struct BookPickerView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                BookSearchField(text: $searchQuery)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                if preselectedBook == nil {
+                    BookSearchField(text: $searchQuery)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+                }
 
-                if books.isEmpty {
+                if let preselected = preselectedBook {
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            SelectBookRow(book: preselected) {
+                                onPicked(preselected)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 24)
+                        .padding(.bottom, 20)
+                    }
+                } else if books.isEmpty {
                     Spacer()
                     Text("No books yet. Add a new book to get started")
                         .font(.system(size: 16, weight: .regular))
@@ -60,12 +75,22 @@ struct BookPickerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        isShowingAddBook = true
-                    } label: {
-                        Text("Add new")
-                            .font(.system(size: 17, weight: .medium))
-                            .foregroundStyle(AppColor.glassIconForeground)
+                    if preselectedBook != nil {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(AppColor.glassIconForeground)
+                        }
+                    } else {
+                        Button {
+                            isShowingAddBook = true
+                        } label: {
+                            Text("Add new")
+                                .font(.system(size: 17, weight: .medium))
+                                .foregroundStyle(AppColor.glassIconForeground)
+                        }
                     }
                 }
             }

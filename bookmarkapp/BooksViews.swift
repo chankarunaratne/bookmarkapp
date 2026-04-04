@@ -346,8 +346,12 @@ struct BookTileWithActions: View {
 struct BookDetailView: View {
     @Bindable var book: Book
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @State private var quotePendingDeletion: Quote?
     @State private var isShowingDeleteConfirm: Bool = false
+    @State private var isShowingDeleteBookConfirm: Bool = false
+    @State private var showCamera: Bool = false
+    @State private var ocrImageItem: OCRImageItem?
     
     private var sortedQuotes: [Quote] {
         book.quotes.sorted { $0.createdAt > $1.createdAt }
@@ -392,14 +396,18 @@ struct BookDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    // Add quote action – placeholder
+                    showCamera = true
                 } label: {
                     Image(systemName: "plus")
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    // More options – placeholder
+                Menu {
+                    Button(role: .destructive) {
+                        isShowingDeleteBookConfirm = true
+                    } label: {
+                        Label("Delete book", systemImage: "trash")
+                    }
                 } label: {
                     Image(systemName: "ellipsis")
                 }
@@ -417,6 +425,32 @@ struct BookDetailView: View {
             }
         } message: {
             Text("This will delete the quote permanently. This action cannot be undone.")
+        }
+        .alert("Delete this book?", isPresented: $isShowingDeleteBookConfirm) {
+            Button("Delete", role: .destructive) {
+                modelContext.delete(book)
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will permanently delete the book and all of its highlights. This action cannot be undone.")
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CustomCameraView { img in
+                ocrImageItem = OCRImageItem(image: img)
+            }
+        }
+        .fullScreenCover(item: $ocrImageItem) { item in
+            NavigationStack {
+                OCRReviewView(
+                    image: item.image,
+                    onRescan: {
+                        ocrImageItem = nil
+                        showCamera = true
+                    },
+                    preselectedBook: book
+                )
+            }
         }
     }
 }
