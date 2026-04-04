@@ -302,6 +302,8 @@ private struct InstructionsBanner: View {
                 .font(.system(size: 18, weight: .regular, design: .serif))
                 .foregroundStyle(.black)
                 .lineSpacing(11)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
                 .overlay(
                     highlightBlue
                         .opacity(0.25)
