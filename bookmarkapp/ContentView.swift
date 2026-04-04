@@ -269,21 +269,25 @@ private struct RecentBooksCarouselView: View {
     
     var body: some View {
         if placeholderCount > 0 {
-            HStack(spacing: 12) {
-                ForEach(books) { book in
-                    NavigationLink(destination: BookDetailView(book: book)) {
-                        RecentBookCardView(book: book)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(books) { book in
+                        NavigationLink(destination: BookDetailView(book: book)) {
+                            RecentBookCardView(book: book)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
+                    
+                    ForEach(0..<placeholderCount, id: \.self) { _ in
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .fill(AppColor.background)
+                            .frame(width: 148)
+                    }
                 }
-                
-                ForEach(0..<placeholderCount, id: \.self) { _ in
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(AppColor.background)
-                }
+                .padding(.leading, 20)
+                .padding(.vertical, 4)
             }
-            .padding(.leading, 20)
-            .padding(.vertical, 4)
+            .scrollDisabled(true)
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
