@@ -79,9 +79,9 @@ struct MyBooksView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
             
-            Spacer()
-            
             VStack(spacing: 32) {
+                Spacer()
+                
                 Image("library-empty")
                     .resizable()
                     .scaledToFit()
@@ -116,10 +116,19 @@ struct MyBooksView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                
+                Spacer()
             }
-            .frame(maxWidth: 324)
-            
-            Spacer()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 36)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(AppColor.background)
+            )
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.white.ignoresSafeArea())

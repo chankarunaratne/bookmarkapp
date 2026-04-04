@@ -67,6 +67,7 @@ struct ContentView: View {
                         HomeContentView(
                             books: books,
                             highlights: recentHighlights,
+                            onSaveHighlight: onSaveHighlight,
                             onTapMyLibrary: onTapMyLibrary
                         )
                         .padding(.top, 40)
@@ -98,9 +99,9 @@ struct ContentView: View {
             .padding(.horizontal, 28)
             .padding(.top, 8)
             
-            Spacer()
-            
             VStack(spacing: 32) {
+                Spacer()
+                
                 Image("no-books-image")
                     .resizable()
                     .scaledToFit()
@@ -135,10 +136,19 @@ struct ContentView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                
+                Spacer()
             }
-            .frame(maxWidth: 324)
-            
-            Spacer()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 36)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(AppColor.background)
+            )
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.white.ignoresSafeArea())
@@ -150,13 +160,13 @@ struct ContentView: View {
 private struct HomeContentView: View {
     let books: [Book]
     let highlights: [(book: Book, quote: Quote)]
+    var onSaveHighlight: (() -> Void)?
     var onTapMyLibrary: (() -> Void)?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             // Recent books section
             VStack(alignment: .leading, spacing: 16) {
-                // Section header with chevron
                 Button(action: { onTapMyLibrary?() }) {
                     HStack(spacing: 2) {
                         Text("My library")
@@ -171,12 +181,13 @@ private struct HomeContentView: View {
                 }
                 .buttonStyle(.plain)
                 
-                // Carousel
                 RecentBooksCarouselView(books: books)
             }
             
             // Recent highlights section
-            if !highlights.isEmpty {
+            if highlights.isEmpty {
+                highlightsEmptyStateView
+            } else {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Recent highlights")
                         .font(AppFont.homeSectionTitle)
@@ -196,6 +207,52 @@ private struct HomeContentView: View {
                 }
             }
         }
+    }
+    
+    private var highlightsEmptyStateView: some View {
+        VStack(spacing: 32) {
+            Image("open-book")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 142, height: 103)
+            
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Text("No highlights yet")
+                        .font(.system(size: 20, weight: .semibold, design: .default))
+                        .foregroundStyle(AppColor.textMuted)
+                    
+                    Text("This is where your book highlights will live.\nScan a page to start remembering what\nyou read.")
+                        .font(.system(size: 16, weight: .regular, design: .default))
+                        .foregroundStyle(AppColor.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                }
+                
+                Button(action: { onSaveHighlight?() }) {
+                    Text("Save a highlight")
+                        .font(AppFont.buttonLabel)
+                        .foregroundStyle(.white)
+                        .frame(height: 36)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(AppColor.buttonDark)
+                                .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 36)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(AppColor.background)
+        )
+        .padding(.horizontal, 20)
     }
 }
 
