@@ -7,6 +7,39 @@
 
 import SwiftUI
 
+/// The five cover-color options available when manually creating a book.
+enum BookCoverColor: String, CaseIterable {
+    case blue, red, yellow, purple, green
+
+    var assetName: String {
+        "book-thumbnail-icon-\(rawValue)"
+    }
+
+    var swatchColor: Color {
+        switch self {
+        case .blue:   return Color(red: 0.25, green: 0.56, blue: 0.97)
+        case .red:    return Color(red: 0.85, green: 0.35, blue: 0.32)
+        case .yellow: return Color(red: 0.95, green: 0.78, blue: 0.30)
+        case .purple: return Color(red: 0.62, green: 0.51, blue: 0.85)
+        case .green:  return Color(red: 0.42, green: 0.72, blue: 0.42)
+        }
+    }
+
+    var letterColor: Color {
+        switch self {
+        case .blue:   return Color(red: 0.149, green: 0.400, blue: 0.561) // #26668F
+        case .red:    return Color(red: 0.620, green: 0.376, blue: 0.333) // #9E6055
+        case .green:  return Color(red: 0.471, green: 0.600, blue: 0.325) // #789953
+        case .purple: return Color(red: 0.325, green: 0.361, blue: 0.600) // #535C99
+        case .yellow: return Color(red: 0.600, green: 0.502, blue: 0.325) // #998053
+        }
+    }
+
+    init(rawColorString: String) {
+        self = BookCoverColor(rawValue: rawColorString) ?? .blue
+    }
+}
+
 /// Shared app colors derived from the Figma design.
 enum AppColor {
     /// Background/Normal [25] – #F6F8FA

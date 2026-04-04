@@ -248,7 +248,7 @@ private struct LibraryBookIconView: View {
             let bookWidth = proxy.size.width
             
             ZStack(alignment: .top) {
-                Image("book-thumbnail-icon")
+                Image(book.thumbnailAssetName)
                     .resizable()
                     .renderingMode(.original)
                     .scaledToFit()
@@ -256,7 +256,7 @@ private struct LibraryBookIconView: View {
                 
                 Text(initial)
                     .font(AppFont.bookInitial)
-                    .foregroundStyle(AppColor.bookThumbnailLetter)
+                    .foregroundStyle(BookCoverColor(rawColorString: book.coverColor).letterColor)
                     .padding(.top, bookWidth * 0.272)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
@@ -633,7 +633,7 @@ private struct BookDetailCoverView: View {
             let bookWidth = proxy.size.width
             
             ZStack(alignment: .top) {
-                Image("book-thumbnail-icon")
+                Image(book.thumbnailAssetName)
                     .resizable()
                     .renderingMode(.original)
                     .scaledToFit()
@@ -641,7 +641,7 @@ private struct BookDetailCoverView: View {
                 
                 Text(initial)
                     .font(.system(size: 36, weight: .regular, design: .serif))
-                    .foregroundStyle(AppColor.bookThumbnailLetter)
+                    .foregroundStyle(BookCoverColor(rawColorString: book.coverColor).letterColor)
                     .padding(.top, bookWidth * 0.272)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
@@ -854,7 +854,7 @@ struct BookThumbnailView: View {
                         // Book illustration, anchored to the top with a small inset so the
                         // background color is visible above it. The view itself clips the
                         // bottom of the book so only the upper portion is shown.
-                        Image("book-thumbnail-icon")
+                        Image(book.thumbnailAssetName)
                             .resizable()
                             .renderingMode(.original)
                             .scaledToFit()
@@ -866,7 +866,7 @@ struct BookThumbnailView: View {
                         // by ~20pt from the top of the book.
                         Text(initial)
                             .font(AppFont.bookInitial)
-                            .foregroundStyle(AppColor.bookThumbnailLetter)
+                            .foregroundStyle(BookCoverColor(rawColorString: book.coverColor).letterColor)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.top, topPadding + letterOffset)
                     }

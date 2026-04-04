@@ -436,7 +436,7 @@ private struct BookIconView: View {
             let bookWidth = proxy.size.width
             
             ZStack(alignment: .top) {
-                Image("book-thumbnail-icon")
+                Image(book.thumbnailAssetName)
                     .resizable()
                     .renderingMode(.original)
                     .scaledToFit()
@@ -444,7 +444,7 @@ private struct BookIconView: View {
                 
                 Text(initial)
                     .font(AppFont.bookInitial)
-                    .foregroundStyle(AppColor.bookThumbnailLetter)
+                    .foregroundStyle(BookCoverColor(rawColorString: book.coverColor).letterColor)
                     .padding(.top, bookWidth * 0.272)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)

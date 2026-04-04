@@ -216,6 +216,12 @@ struct AddBookView: View {
         return manualTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    private var selectedCoverColor: BookCoverColor {
+        let allColors = BookCoverColor.allCases
+        guard selectedColorIndex >= 0, selectedColorIndex < allColors.count else { return .blue }
+        return allColors[selectedColorIndex]
+    }
+
     private var titleInitial: String {
         let trimmed = manualTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let first = trimmed.first else { return "" }
@@ -396,7 +402,7 @@ struct AddBookView: View {
                 .overlay {
                     ZStack(alignment: .bottom) {
                         ZStack(alignment: .top) {
-                            Image("book-thumbnail-icon")
+                            Image(selectedCoverColor.assetName)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 114)
@@ -404,7 +410,7 @@ struct AddBookView: View {
                             if !titleInitial.isEmpty {
                                 Text(titleInitial)
                                     .font(.system(size: 44, weight: .regular, design: .serif))
-                                    .foregroundStyle(AppColor.bookThumbnailLetter)
+                                    .foregroundStyle(selectedCoverColor.letterColor)
                                     .padding(.top, 31)
                             }
                         }
@@ -438,11 +444,16 @@ struct AddBookView: View {
                 .padding(.leading, 8)
 
             HStack(spacing: 11) {
-                CoverColorCircle(color: CoverColor.blue, isSelected: selectedColorIndex == 0)
-                CoverColorCircle(color: CoverColor.peach, isSelected: selectedColorIndex == 1)
-                CoverColorCircle(color: CoverColor.gold, isSelected: selectedColorIndex == 2)
-                CoverColorCircle(color: CoverColor.lavender, isSelected: selectedColorIndex == 3)
-                CoverColorCircle(color: CoverColor.sage, isSelected: selectedColorIndex == 4)
+                ForEach(Array(BookCoverColor.allCases.enumerated()), id: \.element) { index, coverColor in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedColorIndex = index
+                        }
+                    } label: {
+                        CoverColorCircle(color: coverColor.swatchColor, isSelected: selectedColorIndex == index)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
             .padding(.leading, 8)
         }
@@ -457,7 +468,8 @@ struct AddBookView: View {
 
         let book = Book(
             title: trimmedTitle,
-            author: trimmedAuthor.isEmpty ? nil : trimmedAuthor
+            author: trimmedAuthor.isEmpty ? nil : trimmedAuthor,
+            coverColor: selectedCoverColor.rawValue
         )
         modelContext.insert(book)
         onBookAdded(book)
@@ -582,15 +594,7 @@ private struct AddBookTextField: View {
     }
 }
 
-// MARK: - Cover Colors
-
-private enum CoverColor {
-    static let blue = Color(red: 0.25, green: 0.56, blue: 0.97)
-    static let peach = Color(red: 0.91, green: 0.55, blue: 0.50)
-    static let gold = Color(red: 0.92, green: 0.80, blue: 0.42)
-    static let lavender = Color(red: 0.70, green: 0.65, blue: 0.88)
-    static let sage = Color(red: 0.72, green: 0.82, blue: 0.55)
-}
+// MARK: - Cover Color Circle
 
 private struct CoverColorCircle: View {
     let color: Color

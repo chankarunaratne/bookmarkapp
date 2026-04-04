@@ -7,20 +7,26 @@ final class Book {
     var title: String
     var author: String?
     var coverURL: String?
+    var coverColor: String = "blue"
     var createdAt: Date
     var quotes: [Quote]
 
-    init(id: UUID = UUID(), title: String, author: String? = nil, coverURL: String? = nil, createdAt: Date = Date(), quotes: [Quote] = []) {
+    init(id: UUID = UUID(), title: String, author: String? = nil, coverURL: String? = nil, coverColor: String = "blue", createdAt: Date = Date(), quotes: [Quote] = []) {
         self.id = id
         self.title = title
         self.author = author
         self.coverURL = coverURL
+        self.coverColor = coverColor
         self.createdAt = createdAt
         self.quotes = quotes
     }
 }
 
 extension Book {
+    var thumbnailAssetName: String {
+        "book-thumbnail-icon-\(coverColor)"
+    }
+
     /// The most recent date when this book or any of its quotes were updated.
     var lastUpdatedAt: Date {
         let latestQuoteDate = quotes.map(\.createdAt).max()
