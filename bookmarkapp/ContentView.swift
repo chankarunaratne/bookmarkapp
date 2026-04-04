@@ -73,7 +73,7 @@ struct ContentView: View {
                             )
                             .padding(.top, 40)
                         }
-                        .frame(minHeight: geometry.size.height)
+                        .frame(minHeight: recentHighlights.isEmpty ? geometry.size.height : nil)
                         .padding(.bottom, recentHighlights.isEmpty ? 0 : 40)
                     }
                     .background(Color.white.ignoresSafeArea())
