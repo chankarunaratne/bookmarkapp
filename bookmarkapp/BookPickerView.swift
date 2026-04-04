@@ -142,7 +142,7 @@ private struct SelectBookRow: View {
 
                 Image(systemName: "plus.circle")
                     .font(.system(size: 28, weight: .light))
-                    .foregroundStyle(AppColor.cardBorderStrong)
+                    .foregroundStyle(AppColor.textSecondary)
                     .frame(width: 32, height: 32)
             }
         }
@@ -526,7 +526,7 @@ private struct SearchResultRow: View {
 
                 Image(systemName: "plus.circle")
                     .font(.system(size: 24, weight: .light))
-                    .foregroundStyle(AppColor.cardBorderStrong)
+                    .foregroundStyle(AppColor.textSecondary)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
