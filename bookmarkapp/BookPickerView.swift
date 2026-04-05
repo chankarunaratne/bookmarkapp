@@ -263,10 +263,7 @@ struct AddBookView: View {
                         Button {
                             createManualBook()
                         } label: {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 28))
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundStyle(.blue)
+                            Image(systemName: "checkmark")
                         }
                         .disabled(isSaveDisabled)
                     }

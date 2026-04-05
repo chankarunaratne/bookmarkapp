@@ -17,6 +17,7 @@ struct ContentView: View {
     
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
     @Query(sort: \Quote.createdAt, order: .reverse) private var quotes: [Quote]
+    @State private var showSettings = false
     
     /// Most recent quote per book, ordered by quote recency.
     private var recentHighlights: [(book: Book, quote: Quote)] {
@@ -53,7 +54,7 @@ struct ContentView: View {
                                 
                                 Spacer()
                                 
-                                Button(action: {}) {
+                                Button(action: { showSettings = true }) {
                                     Image(systemName: "person.fill")
                                         .font(.system(size: 22))
                                         .foregroundStyle(AppColor.glassIconForeground)
@@ -80,6 +81,9 @@ struct ContentView: View {
                 }
             }
         }
+        .sheet(isPresented: $showSettings) {
+            SettingsMenuView()
+        }
     }
     
     private var emptyStateView: some View {
@@ -91,7 +95,7 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Button(action: {}) {
+                Button(action: { showSettings = true }) {
                     Image(systemName: "person.fill")
                         .font(.system(size: 22))
                         .foregroundStyle(AppColor.glassIconForeground)
@@ -201,11 +205,14 @@ private struct HomeContentView: View {
                     
                     VStack(spacing: 20) {
                         ForEach(highlights, id: \.quote.id) { item in
-                            RecentHighlightCardView(
-                                book: item.book,
-                                quoteText: item.quote.text,
-                                createdAt: item.quote.createdAt
-                            )
+                            NavigationLink(destination: QuoteDetailView(quote: item.quote)) {
+                                RecentHighlightCardView(
+                                    book: item.book,
+                                    quoteText: item.quote.text,
+                                    createdAt: item.quote.createdAt
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -516,8 +523,6 @@ private struct RecentHighlightCardView: View {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .stroke(AppColor.cardBorder, lineWidth: 1)
         )
-        // View-only: no interaction on the card itself.
-        .allowsHitTesting(false)
     }
 }
 

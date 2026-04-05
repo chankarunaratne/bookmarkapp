@@ -13,6 +13,7 @@ import UIKit
 
 @main
 struct bookmarkappApp: App {
+    @State private var showSplash = true
     
     init() {
         configureTabBarAppearance()
@@ -20,7 +21,21 @@ struct bookmarkappApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootTabView()
+            ZStack {
+                RootTabView()
+                    .opacity(showSplash ? 0 : 1)
+
+                if showSplash {
+                    SplashScreenView()
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.4), value: showSplash)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                    showSplash = false
+                }
+            }
         }
         .modelContainer(for: [Book.self, Quote.self])
     }

@@ -2,138 +2,134 @@
 //  SettingsMenuView.swift
 //  bookmarkapp
 //
-//  Created as part of the settings/menu placeholder implementation.
-//
 
 import SwiftUI
 
 struct SettingsMenuView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    private let linkItems: [(title: String, id: String)] = [
+        ("Rate the app", "rate"),
+        ("Terms and Conditions", "terms"),
+        ("Privacy Policy", "privacy"),
+        ("Contact Us", "contact")
+    ]
+
     var body: some View {
-        List {
-            // Notifications section
-            Section("Notifications") {
-                NavigationLink {
-                    PushNotificationsSettingsView()
-                } label: {
-                    HStack {
-                        Text("Push Notifications")
-                        Spacer()
-                        Text("Off")
-                            .foregroundStyle(.secondary)
+        NavigationStack {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 24) {
+                    feedbackBanner
+                    linksList
+                }
+                .padding(.top, 8)
+                .padding(.bottom, 40)
+            }
+            .background(AppColor.background.ignoresSafeArea())
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
                     }
                 }
             }
+        }
+    }
 
-            // About section
-            Section("About") {
-                NavigationLink {
-                    TermsOfServiceView()
+    // MARK: - Feedback Banner
+
+    private var feedbackBanner: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Share your feedback")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(AppColor.textLoud)
+
+                Text("Help us improve by sharing your thoughts.")
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 0)
+
+            Button {
+                // TODO: feedback action
+            } label: {
+                Text("Share")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 9)
+                    .background(
+                        Capsule()
+                            .fill(AppColor.buttonDark)
+                    )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(AppColor.cardBorder, lineWidth: 1)
+        )
+        .padding(.horizontal, 20)
+    }
+
+    // MARK: - Links List
+
+    private var linksList: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(linkItems.enumerated()), id: \.element.id) { index, item in
+                Button {
+                    handleLinkTap(item.id)
                 } label: {
-                    Text("Terms of Service")
+                    HStack {
+                        Text(item.title)
+                            .font(.system(size: 16, weight: .regular))
+                            .foregroundStyle(AppColor.textLoud)
+
+                        Spacer()
+
+                        Image(systemName: "arrow.up.forward")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(AppColor.textSubdued)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 15)
                 }
+                .buttonStyle(.plain)
 
-                NavigationLink {
-                    PrivacyPolicyView()
-                } label: {
-                    Text("Privacy Policy")
-                }
-            }
-
-            // Session section
-            Section("Session") {
-                NavigationLink {
-                    LogoutPlaceholderView()
-                } label: {
-                    Text("Log out")
-                        .foregroundStyle(.red)
+                if index < linkItems.count - 1 {
+                    Divider()
+                        .padding(.leading, 16)
                 }
             }
         }
-        .listStyle(.insetGrouped)
-        .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.inline)
-        .background(Color(.systemGroupedBackground))
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(AppColor.cardBorder, lineWidth: 1)
+        )
+        .padding(.horizontal, 20)
     }
-}
 
-// MARK: - Placeholder Detail Screens
-
-struct PushNotificationsSettingsView: View {
-    @State private var isEnabled: Bool = false
-
-    var body: some View {
-        Form {
-            Section {
-                Toggle("Enable push notifications", isOn: $isEnabled)
-                    .disabled(true) // Placeholder – no real behavior yet
-            } footer: {
-                Text("Push notification settings will be available here in a future update.")
-            }
-        }
-        .navigationTitle("Push Notifications")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct TermsOfServiceView: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Terms of Service")
-                    .font(.title2.weight(.semibold))
-
-                Text("The full Terms of Service will be displayed here and may open in a web page in a future version of the app.")
-                    .foregroundStyle(.secondary)
-            }
-            .padding()
-        }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Terms of Service")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct PrivacyPolicyView: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Privacy Policy")
-                    .font(.title2.weight(.semibold))
-
-                Text("The full Privacy Policy will be displayed here and may open in a web page in a future version of the app.")
-                    .foregroundStyle(.secondary)
-            }
-            .padding()
-        }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Privacy Policy")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct LogoutPlaceholderView: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Log out")
-                .font(.title2.weight(.semibold))
-
-            Text("Logging out will be available here in a future update. For now, this is only a placeholder and does not change your account state.")
-                .foregroundStyle(.secondary)
-
-            Spacer()
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Log out")
-        .navigationBarTitleDisplayMode(.inline)
+    private func handleLinkTap(_ id: String) {
+        // Placeholder – will open URLs in a future update
     }
 }
 
 #Preview {
-    NavigationStack {
-        SettingsMenuView()
-    }
+    SettingsMenuView()
 }
-
-
