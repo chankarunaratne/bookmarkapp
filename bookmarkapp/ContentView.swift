@@ -360,7 +360,7 @@ private struct RecentBookCardView: View {
                 BookIconView(book: book)
                     .frame(width: 66, height: 92)
                     .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                    .offset(y: 18)
+                    .offset(y: book.coverURL != nil ? 24 : 18)
             }
             .frame(height: 88)
             .clipped()

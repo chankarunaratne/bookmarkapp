@@ -171,7 +171,7 @@ struct LibraryBookCardView: View {
                     .frame(width: 72, height: 100)
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
-                    .offset(y: 12)
+                    .offset(y: book.coverURL != nil ? 18 : 12)
             }
             .frame(height: 110)
             .clipped()
