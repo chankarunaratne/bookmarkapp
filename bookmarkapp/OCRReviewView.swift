@@ -137,7 +137,7 @@ struct OCRReviewView: View {
                     Button {
                         onRescan()
                     } label: {
-                        Image(systemName: "camera.viewfinder")
+                        Image(systemName: "arrow.counterclockwise")
                     }
                     .accessibilityLabel("Retake photo")
                 }
