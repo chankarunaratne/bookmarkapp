@@ -256,6 +256,11 @@ struct AddBookView: View {
 
     var onBookAdded: (Book) -> Void
 
+    /// Set to `true` when custom cover image selection is implemented for manual add.
+    private enum ManualAddBookCoverFeature {
+        static let showCoverImagePickerButton = false
+    }
+
     private var isSaveDisabled: Bool {
         if selectedTab == 0 { return true }   // Search tab uses row taps, not the save button
         return manualTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -463,18 +468,20 @@ struct AddBookView: View {
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
 
-            Button { } label: {
-                Image(systemName: "photo.badge.plus")
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 42, height: 42)
-                    .background(
-                        Circle()
-                            .fill(Color(white: 0.8))
-                    )
+            if ManualAddBookCoverFeature.showCoverImagePickerButton {
+                Button { } label: {
+                    Image(systemName: "photo.badge.plus")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundStyle(.white)
+                        .frame(width: 42, height: 42)
+                        .background(
+                            Circle()
+                                .fill(Color(white: 0.8))
+                        )
+                }
+                .buttonStyle(.plain)
+                .padding(6)
             }
-            .buttonStyle(.plain)
-            .padding(6)
         }
     }
 
