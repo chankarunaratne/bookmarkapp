@@ -118,10 +118,55 @@ private struct SelectBookRow: View {
         }
     }
 
+    @ViewBuilder
+    private var bookCover: some View {
+        if let urlString = book.coverURL, let url = URL(string: urlString) {
+            CachedAsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    customCover
+                case .empty:
+                    Rectangle()
+                        .fill(AppColor.background)
+                        .overlay { ProgressView().tint(AppColor.textSubdued) }
+                }
+            }
+        } else {
+            customCover
+        }
+    }
+
+    private var initial: String {
+        guard let first = book.title.first else { return "" }
+        return String(first).uppercased()
+    }
+
+    private var customCover: some View {
+        GeometryReader { proxy in
+            let bookWidth = proxy.size.width
+            ZStack(alignment: .top) {
+                Image(book.thumbnailAssetName)
+                    .resizable()
+                    .renderingMode(.original)
+                    .scaledToFit()
+                    .frame(width: bookWidth)
+
+                Text(initial)
+                    .font(.system(size: bookWidth * 0.45, weight: .regular, design: .serif))
+                    .foregroundStyle(BookCoverColor(rawColorString: book.coverColor).letterColor)
+                    .padding(.top, bookWidth * 0.272)
+            }
+        }
+    }
+
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: 16) {
-                BookThumbnailView(book: book)
+                bookCover
                     .frame(width: 40, height: 60)
                     .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
 
