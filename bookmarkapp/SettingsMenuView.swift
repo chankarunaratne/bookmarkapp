@@ -21,6 +21,14 @@ struct SettingsMenuView: View {
                 VStack(spacing: 24) {
                     feedbackBanner
                     linksList
+
+                    Text("Designed and developed by\nChandima Bandara")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundStyle(Color(.systemGray2))
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
                 }
                 .padding(.top, 8)
                 .padding(.bottom, 40)

@@ -57,12 +57,10 @@ struct ContentView: View {
                                 Button(action: { showSettings = true }) {
                                     Image(systemName: "person.fill")
                                         .font(.system(size: 22))
-                                        .foregroundStyle(AppColor.glassIconForeground)
-                                        .frame(width: 48, height: 48)
-                                        .background(.ultraThinMaterial, in: Circle())
                                 }
                             }
-                            .padding(.horizontal, 28)
+                            .padding(.leading, 28)
+                            .padding(.trailing, 20)
                             .padding(.top, 8)
                             
                             // Content sections
@@ -98,12 +96,10 @@ struct ContentView: View {
                 Button(action: { showSettings = true }) {
                     Image(systemName: "person.fill")
                         .font(.system(size: 22))
-                        .foregroundStyle(AppColor.glassIconForeground)
-                        .frame(width: 48, height: 48)
-                        .background(.ultraThinMaterial, in: Circle())
                 }
             }
-            .padding(.horizontal, 28)
+            .padding(.leading, 28)
+            .padding(.trailing, 20)
             .padding(.top, 8)
             
             VStack(spacing: 32) {
