@@ -492,6 +492,8 @@ private struct RecentHighlightCardView: View {
             HStack(alignment: .center, spacing: 16) {
                 // Book cover thumbnail (icon + engraved initial)
                 BookIconView(book: book)
+                    .frame(width: 72, height: book.coverURL != nil ? 88 : 100)
+                    .clipShape(RoundedRectangle(cornerRadius: book.coverURL != nil ? 8 : 0, style: .continuous))
                     .frame(width: 72, height: 100)
                 
                 // Quote text
