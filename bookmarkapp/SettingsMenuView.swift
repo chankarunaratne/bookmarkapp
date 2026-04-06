@@ -155,6 +155,8 @@ struct SettingsMenuView: View {
 
     private func handleLinkTap(_ id: String) {
         switch id {
+        case "terms":
+            safariURL = URL(string: "https://getrememberly.netlify.app/terms")
         case "privacy":
             safariURL = URL(string: "https://getrememberly.netlify.app/privacy-policy")
         default:
