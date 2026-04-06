@@ -133,8 +133,11 @@ struct SettingsMenuView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 15)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 if index < linkItems.count - 1 {
                     Divider()
@@ -142,6 +145,7 @@ struct SettingsMenuView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color.white)
