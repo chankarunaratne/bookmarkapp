@@ -94,7 +94,7 @@ struct ContentView: View {
                             .font(AppFont.emptyStateTitle)
                             .foregroundStyle(AppColor.textPrimary)
                         
-                        Text("This is where your book highlights will live.\nScan a page to start remembering what you read.")
+                        Text("Scan a page to start remembering what you read.")
                             .font(AppFont.emptyStateBody)
                             .foregroundStyle(AppColor.textSecondary)
                             .multilineTextAlignment(.center)
