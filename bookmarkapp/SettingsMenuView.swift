@@ -4,9 +4,25 @@
 //
 
 import SwiftUI
+import SafariServices
+
+extension URL: @retroactive Identifiable {
+    public var id: String { absoluteString }
+}
+
+struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        SFSafariViewController(url: url)
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
+}
 
 struct SettingsMenuView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var safariURL: URL?
 
     private let linkItems: [(title: String, id: String)] = [
         ("Rate the app", "rate"),
@@ -45,6 +61,10 @@ struct SettingsMenuView: View {
                     }
                 }
             }
+        }
+        .sheet(item: $safariURL) { url in
+            SafariView(url: url)
+                .ignoresSafeArea()
         }
     }
 
@@ -134,7 +154,12 @@ struct SettingsMenuView: View {
     }
 
     private func handleLinkTap(_ id: String) {
-        // Placeholder – will open URLs in a future update
+        switch id {
+        case "privacy":
+            safariURL = URL(string: "https://getrememberly.netlify.app/privacy-policy")
+        default:
+            break
+        }
     }
 }
 
