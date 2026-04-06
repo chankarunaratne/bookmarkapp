@@ -40,42 +40,35 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            if books.isEmpty {
-                emptyStateView
-            } else {
-                GeometryReader { geometry in
-                    ScrollView(.vertical, showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            // Header title
-                            HStack {
-                                Text("Home")
-                                    .font(AppFont.largeTitle)
-                                    .foregroundStyle(AppColor.textLoud)
-                                
-                                Spacer()
-                                
-                                Button(action: { showSettings = true }) {
-                                    Image(systemName: "person.fill")
-                                        .font(.system(size: 22))
-                                }
+            Group {
+                if books.isEmpty {
+                    emptyStateView
+                } else {
+                    GeometryReader { geometry in
+                        ScrollView(.vertical, showsIndicators: false) {
+                            VStack(alignment: .leading, spacing: 0) {
+                                HomeContentView(
+                                    books: books,
+                                    highlights: recentHighlights,
+                                    onSaveHighlight: onSaveHighlight,
+                                    onTapMyLibrary: onTapMyLibrary
+                                )
+                                .padding(.top, 20)
                             }
-                            .padding(.leading, 28)
-                            .padding(.trailing, 20)
-                            .padding(.top, 8)
-                            
-                            // Content sections
-                            HomeContentView(
-                                books: books,
-                                highlights: recentHighlights,
-                                onSaveHighlight: onSaveHighlight,
-                                onTapMyLibrary: onTapMyLibrary
-                            )
-                            .padding(.top, 40)
+                            .frame(minHeight: recentHighlights.isEmpty ? geometry.size.height : nil)
+                            .padding(.bottom, recentHighlights.isEmpty ? 0 : 40)
                         }
-                        .frame(minHeight: recentHighlights.isEmpty ? geometry.size.height : nil)
-                        .padding(.bottom, recentHighlights.isEmpty ? 0 : 40)
+                        .background(Color.white.ignoresSafeArea())
                     }
-                    .background(Color.white.ignoresSafeArea())
+                }
+            }
+            .navigationTitle("Home")
+            .toolbarTitleDisplayMode(.inlineLarge)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: { showSettings = true }) {
+                        Image(systemName: "person.fill")
+                    }
                 }
             }
         }
@@ -84,24 +77,9 @@ struct ContentView: View {
         }
     }
     
+    
     private var emptyStateView: some View {
         VStack(spacing: 0) {
-            HStack {
-                Text("Home")
-                    .font(AppFont.largeTitle)
-                    .foregroundStyle(AppColor.textLoud)
-                
-                Spacer()
-                
-                Button(action: { showSettings = true }) {
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 22))
-                }
-            }
-            .padding(.leading, 28)
-            .padding(.trailing, 20)
-            .padding(.top, 8)
-            
             VStack(spacing: 32) {
                 Spacer()
                 
@@ -180,7 +158,7 @@ private struct HomeContentView: View {
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(AppColor.textLoud)
                     }
-                    .padding(.leading, 32)
+                    .padding(.leading, 20)
                 }
                 .buttonStyle(.plain)
                 
@@ -197,7 +175,7 @@ private struct HomeContentView: View {
                     Text("Recent highlights")
                         .font(AppFont.homeSectionTitle)
                         .foregroundStyle(AppColor.textLoud)
-                        .padding(.leading, 32)
+                        .padding(.leading, 20)
                     
                     VStack(spacing: 20) {
                         ForEach(highlights, id: \.quote.id) { item in

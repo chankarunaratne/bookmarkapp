@@ -26,12 +26,6 @@ struct MyBooksView: View {
                 } else {
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("My library")
-                                .font(AppFont.largeTitle)
-                                .foregroundStyle(AppColor.textLoud)
-                                .padding(.horizontal, 20)
-                                .padding(.top, 8)
-                            
                             LazyVGrid(columns: gridColumns, spacing: 14) {
                                 ForEach(filtered) { book in
                                     NavigationLink(destination: BookDetailView(book: book)) {
@@ -41,13 +35,15 @@ struct MyBooksView: View {
                                 }
                             }
                             .padding(.horizontal, 20)
-                            .padding(.top, 28)
+                            .padding(.top, 20)
                         }
                         .padding(.bottom, 40)
                     }
                     .background(Color.white.ignoresSafeArea())
                 }
             }
+            .navigationTitle("My library")
+            .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -66,13 +62,6 @@ struct MyBooksView: View {
     
     private var libraryEmptyStateView: some View {
         VStack(spacing: 0) {
-            Text("My library")
-                .font(AppFont.largeTitle)
-                .foregroundStyle(AppColor.textLoud)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-            
             VStack(spacing: 32) {
                 Spacer()
                 
