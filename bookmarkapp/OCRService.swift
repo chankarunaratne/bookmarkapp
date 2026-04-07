@@ -7,17 +7,26 @@ struct OCRService {
         case unableToCreateImageForOCR
     }
 
-    /// Represents a single OCR line along with its vertical position
-    /// in the image (normalized Vision coordinate space).
-    struct OCRLine {
+    struct WordRegion {
         let text: String
-        let minY: CGFloat
+        let topLeft: CGPoint
+        let topRight: CGPoint
+        let bottomLeft: CGPoint
+        let bottomRight: CGPoint
     }
 
-    /// Runs a Vision text recognition request and returns individual
-    /// lines with their vertical positions so that callers can infer
-    /// paragraph structure from layout.
-    static func recognizeText(in image: UIImage) async throws -> [OCRLine] {
+    struct TextRegion {
+        let text: String
+        let topLeft: CGPoint
+        let topRight: CGPoint
+        let bottomLeft: CGPoint
+        let bottomRight: CGPoint
+        let words: [WordRegion]
+    }
+
+    /// Runs Vision text recognition and returns line-level regions with
+    /// word-level bounding quadrilaterals in normalized image coordinates.
+    static func recognizeText(in image: UIImage) async throws -> [TextRegion] {
         let handler = try makeRequestHandler(from: image)
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -28,17 +37,24 @@ struct OCRService {
                 }
 
                 let observations = request.results as? [VNRecognizedTextObservation] ?? []
-                let lines: [OCRLine] = observations.compactMap { observation in
+                let regions: [TextRegion] = observations.compactMap { observation in
                     guard let candidate = observation.topCandidates(1).first else {
                         return nil
                     }
-                    return OCRLine(
+
+                    let words = Self.extractWords(from: candidate, observation: observation)
+
+                    return TextRegion(
                         text: candidate.string,
-                        minY: observation.boundingBox.minY
+                        topLeft: observation.topLeft,
+                        topRight: observation.topRight,
+                        bottomLeft: observation.bottomLeft,
+                        bottomRight: observation.bottomRight,
+                        words: words
                     )
                 }
 
-                continuation.resume(returning: lines)
+                continuation.resume(returning: regions)
             }
 
             request.recognitionLevel = .accurate
@@ -53,16 +69,54 @@ struct OCRService {
         }
     }
 
-    /// Builds a Vision image request handler using the most robust available
-    /// representation of the given UIImage.
-    /// Fallback order: CGImage → CIImage → encoded JPEG/PNG data.
+    /// Extracts word-level bounding quads from a recognized text candidate.
+    /// Falls back to the full observation quad if word-level boxes aren't available.
+    private static func extractWords(
+        from candidate: VNRecognizedText,
+        observation: VNRecognizedTextObservation
+    ) -> [WordRegion] {
+        let fullString = candidate.string
+        var words: [WordRegion] = []
+
+        fullString.enumerateSubstrings(
+            in: fullString.startIndex..<fullString.endIndex,
+            options: .byWords
+        ) { substring, substringRange, _, _ in
+            guard let word = substring, !word.isEmpty else { return }
+
+            if let box = try? candidate.boundingBox(for: substringRange) {
+                words.append(WordRegion(
+                    text: word,
+                    topLeft: box.topLeft,
+                    topRight: box.topRight,
+                    bottomLeft: box.bottomLeft,
+                    bottomRight: box.bottomRight
+                ))
+            }
+        }
+
+        if words.isEmpty {
+            words.append(WordRegion(
+                text: fullString,
+                topLeft: observation.topLeft,
+                topRight: observation.topRight,
+                bottomLeft: observation.bottomLeft,
+                bottomRight: observation.bottomRight
+            ))
+        }
+
+        return words
+    }
+
     private static func makeRequestHandler(from image: UIImage) throws -> VNImageRequestHandler {
+        let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
+
         if let cgImage = image.cgImage {
-            return VNImageRequestHandler(cgImage: cgImage, options: [:])
+            return VNImageRequestHandler(cgImage: cgImage, orientation: cgOrientation, options: [:])
         }
 
         if let ciImage = image.ciImage {
-            return VNImageRequestHandler(ciImage: ciImage, options: [:])
+            return VNImageRequestHandler(ciImage: ciImage, orientation: cgOrientation, options: [:])
         }
 
         if let data = image.jpegData(compressionQuality: 0.95) ?? image.pngData() {
@@ -73,4 +127,18 @@ struct OCRService {
     }
 }
 
-
+extension CGImagePropertyOrientation {
+    init(_ uiOrientation: UIImage.Orientation) {
+        switch uiOrientation {
+        case .up:            self = .up
+        case .down:          self = .down
+        case .left:          self = .left
+        case .right:         self = .right
+        case .upMirrored:    self = .upMirrored
+        case .downMirrored:  self = .downMirrored
+        case .leftMirrored:  self = .leftMirrored
+        case .rightMirrored: self = .rightMirrored
+        @unknown default:    self = .up
+        }
+    }
+}
