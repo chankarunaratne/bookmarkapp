@@ -35,9 +35,108 @@ struct IndexedWord {
     var centerX: CGFloat { (topLeft.x + topRight.x) / 2 }
 }
 
+// MARK: - iOS-style selection handle
+
+private final class SelectionHandleView: UIView {
+
+    enum HandleType { case start, end }
+
+    let handleType: HandleType
+    private let stemLayer = CAShapeLayer()
+    private let dotLayer = CAShapeLayer()
+
+    private static let dotRadius: CGFloat = 5.5
+    private static let stemWidth: CGFloat = 2.5
+    private static let handleColor = UIColor.systemBlue
+
+    init(type: HandleType) {
+        self.handleType = type
+        super.init(frame: .zero)
+        backgroundColor = .clear
+        isUserInteractionEnabled = true
+
+        stemLayer.strokeColor = Self.handleColor.cgColor
+        stemLayer.lineWidth = Self.stemWidth
+        stemLayer.lineCap = .round
+        stemLayer.fillColor = nil
+        layer.addSublayer(stemLayer)
+
+        dotLayer.fillColor = Self.handleColor.cgColor
+        dotLayer.strokeColor = nil
+        layer.addSublayer(dotLayer)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    /// Position the handle so its stem aligns with a word edge.
+    /// `edgeTop` and `edgeBottom` are in the superview's coordinate space.
+    func place(edgeTop: CGPoint, edgeBottom: CGPoint) {
+        let r = Self.dotRadius
+        let stemH = max(edgeBottom.y - edgeTop.y, 8)
+        let pad: CGFloat = 20
+        let totalH = pad + r * 2 + stemH + pad
+        let w = max(pad * 2, 44)
+        let edgeX = (edgeTop.x + edgeBottom.x) / 2
+
+        if handleType == .start {
+            frame = CGRect(x: edgeX - w / 2,
+                           y: edgeTop.y - r * 2 - pad,
+                           width: w, height: totalH)
+        } else {
+            frame = CGRect(x: edgeX - w / 2,
+                           y: edgeTop.y - pad,
+                           width: w, height: totalH)
+        }
+
+        redraw(stemH: stemH)
+    }
+
+    private func redraw(stemH: CGFloat) {
+        let r = Self.dotRadius
+        let cx = bounds.midX
+        let pad: CGFloat = 20
+
+        if handleType == .start {
+            let dotCY = pad + r
+            let stemTop = pad + r * 2
+            let stemBot = stemTop + stemH
+
+            dotLayer.path = UIBezierPath(
+                arcCenter: CGPoint(x: cx, y: dotCY),
+                radius: r, startAngle: 0,
+                endAngle: .pi * 2, clockwise: true
+            ).cgPath
+
+            let p = UIBezierPath()
+            p.move(to: CGPoint(x: cx, y: stemTop))
+            p.addLine(to: CGPoint(x: cx, y: stemBot))
+            stemLayer.path = p.cgPath
+        } else {
+            let stemTop = pad
+            let stemBot = pad + stemH
+            let dotCY = stemBot + r
+
+            dotLayer.path = UIBezierPath(
+                arcCenter: CGPoint(x: cx, y: dotCY),
+                radius: r, startAngle: 0,
+                endAngle: .pi * 2, clockwise: true
+            ).cgPath
+
+            let p = UIBezierPath()
+            p.move(to: CGPoint(x: cx, y: stemTop))
+            p.addLine(to: CGPoint(x: cx, y: stemBot))
+            stemLayer.path = p.cgPath
+        }
+    }
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        bounds.insetBy(dx: -10, dy: -10).contains(point)
+    }
+}
+
 // MARK: - Core UIKit view
 
-final class TextOverlayView: UIView {
+final class TextOverlayView: UIView, UIGestureRecognizerDelegate {
 
     var onSelectionChanged: ((String) -> Void)?
 
@@ -57,6 +156,10 @@ final class TextOverlayView: UIView {
 
     private static let idleTint = UIColor.systemBlue.withAlphaComponent(0.10)
     private static let selectedTint = UIColor.systemBlue.withAlphaComponent(0.32)
+
+    private let startHandle = SelectionHandleView(type: .start)
+    private let endHandle = SelectionHandleView(type: .end)
+    private var longPressGesture: UILongPressGestureRecognizer!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -105,13 +208,40 @@ final class TextOverlayView: UIView {
 
         imageView.layer.addSublayer(overlayLayer)
 
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
-        longPress.minimumPressDuration = 0.25
-        addGestureRecognizer(longPress)
+        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        longPressGesture.minimumPressDuration = 0.25
+        longPressGesture.delegate = self
+        addGestureRecognizer(longPressGesture)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        tap.require(toFail: longPress)
+        tap.require(toFail: longPressGesture)
         addGestureRecognizer(tap)
+
+        startHandle.isHidden = true
+        endHandle.isHidden = true
+        addSubview(startHandle)
+        addSubview(endHandle)
+
+        let startPan = UIPanGestureRecognizer(target: self, action: #selector(handleStartPan(_:)))
+        startHandle.addGestureRecognizer(startPan)
+
+        let endPan = UIPanGestureRecognizer(target: self, action: #selector(handleEndPan(_:)))
+        endHandle.addGestureRecognizer(endPan)
+    }
+
+    // MARK: - UIGestureRecognizerDelegate
+
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer === longPressGesture {
+            let point = gestureRecognizer.location(in: self)
+            if !startHandle.isHidden, startHandle.frame.insetBy(dx: -10, dy: -10).contains(point) {
+                return false
+            }
+            if !endHandle.isHidden, endHandle.frame.insetBy(dx: -10, dy: -10).contains(point) {
+                return false
+            }
+        }
+        return true
     }
 
     // MARK: - Layout
@@ -119,9 +249,11 @@ final class TextOverlayView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         overlayLayer.frame = imageView.bounds
-        guard needsRebuild else { return }
-        needsRebuild = false
-        rebuildOverlays()
+        if needsRebuild {
+            needsRebuild = false
+            rebuildOverlays()
+        }
+        updateHandlePositions()
     }
 
     private func rebuildOverlays() {
@@ -207,7 +339,6 @@ final class TextOverlayView: UIView {
             }
         }
 
-        // Sort top-to-bottom (Vision Y descending = visually top), then left-to-right
         rawWords.sort {
             if abs($0.lineCenterY - $1.lineCenterY) > 0.005 {
                 return $0.lineCenterY > $1.lineCenterY
@@ -234,6 +365,7 @@ final class TextOverlayView: UIView {
 
         switch gesture.state {
         case .began:
+            hideSelectionHandles()
             if let idx = hitTestWord(at: point) {
                 anchorIndex = idx
                 currentEndIndex = idx
@@ -252,6 +384,9 @@ final class TextOverlayView: UIView {
 
         case .ended, .cancelled:
             reportSelection()
+            if anchorIndex != nil {
+                showSelectionHandles()
+            }
 
         default:
             break
@@ -263,6 +398,54 @@ final class TextOverlayView: UIView {
         clearSelection()
     }
 
+    // MARK: - Handle pan gestures
+
+    @objc private func handleStartPan(_ gesture: UIPanGestureRecognizer) {
+        handlePan(gesture, isStart: true)
+    }
+
+    @objc private func handleEndPan(_ gesture: UIPanGestureRecognizer) {
+        handlePan(gesture, isStart: false)
+    }
+
+    private func handlePan(_ gesture: UIPanGestureRecognizer, isStart: Bool) {
+        let point = gesture.location(in: imageView)
+
+        switch gesture.state {
+        case .began:
+            if let a = anchorIndex, let e = currentEndIndex {
+                anchorIndex = min(a, e)
+                currentEndIndex = max(a, e)
+            }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+
+        case .changed:
+            guard let idx = hitTestWord(at: point) else { return }
+            if isStart {
+                let clamped = min(idx, currentEndIndex ?? idx)
+                if clamped != anchorIndex {
+                    anchorIndex = clamped
+                    updateHighlights()
+                    updateHandlePositions()
+                }
+            } else {
+                let clamped = max(idx, anchorIndex ?? idx)
+                if clamped != currentEndIndex {
+                    currentEndIndex = clamped
+                    updateHighlights()
+                    updateHandlePositions()
+                }
+            }
+
+        case .ended, .cancelled:
+            reportSelection()
+
+        default: break
+        }
+    }
+
+    // MARK: - Hit testing
+
     private func hitTestWord(at point: CGPoint) -> Int? {
         for (i, path) in wordPaths.enumerated() {
             if path.contains(point) {
@@ -272,7 +455,6 @@ final class TextOverlayView: UIView {
         return nearestWord(to: point)
     }
 
-    /// Falls back to the closest word center when the touch lands between quads.
     private func nearestWord(to point: CGPoint) -> Int? {
         guard let image = imageView.image else { return nil }
         let fitRect = aspectFitRect(for: image.size, in: imageView.bounds.size)
@@ -337,6 +519,50 @@ final class TextOverlayView: UIView {
         for layer in wordLayers {
             layer.fillColor = Self.idleTint.cgColor
         }
+        hideSelectionHandles()
         onSelectionChanged?("")
+    }
+
+    // MARK: - Selection handles
+
+    private func updateHandlePositions() {
+        guard !startHandle.isHidden,
+              let lo = anchorIndex, let hi = currentEndIndex,
+              let image = imageView.image else { return }
+
+        let fitRect = aspectFitRect(for: image.size, in: imageView.bounds.size)
+
+        let startWord = allWords[lo]
+        let startTop = visionToView(startWord.topLeft, fitRect: fitRect, imageSize: image.size)
+        let startBottom = visionToView(startWord.bottomLeft, fitRect: fitRect, imageSize: image.size)
+        startHandle.place(edgeTop: startTop, edgeBottom: startBottom)
+
+        let endWord = allWords[hi]
+        let endTop = visionToView(endWord.topRight, fitRect: fitRect, imageSize: image.size)
+        let endBottom = visionToView(endWord.bottomRight, fitRect: fitRect, imageSize: image.size)
+        endHandle.place(edgeTop: endTop, edgeBottom: endBottom)
+    }
+
+    private func showSelectionHandles() {
+        if let a = anchorIndex, let e = currentEndIndex {
+            anchorIndex = min(a, e)
+            currentEndIndex = max(a, e)
+        }
+
+        startHandle.isHidden = false
+        endHandle.isHidden = false
+        startHandle.alpha = 0
+        endHandle.alpha = 0
+        updateHandlePositions()
+
+        UIView.animate(withDuration: 0.15) {
+            self.startHandle.alpha = 1
+            self.endHandle.alpha = 1
+        }
+    }
+
+    private func hideSelectionHandles() {
+        startHandle.isHidden = true
+        endHandle.isHidden = true
     }
 }
