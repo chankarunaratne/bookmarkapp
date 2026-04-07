@@ -3,7 +3,6 @@ import SwiftData
 import UIKit
 
 struct OCRReviewView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
     let image: UIImage
@@ -13,7 +12,7 @@ struct OCRReviewView: View {
     @State private var regions: [OCRService.TextRegion] = []
     @State private var selectedText: String = ""
     @State private var hasSelection: Bool = false
-    @State private var showingBookPicker: Bool = false
+    @State private var showEditSelection: Bool = false
     @State private var isLoading: Bool = true
     @State private var ocrErrorMessage: String? = nil
     @State private var pendingSelectedText: String = ""
@@ -77,9 +76,9 @@ struct OCRReviewView: View {
                             let trimmed = selectedText.trimmingCharacters(in: .whitespacesAndNewlines)
                             guard !trimmed.isEmpty else { return }
                             pendingSelectedText = trimmed
-                            showingBookPicker = true
+                            showEditSelection = true
                         } label: {
-                            Text("Save highlight")
+                            Text("Next")
                                 .font(AppFont.buttonLabel)
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
@@ -101,12 +100,12 @@ struct OCRReviewView: View {
             }
         }
         .background(Color.black)
-        .sheet(isPresented: $showingBookPicker) {
-            BookPickerView(preselectedBook: preselectedBook) { book in
-                save(to: book)
-                showingBookPicker = false
-                dismiss()
-            }
+        .navigationDestination(isPresented: $showEditSelection) {
+            EditSelectionView(
+                initialText: pendingSelectedText,
+                preselectedBook: preselectedBook,
+                onComplete: { dismiss() }
+            )
         }
         .navigationTitle("Select highlight")
         .navigationBarTitleDisplayMode(.inline)
@@ -149,23 +148,4 @@ struct OCRReviewView: View {
         }
     }
 
-    private func save(to book: Book) {
-        let baseText = pendingSelectedText.isEmpty ? selectedText : pendingSelectedText
-        let trimmed = baseText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-
-        let quote = Quote(
-            text: trimmed,
-            page: nil,
-            note: nil,
-            book: book
-        )
-        modelContext.insert(quote)
-        book.quotes.append(quote)
-        try? modelContext.save()
-
-        selectedText = ""
-        pendingSelectedText = ""
-        hasSelection = false
-    }
 }
