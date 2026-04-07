@@ -713,6 +713,34 @@ struct QuoteDetailView: View {
                     .foregroundStyle(AppColor.textMuted) // #36394A
                     .lineSpacing(8) // ~32pt line height for 18pt text
                     .fixedSize(horizontal: false, vertical: true)
+
+                if quote.page != nil || quote.note != nil {
+                    VStack(alignment: .leading, spacing: 12) {
+                        if let page = quote.page, !page.isEmpty {
+                            HStack(spacing: 6) {
+                                Image(systemName: "book.pages")
+                                    .font(.system(size: 14, weight: .regular))
+                                Text("Page \(page)")
+                                    .font(.system(size: 15, weight: .regular))
+                            }
+                            .foregroundStyle(AppColor.textSubdued)
+                        }
+
+                        if let note = quote.note, !note.isEmpty {
+                            HStack(alignment: .top, spacing: 6) {
+                                Image(systemName: "note.text")
+                                    .font(.system(size: 14, weight: .regular))
+                                    .padding(.top, 2)
+                                Text(note)
+                                    .font(.system(size: 15, weight: .regular))
+                                    .lineSpacing(4)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .foregroundStyle(AppColor.textSubdued)
+                        }
+                    }
+                    .padding(.top, 20)
+                }
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
