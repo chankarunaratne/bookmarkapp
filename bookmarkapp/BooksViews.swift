@@ -668,7 +668,11 @@ private struct QuoteRowView: View {
                         Label("Copy", systemImage: "doc.on.doc")
                     }
                     
-                    ShareLink(item: quote.text) {
+                    Button {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            shareQuoteAsImage(quote: quote)
+                        }
+                    } label: {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                 } label: {
@@ -758,7 +762,11 @@ struct QuoteDetailView: View {
                         Label("Copy", systemImage: "doc.on.doc")
                     }
                     
-                    ShareLink(item: quote.text) {
+                    Button {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            shareQuoteAsImage(quote: quote)
+                        }
+                    } label: {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                     
@@ -781,6 +789,144 @@ struct QuoteDetailView: View {
             Text("This will delete the quote permanently. This action cannot be undone.")
         }
     }
+}
+
+// MARK: - Quote Share Card View
+
+/// Renders a shareable quote card matching the Figma design.
+/// Used with ImageRenderer to produce a PNG image for the share sheet.
+private struct QuoteShareCardView: View {
+    let quoteText: String
+    let bookTitle: String
+    let authorName: String
+    let coverImage: UIImage?
+    let thumbnailAssetName: String
+    let coverColor: BookCoverColor
+    let bookInitial: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .top, spacing: 12) {
+                    Group {
+                        if let coverImage {
+                            Image(uiImage: coverImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 50, height: 70)
+                                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                        } else {
+                            ZStack(alignment: .top) {
+                                Image(thumbnailAssetName)
+                                    .resizable()
+                                    .renderingMode(.original)
+                                    .scaledToFit()
+                                    .frame(width: 50)
+                                
+                                Text(bookInitial)
+                                    .font(.system(size: 16, weight: .regular, design: .serif))
+                                    .foregroundStyle(coverColor.letterColor)
+                                    .padding(.top, 50 * 0.272)
+                            }
+                            .frame(width: 50, height: 70)
+                            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(bookTitle)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(AppColor.textMuted)
+                            .tracking(-0.43)
+                            .lineLimit(2)
+                        
+                        Text(authorName)
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundStyle(AppColor.textNormal)
+                            .lineLimit(2)
+                    }
+                    .padding(.top, 4)
+                    
+                    Spacer(minLength: 0)
+                }
+                
+                Text("\u{201C}\(quoteText)\u{201D}")
+                    .font(.system(size: 18, weight: .regular, design: .serif))
+                    .foregroundStyle(AppColor.textMuted)
+                    .lineSpacing(8)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Text("@rememberlyapp")
+                .font(.system(size: 16, weight: .regular))
+                .foregroundStyle(AppColor.textSubdued)
+                .tracking(-0.16)
+        }
+        .padding(16)
+        .frame(width: 322, alignment: .leading)
+        .background(Color.white)
+        .overlay(
+            Rectangle()
+                .stroke(AppColor.cardBorderStrong, lineWidth: 1)
+        )
+        .shadow(color: Color(red: 0.035, green: 0.098, blue: 0.282).opacity(0.13), radius: 0, x: 0, y: 0)
+        .shadow(color: Color(red: 0.071, green: 0.216, blue: 0.412).opacity(0.08), radius: 1, x: 0, y: 1)
+    }
+}
+
+// MARK: - Share Quote as Image
+
+@MainActor
+private func shareQuoteAsImage(quote: Quote) {
+    let book = quote.book
+    let bookTitle = book?.title ?? "Untitled"
+    let authorName = (book?.author?.trimmingCharacters(in: .whitespacesAndNewlines))
+        .flatMap { !$0.isEmpty ? $0 : nil } ?? "Unknown author"
+    
+    var coverImage: UIImage? = nil
+    if let urlString = book?.coverURL {
+        coverImage = ImageCache.shared.getImage(for: urlString)
+    }
+    
+    let coverColor = BookCoverColor(rawColorString: book?.coverColor ?? "blue")
+    let trimmedTitle = (book?.title ?? "#").trimmingCharacters(in: .whitespacesAndNewlines)
+    let bookInitial = trimmedTitle.isEmpty ? "#" : String(trimmedTitle.prefix(1)).uppercased()
+    
+    let cardView = QuoteShareCardView(
+        quoteText: quote.text,
+        bookTitle: bookTitle,
+        authorName: authorName,
+        coverImage: coverImage,
+        thumbnailAssetName: book?.thumbnailAssetName ?? "book-thumbnail-icon-blue",
+        coverColor: coverColor,
+        bookInitial: bookInitial
+    )
+    
+    let renderer = ImageRenderer(content: cardView)
+    renderer.scale = UIScreen.main.scale
+    
+    guard let image = renderer.uiImage else { return }
+    
+    let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+    
+    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+          let rootVC = windowScene.windows.first?.rootViewController else { return }
+    
+    var topVC = rootVC
+    while let presented = topVC.presentedViewController {
+        topVC = presented
+    }
+    
+    activityVC.popoverPresentationController?.sourceView = topVC.view
+    activityVC.popoverPresentationController?.sourceRect = CGRect(
+        x: topVC.view.bounds.midX,
+        y: topVC.view.bounds.midY,
+        width: 0,
+        height: 0
+    )
+    activityVC.popoverPresentationController?.permittedArrowDirections = []
+    
+    topVC.present(activityVC, animated: true)
 }
 
 // MARK: - Date Extension for Relative Descriptions
