@@ -20,8 +20,10 @@ struct OCRReviewView: View {
     var body: some View {
         ZStack {
             if isLoading {
-                ProgressView("Extracting text from the image.\nThis will only take a moment.")
+                ProgressView("Just a moment...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .tint(.white)
+                    .foregroundStyle(.white)
                     .task { await runOCR() }
             } else if let message = ocrErrorMessage {
                 VStack(spacing: 24) {
