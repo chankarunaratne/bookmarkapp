@@ -700,6 +700,7 @@ private struct QuoteRowView: View {
 /// Shows the timestamp and full quote text with a native back button and ellipsis toolbar button.
 struct QuoteDetailView: View {
     let quote: Quote
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @State private var isShowingDeleteConfirm: Bool = false
     
@@ -783,6 +784,12 @@ struct QuoteDetailView: View {
         .alert("Delete this quote?", isPresented: $isShowingDeleteConfirm) {
             Button("Delete", role: .destructive) {
                 modelContext.delete(quote)
+                isShowingDeleteConfirm = false
+                DispatchQueue.main.async {
+                    withAnimation {
+                        dismiss()
+                    }
+                }
             }
             Button("Cancel", role: .cancel) { }
         } message: {
