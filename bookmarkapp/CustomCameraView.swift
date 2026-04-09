@@ -11,6 +11,7 @@ import Combine
 struct CustomCameraView: View {
     var onImagePicked: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     @StateObject private var model = CameraModel()
     @State private var latestPhoto: UIImage?
@@ -18,10 +19,52 @@ struct CustomCameraView: View {
     
     var body: some View {
         ZStack {
+            if model.cameraAuthorized {
+                cameraContent
+                    .transition(.opacity)
+            } else {
+                cameraPermissionContent
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: model.cameraAuthorized)
+        .onAppear {
+            model.checkPermissions()
+            if model.cameraAuthorized {
+                fetchLatestPhoto()
+            }
+        }
+        .onChange(of: model.cameraAuthorized) { _, authorized in
+            if authorized {
+                fetchLatestPhoto()
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                model.recheckAuthorization()
+            }
+        }
+        .onChange(of: model.capturedImage) { _, image in
+            if let img = image {
+                onImagePicked(img)
+                dismiss()
+            }
+        }
+        .sheet(isPresented: $showPhotoPicker) {
+            PhotoPicker { img in
+                onImagePicked(img)
+                dismiss()
+            }
+        }
+    }
+    
+    // MARK: - Camera Content
+    
+    private var cameraContent: some View {
+        ZStack {
             Color.black.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Top header
                 HStack {
                     Spacer()
                     Text("Camera")
@@ -39,25 +82,21 @@ struct CustomCameraView: View {
                 .padding(.top, 24)
                 .padding(.bottom, 24)
                 
-                // Guide text
                 VStack(spacing: 4) {
                     Text("Keep the text clear and flat.")
                         .font(.system(size: 18))
                         .foregroundColor(Color(white: 0.4))
-                    Text("You’ll select the highlight next.")
+                    Text("You'll select the highlight next.")
                         .font(.system(size: 18))
                         .foregroundColor(Color(white: 0.4))
                 }
                 .padding(.bottom, 24)
                 
-                // Viewport
                 CameraPreview(session: model.session)
                     .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
                     .padding(.horizontal, 24)
                 
-                // Bottom controls
                 HStack {
-                    // Gallery shortcut
                     Button {
                         showPhotoPicker = true
                     } label: {
@@ -80,7 +119,6 @@ struct CustomCameraView: View {
                     
                     Spacer()
                     
-                    // Native-like shooter button
                     Button {
                         model.capturePhoto()
                     } label: {
@@ -95,7 +133,6 @@ struct CustomCameraView: View {
                     
                     Spacer()
                     
-                    // Balancing empty space for alignment
                     Spacer()
                         .frame(width: 56)
                 }
@@ -104,20 +141,70 @@ struct CustomCameraView: View {
                 .padding(.bottom, 16)
             }
         }
-        .onAppear {
-            model.checkPermissions()
-            fetchLatestPhoto()
-        }
-        .onChange(of: model.capturedImage) { _, image in
-            if let img = image {
-                onImagePicked(img)
-                dismiss()
-            }
-        }
-        .sheet(isPresented: $showPhotoPicker) {
-            PhotoPicker { img in
-                onImagePicked(img)
-                dismiss()
+    }
+    
+    // MARK: - Camera Permission Content
+    
+    private var cameraPermissionContent: some View {
+        ZStack {
+            AppColor.background.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(AppColor.glassIconForeground)
+                    }
+                }
+                .padding(.trailing, 24)
+                .padding(.top, 20)
+                
+                Spacer()
+                
+                VStack(spacing: 32) {
+                    ZStack {
+                        Circle()
+                            .fill(AppColor.cardBorder)
+                            .frame(width: 80, height: 80)
+                        
+                        Image(systemName: "camera")
+                            .font(.system(size: 32, weight: .light))
+                            .foregroundStyle(AppColor.textSubdued)
+                    }
+                    
+                    VStack(spacing: 10) {
+                        Text("Camera access required")
+                            .font(AppFont.emptyStateTitle)
+                            .foregroundStyle(AppColor.textPrimary)
+                        
+                        Text("For Rememberly to work properly we need to access your camera so that it can capture the text. Please allow camera access below.")
+                            .font(AppFont.emptyStateBody)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                    }
+                    
+                    Button(action: { model.requestCameraAccess() }) {
+                        Text("Allow camera access")
+                            .font(AppFont.buttonLabel)
+                            .foregroundStyle(.white)
+                            .frame(height: 36)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule()
+                                    .fill(AppColor.buttonDark)
+                                    .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                    .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 40)
+                
+                Spacer()
             }
         }
     }
@@ -164,7 +251,6 @@ struct LiquidGlassXButton: View {
             
             Image(systemName: "xmark")
                 .font(.system(size: 14, weight: .semibold))
-                // iOS 26 liquid glass commonly has contrasting icons or somewhat dark gray
                 .foregroundColor(.white)
         }
         .background(.ultraThinMaterial, in: Circle())
@@ -174,20 +260,46 @@ struct LiquidGlassXButton: View {
 class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var session = AVCaptureSession()
     @Published var capturedImage: UIImage?
+    @Published var cameraAuthorized: Bool = false
     
     private let output = AVCapturePhotoOutput()
     
     func checkPermissions() {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        DispatchQueue.main.async {
+            self.cameraAuthorized = (status == .authorized)
+        }
+        if status == .authorized {
             setup()
+        }
+    }
+    
+    func requestCameraAccess() {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
-                if granted {
-                    DispatchQueue.main.async { self?.setup() }
+                DispatchQueue.main.async {
+                    self?.cameraAuthorized = granted
+                    if granted { self?.setup() }
                 }
             }
-        default: break
+        case .denied, .restricted:
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        default:
+            break
+        }
+    }
+    
+    func recheckAuthorization() {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        if status == .authorized && !cameraAuthorized {
+            DispatchQueue.main.async {
+                self.cameraAuthorized = true
+            }
+            setup()
         }
     }
     
@@ -196,7 +308,6 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
             guard let self = self else { return }
             self.session.beginConfiguration()
             
-            // Setup input
             guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
                   let input = try? AVCaptureDeviceInput(device: device) else {
                 return
@@ -205,7 +316,6 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
                 self.session.addInput(input)
             }
             
-            // Setup output
             if self.session.canAddOutput(self.output) {
                 self.session.addOutput(self.output)
             }

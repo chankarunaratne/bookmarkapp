@@ -218,11 +218,7 @@ private struct BookSearchField: View {
                     .foregroundStyle(AppColor.textPrimary)
             }
 
-            if text.isEmpty {
-                Image(systemName: "mic.fill")
-                    .font(.system(size: 17))
-                    .foregroundStyle(Color(.placeholderText))
-            } else {
+            if !text.isEmpty {
                 Button {
                     text = ""
                 } label: {
