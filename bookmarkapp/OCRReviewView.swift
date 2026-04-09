@@ -15,6 +15,7 @@ struct OCRReviewView: View {
     @State private var showEditSelection: Bool = false
     @State private var isLoading: Bool = true
     @State private var ocrErrorMessage: String? = nil
+    @State private var noTextFound: Bool = false
     @State private var pendingSelectedText: String = ""
 
     var body: some View {
@@ -25,6 +26,8 @@ struct OCRReviewView: View {
                     .tint(.white)
                     .foregroundStyle(.white)
                     .task { await runOCR() }
+            } else if noTextFound {
+                noTextFoundContent
             } else if let message = ocrErrorMessage {
                 VStack(spacing: 24) {
                     Spacer()
@@ -135,15 +138,73 @@ struct OCRReviewView: View {
         }
     }
 
+    private var noTextFoundContent: some View {
+        VStack {
+            Spacer()
+
+            VStack(spacing: 24) {
+                VStack(spacing: 10) {
+                    Text("No text found")
+                        .font(AppFont.emptyStateTitle)
+                        .foregroundStyle(AppColor.textPrimary)
+                        .multilineTextAlignment(.center)
+
+                    Text("We couldn't read any text in the image. Please try again. Make sure you're in a well lit place and focus the page well in the view.")
+                        .font(AppFont.emptyStateBody)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                }
+
+                Button {
+                    if let onRescan {
+                        onRescan()
+                    } else {
+                        dismiss()
+                    }
+                } label: {
+                    Text("Try again")
+                        .font(AppFont.buttonLabel)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 48)
+                        .background(
+                            Capsule()
+                                .fill(AppColor.buttonDark)
+                                .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
+                                .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 28)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(AppColor.background)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .stroke(AppColor.cardBorder, lineWidth: 1)
+            )
+            .padding(.horizontal, 20)
+            .padding(.bottom, 40)
+        }
+    }
+
     private func runOCR() async {
         do {
             let result = try await OCRService.recognizeText(in: image)
             await MainActor.run {
                 self.regions = result
+                self.ocrErrorMessage = nil
+                self.noTextFound = result.isEmpty
                 self.isLoading = false
             }
         } catch {
             await MainActor.run {
+                self.noTextFound = false
                 self.ocrErrorMessage = "Please try again."
                 self.isLoading = false
             }

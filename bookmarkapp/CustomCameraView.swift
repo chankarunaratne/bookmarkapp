@@ -260,15 +260,18 @@ struct LiquidGlassXButton: View {
 class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var session = AVCaptureSession()
     @Published var capturedImage: UIImage?
-    @Published var cameraAuthorized: Bool = false
+    @Published var cameraAuthorized: Bool
     
     private let output = AVCapturePhotoOutput()
     
+    override init() {
+        self.cameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+        super.init()
+    }
+    
     func checkPermissions() {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
-        DispatchQueue.main.async {
-            self.cameraAuthorized = (status == .authorized)
-        }
+        cameraAuthorized = (status == .authorized)
         if status == .authorized {
             setup()
         }
