@@ -104,7 +104,7 @@ struct OCRReviewView: View {
                 }
             }
         }
-        .background(Color.black)
+        .background(noTextFound ? AppColor.background : Color.black)
         .navigationDestination(isPresented: $showEditSelection) {
             EditSelectionView(
                 initialText: pendingSelectedText,
@@ -121,7 +121,7 @@ struct OCRReviewView: View {
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .medium))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(noTextFound ? AppColor.textPrimary : .white)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -130,7 +130,7 @@ struct OCRReviewView: View {
                         onRescan()
                     } label: {
                         Image(systemName: "arrow.counterclockwise")
-                            .foregroundStyle(.white)
+                            .foregroundStyle(noTextFound ? AppColor.textPrimary : .white)
                     }
                     .accessibilityLabel("Retake photo")
                 }
@@ -139,10 +139,20 @@ struct OCRReviewView: View {
     }
 
     private var noTextFoundContent: some View {
-        VStack {
+        VStack(spacing: 0) {
             Spacer()
 
-            VStack(spacing: 24) {
+            VStack(spacing: 32) {
+                ZStack {
+                    Circle()
+                        .fill(AppColor.cardBorder)
+                        .frame(width: 80, height: 80)
+
+                    Image(systemName: "text.viewfinder")
+                        .font(.system(size: 30, weight: .light))
+                        .foregroundStyle(AppColor.textSubdued)
+                }
+
                 VStack(spacing: 10) {
                     Text("No text found")
                         .font(AppFont.emptyStateTitle)
@@ -166,8 +176,9 @@ struct OCRReviewView: View {
                     Text("Try again")
                         .font(AppFont.buttonLabel)
                         .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 48)
+                        .frame(height: 36)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 6)
                         .background(
                             Capsule()
                                 .fill(AppColor.buttonDark)
@@ -177,19 +188,9 @@ struct OCRReviewView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 28)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(AppColor.background)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(AppColor.cardBorder, lineWidth: 1)
-            )
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            .padding(.horizontal, 40)
+
+            Spacer()
         }
     }
 
