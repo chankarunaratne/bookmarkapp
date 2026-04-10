@@ -22,6 +22,7 @@ struct SafariView: UIViewControllerRepresentable {
 
 struct SettingsMenuView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @State private var safariURL: URL?
 
     private let linkItems: [(title: String, id: String)] = [
@@ -86,7 +87,7 @@ struct SettingsMenuView: View {
             Spacer(minLength: 0)
 
             Button {
-                // TODO: feedback action
+                openSupportEmail()
             } label: {
                 Text("Share")
                     .font(.system(size: 14, weight: .semibold))
@@ -160,11 +161,19 @@ struct SettingsMenuView: View {
     private func handleLinkTap(_ id: String) {
         switch id {
         case "terms":
-            safariURL = URL(string: "https://getrememberly.netlify.app/terms")
+            safariURL = URL(string: "https://getrememberly.app/terms")
         case "privacy":
-            safariURL = URL(string: "https://getrememberly.netlify.app/privacy-policy")
+            safariURL = URL(string: "https://getrememberly.app/privacy-policy")
+        case "contact":
+            openSupportEmail()
         default:
             break
+        }
+    }
+
+    private func openSupportEmail() {
+        if let url = URL(string: "mailto:contact@getrememberly.app") {
+            openURL(url)
         }
     }
 }
