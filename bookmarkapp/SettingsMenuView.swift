@@ -87,7 +87,7 @@ struct SettingsMenuView: View {
             Spacer(minLength: 0)
 
             Button {
-                openSupportEmail()
+                safariURL = URL(string: "https://cg94.typeform.com/to/P0WT4Lks")
             } label: {
                 Text("Share")
                     .font(.system(size: 14, weight: .semibold))
