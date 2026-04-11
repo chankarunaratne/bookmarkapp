@@ -5,6 +5,8 @@ struct MyBooksView: View {
     @State private var isPresentingNewBook: Bool = false
     @Query(sort: \Book.createdAt, order: .reverse) private var books: [Book]
     @State private var searchText: String = ""
+    @State private var showBookToast: Bool = false
+    @State private var bookWasAdded: Bool = false
     
     private var filtered: [Book] {
         guard !searchText.isEmpty else { return books }
@@ -55,8 +57,21 @@ struct MyBooksView: View {
                 }
             }
         }
-        .sheet(isPresented: $isPresentingNewBook) {
-            AddBookView { _ in }
+        .successToast(isPresented: $showBookToast, message: "Book created successfully")
+        .sheet(isPresented: $isPresentingNewBook, onDismiss: {
+            if bookWasAdded {
+                bookWasAdded = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    withAnimation {
+                        showBookToast = true
+                    }
+                }
+            }
+        }) {
+            AddBookView { _ in
+                bookWasAdded = true
+            }
         }
     }
     
@@ -378,6 +393,8 @@ struct BookDetailView: View {
     @State private var isShowingDeleteBookConfirm: Bool = false
     @State private var showCamera: Bool = false
     @State private var ocrImageItem: OCRImageItem?
+    @State private var showHighlightToast: Bool = false
+    @State private var pendingHighlightToast: Bool = false
     
     private var sortedQuotes: [Quote] {
         book.quotes.sorted { $0.createdAt > $1.createdAt }
@@ -516,12 +533,23 @@ struct BookDetailView: View {
         } message: {
             Text("This will permanently delete the book and all of its highlights. This action cannot be undone.")
         }
+        .successToast(isPresented: $showHighlightToast, message: "Highlight added successfully")
         .fullScreenCover(isPresented: $showCamera) {
             CustomCameraView { img in
                 ocrImageItem = OCRImageItem(image: img)
             }
         }
-        .fullScreenCover(item: $ocrImageItem) { item in
+        .fullScreenCover(item: $ocrImageItem, onDismiss: {
+            if pendingHighlightToast {
+                pendingHighlightToast = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    withAnimation {
+                        showHighlightToast = true
+                    }
+                }
+            }
+        }) { item in
             NavigationStack {
                 OCRReviewView(
                     image: item.image,
@@ -532,6 +560,9 @@ struct BookDetailView: View {
                     preselectedBook: book
                 )
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .highlightAdded)) { _ in
+            pendingHighlightToast = true
         }
     }
 }

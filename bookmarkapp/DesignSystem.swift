@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// The five cover-color options available when manually creating a book.
 enum BookCoverColor: String, CaseIterable {
@@ -173,6 +176,71 @@ enum AppFont {
     
     /// Home section title – 22pt SemiBold (matches Figma "Overused Grotesk SemiBold")
     static let homeSectionTitle = Font.system(size: 22, weight: .semibold, design: .default)
+
+    /// Toast message – 14pt Medium
+    static let toastMessage = Font.system(size: 14, weight: .medium, design: .default)
 }
 
+// MARK: - App Notifications
 
+extension Notification.Name {
+    static let highlightAdded = Notification.Name("highlightAdded")
+    static let bookCreated = Notification.Name("bookCreated")
+}
+
+// MARK: - Success Toast
+
+struct SuccessToastView: View {
+    let message: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(Color(red: 0.30, green: 0.69, blue: 0.31))
+
+            Text(message)
+                .font(AppFont.toastMessage)
+                .foregroundStyle(Color(red: 0.18, green: 0.19, blue: 0.22))
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+        .background(
+            Capsule()
+                .fill(.white)
+                .shadow(color: .black.opacity(0.08), radius: 1, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
+        )
+    }
+}
+
+// MARK: - Toast View Modifier
+
+struct ToastModifier: ViewModifier {
+    @Binding var isPresented: Bool
+    let message: String
+
+    func body(content: Content) -> some View {
+        content.overlay(alignment: .bottom) {
+            if isPresented {
+                SuccessToastView(message: message)
+                    .padding(.bottom, 32)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+                            withAnimation(.easeOut(duration: 0.25)) {
+                                isPresented = false
+                            }
+                        }
+                    }
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: isPresented)
+    }
+}
+
+extension View {
+    func successToast(isPresented: Binding<Bool>, message: String) -> some View {
+        modifier(ToastModifier(isPresented: isPresented, message: message))
+    }
+}

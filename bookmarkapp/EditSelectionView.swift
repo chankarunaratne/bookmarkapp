@@ -185,6 +185,7 @@ struct EditSelectionView: View {
         book.quotes.append(quote)
         try? modelContext.save()
 
+        NotificationCenter.default.post(name: .highlightAdded, object: nil)
         onComplete()
     }
 }

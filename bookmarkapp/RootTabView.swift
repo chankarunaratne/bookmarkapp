@@ -19,6 +19,8 @@ struct RootTabView: View {
     
     @State private var showCamera: Bool = false
     @State private var ocrImageItem: OCRImageItem?
+    @State private var showHighlightToast: Bool = false
+    @State private var pendingHighlightToast: Bool = false
     
     var body: some View {
         ZStack {
@@ -34,7 +36,6 @@ struct RootTabView: View {
                     MyBooksView()
                 }
                 
-                // Uses the .search role so the system pins it separately on the right
                 Tab("Add highlight", systemImage: "plus", value: .add, role: .search) {
                     Color.clear
                 }
@@ -47,12 +48,23 @@ struct RootTabView: View {
                 }
             }
         }
+        .successToast(isPresented: $showHighlightToast, message: "Highlight added successfully")
         .fullScreenCover(isPresented: $showCamera) {
             CustomCameraView { img in
                 ocrImageItem = OCRImageItem(image: img)
             }
         }
-        .fullScreenCover(item: $ocrImageItem) { item in
+        .fullScreenCover(item: $ocrImageItem, onDismiss: {
+            if pendingHighlightToast {
+                pendingHighlightToast = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    withAnimation {
+                        showHighlightToast = true
+                    }
+                }
+            }
+        }) { item in
             NavigationStack {
                 OCRReviewView(
                     image: item.image,
@@ -62,6 +74,9 @@ struct RootTabView: View {
                     }
                 )
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .highlightAdded)) { _ in
+            pendingHighlightToast = true
         }
     }
 }
