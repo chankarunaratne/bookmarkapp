@@ -62,10 +62,10 @@ struct MyBooksView: View {
     
     private var libraryEmptyStateView: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 32) {
+            VStack(spacing: 24) {
                 Spacer()
                 
-                Image("library-empty")
+                Image("no-books-image")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 170, height: 124)
@@ -384,11 +384,11 @@ struct BookDetailView: View {
     }
     
     private var bookDetailEmptyStateView: some View {
-        VStack(spacing: 32) {
-            Image("open-book")
+        VStack(spacing: 24) {
+            Image("no-books-image")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 142, height: 103)
+                .frame(width: 170, height: 124)
             
             VStack(spacing: 24) {
                 VStack(spacing: 8) {
@@ -396,7 +396,7 @@ struct BookDetailView: View {
                         .font(.system(size: 20, weight: .semibold, design: .default))
                         .foregroundStyle(AppColor.textMuted)
                     
-                    Text("This is where your book highlights will live.\nScan a page to start remembering what\nyou read.")
+                    Text("Scan a page to save your first highlight.")
                         .font(.system(size: 16, weight: .regular, design: .default))
                         .foregroundStyle(AppColor.textSecondary)
                         .multilineTextAlignment(.center)

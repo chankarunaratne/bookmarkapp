@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "open-book.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "empty-highlights.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
