@@ -66,20 +66,6 @@ struct RootTabView: View {
     }
 }
 
-
-
-// MARK: - Placeholder Search
-
-struct SearchPlaceholderView: View {
-    var body: some View {
-        Text("Search will be available in a future update.")
-            .foregroundStyle(.secondary)
-            .padding()
-            .navigationTitle("Search")
-            .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
 #Preview {
     RootTabView()
         .modelContainer(for: [Book.self, Quote.self], inMemory: true)
