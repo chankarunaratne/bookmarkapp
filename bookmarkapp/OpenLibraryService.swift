@@ -39,6 +39,9 @@ private struct SearchDoc: Decodable {
 
 @MainActor
 final class OpenLibraryService: ObservableObject {
+    /// Open Library rejects shorter queries; keep UI and network aligned.
+    static let minimumSearchQueryLength = 3
+
     @Published var results: [OpenLibrarySearchResult] = []
     @Published var isSearching: Bool = false
     @Published var searchText: String = ""
@@ -54,7 +57,7 @@ final class OpenLibraryService: ObservableObject {
             .sink { [weak self] query in
                 guard let self else { return }
                 let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-                if trimmed.count < 2 {
+                if trimmed.count < Self.minimumSearchQueryLength {
                     self.results = []
                     return
                 }

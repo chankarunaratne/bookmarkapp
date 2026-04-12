@@ -274,6 +274,14 @@ struct AddBookView: View {
         return String(first).uppercased()
     }
 
+    private var trimmedOpenLibraryQuery: String {
+        searchService.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var isOpenLibraryQueryTooShort: Bool {
+        trimmedOpenLibraryQuery.count < OpenLibraryService.minimumSearchQueryLength
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -322,46 +330,29 @@ struct AddBookView: View {
 
     private var searchTabContent: some View {
         VStack(spacing: 0) {
-            // Results / States
-            if searchService.searchText.trimmingCharacters(in: .whitespacesAndNewlines).count < 2 {
-                // Initial state – show banner then search field
+            // One text field for all states so focus and keyboard stay stable when results load.
+            AddBookTextField(
+                label: "Title",
+                placeholder: "Search by book title or author",
+                text: $searchService.searchText
+            )
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+
+            if isOpenLibraryQueryTooShort {
                 ScrollView {
                     VStack(spacing: 0) {
                         SearchBannerView()
                             .padding(.horizontal, 20)
                             .padding(.top, 20)
-
-                        AddBookTextField(
-                            label: "Title",
-                            placeholder: "Search by book title or author",
-                            text: $searchService.searchText
-                        )
-                        .padding(.horizontal, 20)
-                        .padding(.top, 20)
                     }
                 }
             } else if searchService.isSearching {
-                AddBookTextField(
-                    label: "Title",
-                    placeholder: "Search by book title or author",
-                    text: $searchService.searchText
-                )
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-
                 Spacer()
                 ProgressView()
                     .tint(AppColor.textSecondary)
                 Spacer()
             } else if searchService.results.isEmpty {
-                AddBookTextField(
-                    label: "Title",
-                    placeholder: "Search by book title or author",
-                    text: $searchService.searchText
-                )
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-
                 Spacer()
                 VStack(spacing: 8) {
                     Image(systemName: "book.closed")
@@ -378,14 +369,6 @@ struct AddBookView: View {
                 .padding(.horizontal, 40)
                 Spacer()
             } else {
-                AddBookTextField(
-                    label: "Title",
-                    placeholder: "Search by book title or author",
-                    text: $searchService.searchText
-                )
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(searchService.results) { result in
