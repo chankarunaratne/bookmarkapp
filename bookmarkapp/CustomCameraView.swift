@@ -80,21 +80,19 @@ struct CustomCameraView: View {
                     , alignment: .trailing
                 )
                 .padding(.top, 24)
-                .padding(.bottom, 24)
+                .padding(.bottom, 12)
                 
-                VStack(spacing: 4) {
-                    Text("Keep the text clear and flat.")
-                        .font(.system(size: 18))
-                        .foregroundColor(Color(white: 0.4))
-                    Text("You'll select the highlight next.")
-                        .font(.system(size: 18))
-                        .foregroundColor(Color(white: 0.4))
+                GeometryReader { geo in
+                    let inset: CGFloat = 16
+                    CameraPreview(session: model.session)
+                        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                        .frame(
+                            width: max(0, geo.size.width - inset * 2),
+                            height: max(0, geo.size.height - inset * 2)
+                        )
+                        .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                 }
-                .padding(.bottom, 24)
-                
-                CameraPreview(session: model.session)
-                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                    .padding(.horizontal, 24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
                 HStack {
                     Button {

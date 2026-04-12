@@ -26,7 +26,6 @@ struct SettingsMenuView: View {
     @State private var safariURL: URL?
 
     private let linkItems: [(title: String, id: String)] = [
-        ("Rate the app", "rate"),
         ("Terms and Conditions", "terms"),
         ("Privacy Policy", "privacy"),
         ("Contact Us", "contact")
