@@ -56,6 +56,9 @@ struct CustomCameraView: View {
                 dismiss()
             }
         }
+        .onDisappear {
+            model.stopSession()
+        }
     }
     
     // MARK: - Camera Content
@@ -261,6 +264,9 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var cameraAuthorized: Bool
     
     private let output = AVCapturePhotoOutput()
+    /// Serializes session start/stop and coordinates with `setup()` so a late async completion cannot start the camera after the UI was dismissed.
+    private let sessionQueue = DispatchQueue(label: "bookmarkapp.camera.session")
+    private var allowsSessionRunning = true
     
     override init() {
         self.cameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
@@ -305,7 +311,7 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     }
     
     func setup() {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        sessionQueue.async { [weak self] in
             guard let self = self else { return }
             self.session.beginConfiguration()
             
@@ -322,7 +328,18 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
             }
             
             self.session.commitConfiguration()
+            guard self.allowsSessionRunning else { return }
             self.session.startRunning()
+        }
+    }
+    
+    func stopSession() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.allowsSessionRunning = false
+            if self.session.isRunning {
+                self.session.stopRunning()
+            }
         }
     }
     
@@ -335,9 +352,15 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
         guard let data = photo.fileDataRepresentation(),
               let image = UIImage(data: data) else { return }
         
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.allowsSessionRunning = false
+            if self.session.isRunning {
+                self.session.stopRunning()
+            }
+        }
         DispatchQueue.main.async {
             self.capturedImage = image
-            self.session.stopRunning()
         }
     }
 }

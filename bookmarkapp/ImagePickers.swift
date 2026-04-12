@@ -55,17 +55,23 @@ struct PhotoPicker: UIViewControllerRepresentable {
         init(parent: PhotoPicker) { self.parent = parent }
 
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            guard let provider = results.first?.itemProvider else { parent.dismiss(); return }
-            if provider.canLoadObject(ofClass: UIImage.self) {
-                provider.loadObject(ofClass: UIImage.self) { object, _ in
+            guard let provider = results.first?.itemProvider else {
+                DispatchQueue.main.async { self.parent.dismiss() }
+                return
+            }
+            guard provider.canLoadObject(ofClass: UIImage.self) else {
+                DispatchQueue.main.async { self.parent.dismiss() }
+                return
+            }
+            provider.loadObject(ofClass: UIImage.self) { [weak self] object, _ in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.parent.dismiss()
                     if let image = object as? UIImage {
-                        DispatchQueue.main.async {
-                            self.parent.onImagePicked(image)
-                        }
+                        self.parent.onImagePicked(image)
                     }
                 }
             }
-            parent.dismiss()
         }
     }
 }
