@@ -19,15 +19,24 @@ struct CustomCameraView: View {
     
     var body: some View {
         ZStack {
-            if model.cameraAuthorized {
+            if model.cameraAuthorized, model.isSessionReady {
                 cameraContent
                     .transition(.opacity)
-            } else {
+            } else if !model.cameraAuthorized {
                 cameraPermissionContent
                     .transition(.opacity)
+            } else {
+                // Camera authorized but session still starting
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    ProgressView()
+                        .tint(.white)
+                }
+                .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 0.3), value: model.cameraAuthorized)
+        .animation(.easeInOut(duration: 0.3), value: model.isSessionReady)
         .onAppear {
             model.checkPermissions()
             if model.cameraAuthorized {
@@ -262,11 +271,13 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var session = AVCaptureSession()
     @Published var capturedImage: UIImage?
     @Published var cameraAuthorized: Bool
+    @Published var isSessionReady: Bool = false
     
     private let output = AVCapturePhotoOutput()
     /// Serializes session start/stop and coordinates with `setup()` so a late async completion cannot start the camera after the UI was dismissed.
     private let sessionQueue = DispatchQueue(label: "bookmarkapp.camera.session")
     private var allowsSessionRunning = true
+    private var isConfigured = false
     
     override init() {
         self.cameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
@@ -313,11 +324,15 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     func setup() {
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
+            guard !self.isConfigured else { return }
+            self.isConfigured = true
+            
             self.session.beginConfiguration()
-            defer { self.session.commitConfiguration() }
             
             guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
                   let input = try? AVCaptureDeviceInput(device: device) else {
+                self.session.commitConfiguration()
+                self.isConfigured = false
                 return
             }
             if self.session.canAddInput(input) {
@@ -328,8 +343,14 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
                 self.session.addOutput(self.output)
             }
             
+            self.session.commitConfiguration()
+            
             guard self.allowsSessionRunning else { return }
             self.session.startRunning()
+            
+            DispatchQueue.main.async {
+                self.isSessionReady = true
+            }
         }
     }
     
