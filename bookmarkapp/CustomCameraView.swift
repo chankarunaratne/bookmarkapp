@@ -314,6 +314,7 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             self.session.beginConfiguration()
+            defer { self.session.commitConfiguration() }
             
             guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
                   let input = try? AVCaptureDeviceInput(device: device) else {
@@ -327,7 +328,6 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
                 self.session.addOutput(self.output)
             }
             
-            self.session.commitConfiguration()
             guard self.allowsSessionRunning else { return }
             self.session.startRunning()
         }
