@@ -15,7 +15,7 @@ struct EditSelectionView: View {
     @FocusState private var focusedField: Field?
 
     private enum Field: Hashable {
-        case highlight, page, notes
+        case highlight
     }
 
     private var isSaveDisabled: Bool {
@@ -72,11 +72,7 @@ struct EditSelectionView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.white)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(AppColor.cardBorder, lineWidth: 1)
+                        .fill(AppColor.cardBorder)
                 )
         }
     }
@@ -86,58 +82,20 @@ struct EditSelectionView: View {
     private var additionalDetailsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Additional details")
-                .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(AppColor.textPrimary)
-                .padding(.leading, 8)
-
-            editTextField(
-                label: "Page number",
-                placeholder: "Enter page number",
-                text: $pageNumber,
-                field: .page,
-                keyboardType: .numberPad
-            )
-
-            editTextField(
-                label: "Notes",
-                placeholder: "Add a note about this highlight",
-                text: $notes,
-                field: .notes
-            )
-        }
-    }
-
-    // MARK: - Styled Text Field
-
-    private func editTextField(
-        label: String,
-        placeholder: String,
-        text: Binding<String>,
-        field: Field,
-        keyboardType: UIKeyboardType = .default
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(label)
                 .font(.system(size: 17, weight: .regular))
                 .foregroundStyle(AppColor.textPrimary)
                 .padding(.leading, 8)
 
-            ZStack(alignment: .leading) {
-                if text.wrappedValue.isEmpty {
-                    Text(placeholder)
-                        .foregroundStyle(AppColor.textSubdued)
-                }
-                TextField("", text: text)
-                    .foregroundStyle(AppColor.textPrimary)
-                    .keyboardType(keyboardType)
-                    .focused($focusedField, equals: field)
-            }
-            .font(.system(size: 17, weight: .regular))
-            .padding(.horizontal, 16)
-            .frame(height: 48)
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(AppColor.cardBorder)
+            AddBookTextField(
+                label: "Page number",
+                placeholder: "Enter page number",
+                text: $pageNumber
+            )
+
+            AddBookTextField(
+                label: "Notes",
+                placeholder: "Add a note about this highlight",
+                text: $notes
             )
         }
     }

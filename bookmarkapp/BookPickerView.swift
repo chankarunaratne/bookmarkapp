@@ -589,7 +589,7 @@ private struct SearchResultRow: View {
 
 // MARK: - Custom Text Field
 
-private struct AddBookTextField: View {
+struct AddBookTextField: View {
     let label: String
     let placeholder: String
     @Binding var text: String
