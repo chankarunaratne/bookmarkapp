@@ -179,25 +179,54 @@ struct CustomCameraView: View {
                             .fill(AppColor.cardBorder)
                             .frame(width: 80, height: 80)
                         
-                        Image(systemName: "camera")
+                        Image(systemName: model.permissionIconName)
                             .font(.system(size: 32, weight: .light))
                             .foregroundStyle(AppColor.textSubdued)
                     }
                     
                     VStack(spacing: 10) {
-                        Text("Camera access required")
+                        Text(model.permissionTitle)
                             .font(AppFont.emptyStateTitle)
                             .foregroundStyle(AppColor.textPrimary)
                         
-                        Text("For Rememberly to work properly we need to access your camera so that it can capture the text. Please allow camera access below.")
+                        Text(model.permissionMessage)
                             .font(AppFont.emptyStateBody)
                             .foregroundStyle(AppColor.textSecondary)
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
                     }
+
+                    if model.shouldShowPermissionSteps {
+                        VStack(alignment: .leading, spacing: 14) {
+                            ForEach(Array(model.permissionSteps.enumerated()), id: \.offset) { index, step in
+                                HStack(alignment: .top, spacing: 12) {
+                                    Text("\(index + 1).")
+                                        .font(.system(size: 15, weight: .semibold))
+                                        .foregroundStyle(AppColor.textPrimary)
+                                        .frame(width: 20, alignment: .leading)
+
+                                    Text(step)
+                                        .font(AppFont.emptyStateBody)
+                                        .foregroundStyle(AppColor.textSecondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 18)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .fill(.white.opacity(0.72))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                        .stroke(AppColor.cardBorder, lineWidth: 1)
+                                )
+                        )
+                    }
                     
-                    Button(action: { model.requestCameraAccess() }) {
-                        Text("Allow camera access")
+                    Button(action: { model.handlePermissionCTA() }) {
+                        Text(model.permissionButtonTitle)
                             .font(AppFont.buttonLabel)
                             .foregroundStyle(.white)
                             .frame(height: 36)
@@ -268,10 +297,18 @@ struct LiquidGlassXButton: View {
 }
 
 class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
+    enum CameraPermissionState {
+        case notDetermined
+        case denied
+        case restricted
+        case authorized
+    }
+
     @Published var session = AVCaptureSession()
     @Published var capturedImage: UIImage?
     @Published var cameraAuthorized: Bool
     @Published var isSessionReady: Bool = false
+    @Published var permissionState: CameraPermissionState
     
     private let output = AVCapturePhotoOutput()
     /// Serializes session start/stop and coordinates with `setup()` so a late async completion cannot start the camera after the UI was dismissed.
@@ -280,18 +317,32 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     private var isConfigured = false
     
     override init() {
-        self.cameraAuthorized = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+        let initialStatus = AVCaptureDevice.authorizationStatus(for: .video)
+        self.cameraAuthorized = initialStatus == .authorized
+        self.permissionState = CameraModel.permissionState(for: initialStatus)
         super.init()
     }
     
     func checkPermissions() {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
+        permissionState = Self.permissionState(for: status)
         cameraAuthorized = (status == .authorized)
         if status == .authorized {
             setup()
         }
     }
     
+    func handlePermissionCTA() {
+        switch permissionState {
+        case .notDetermined:
+            requestCameraAccess()
+        case .denied, .restricted:
+            openAppSettings()
+        case .authorized:
+            break
+        }
+    }
+
     func requestCameraAccess() {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
         switch status {
@@ -299,13 +350,12 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
                 DispatchQueue.main.async {
                     self?.cameraAuthorized = granted
+                    self?.permissionState = granted ? .authorized : .denied
                     if granted { self?.setup() }
                 }
             }
         case .denied, .restricted:
-            if let url = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(url)
-            }
+            permissionState = Self.permissionState(for: status)
         default:
             break
         }
@@ -313,11 +363,78 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     
     func recheckAuthorization() {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
+        let nextPermissionState = Self.permissionState(for: status)
+        DispatchQueue.main.async {
+            self.permissionState = nextPermissionState
+            self.cameraAuthorized = (status == .authorized)
+        }
         if status == .authorized && !cameraAuthorized {
-            DispatchQueue.main.async {
-                self.cameraAuthorized = true
-            }
             setup()
+        }
+    }
+
+    var shouldShowPermissionSteps: Bool {
+        permissionState == .denied || permissionState == .restricted
+    }
+
+    var permissionIconName: String {
+        shouldShowPermissionSteps ? "camera.badge.ellipsis" : "camera"
+    }
+
+    var permissionTitle: String {
+        switch permissionState {
+        case .notDetermined:
+            return "Camera access required"
+        case .denied, .restricted:
+            return "Turn on camera access"
+        case .authorized:
+            return "Camera ready"
+        }
+    }
+
+    var permissionMessage: String {
+        switch permissionState {
+        case .notDetermined:
+            return "For Rememberly to work properly we need to access your camera so that it can capture the text. Please allow camera access below."
+        case .denied:
+            return "Camera access is currently off for Rememberly. Update it in Settings, then come back here to keep scanning."
+        case .restricted:
+            return "Camera access is currently unavailable for Rememberly. If this device allows changes, update it in Settings and then return here."
+        case .authorized:
+            return ""
+        }
+    }
+
+    var permissionSteps: [String] {
+        [
+            "Open Settings for Rememberly.",
+            "Turn on Camera access.",
+            "Return to the app.",
+            "Start scanning again."
+        ]
+    }
+
+    var permissionButtonTitle: String {
+        shouldShowPermissionSteps ? "Open Settings" : "Allow camera access"
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
+    }
+
+    private static func permissionState(for status: AVAuthorizationStatus) -> CameraPermissionState {
+        switch status {
+        case .notDetermined:
+            return .notDetermined
+        case .restricted:
+            return .restricted
+        case .denied:
+            return .denied
+        case .authorized:
+            return .authorized
+        @unknown default:
+            return .denied
         }
     }
     
