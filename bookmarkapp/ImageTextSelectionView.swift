@@ -154,7 +154,12 @@ final class TextOverlayView: UIView, UIGestureRecognizerDelegate {
     private var lastRegions: [OCRService.TextRegion]?
     private var needsRebuild = true
 
-    private static let idleTint = UIColor.systemBlue.withAlphaComponent(0.10)
+    private static let idleTint = UIColor(
+        red: 0.96,
+        green: 0.82,
+        blue: 0.34,
+        alpha: 0.22
+    )
     private static let selectedTint = UIColor.systemBlue.withAlphaComponent(0.32)
 
     private let startHandle = SelectionHandleView(type: .start)
