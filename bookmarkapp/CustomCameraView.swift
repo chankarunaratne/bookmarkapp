@@ -439,32 +439,49 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     }
     
     func setup() {
+        DispatchQueue.main.async {
+            self.isSessionReady = false
+        }
+
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
-            guard !self.isConfigured else { return }
+            self.allowsSessionRunning = true
+
+            if self.isConfigured {
+                guard self.allowsSessionRunning else { return }
+                if !self.session.isRunning {
+                    self.session.startRunning()
+                }
+
+                DispatchQueue.main.async {
+                    self.isSessionReady = true
+                }
+                return
+            }
+
             self.isConfigured = true
-            
             self.session.beginConfiguration()
-            
+
             guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
                   let input = try? AVCaptureDeviceInput(device: device) else {
                 self.session.commitConfiguration()
                 self.isConfigured = false
                 return
             }
+
             if self.session.canAddInput(input) {
                 self.session.addInput(input)
             }
-            
+
             if self.session.canAddOutput(self.output) {
                 self.session.addOutput(self.output)
             }
-            
+
             self.session.commitConfiguration()
-            
+
             guard self.allowsSessionRunning else { return }
             self.session.startRunning()
-            
+
             DispatchQueue.main.async {
                 self.isSessionReady = true
             }
@@ -472,6 +489,10 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     }
     
     func stopSession() {
+        DispatchQueue.main.async {
+            self.isSessionReady = false
+        }
+
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             self.allowsSessionRunning = false
