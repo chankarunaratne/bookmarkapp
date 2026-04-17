@@ -13,6 +13,8 @@ struct OCRService {
         let topRight: CGPoint
         let bottomLeft: CGPoint
         let bottomRight: CGPoint
+        let rangeStart: Int
+        let rangeEnd: Int
     }
 
     struct TextRegion {
@@ -90,7 +92,9 @@ struct OCRService {
                     topLeft: box.topLeft,
                     topRight: box.topRight,
                     bottomLeft: box.bottomLeft,
-                    bottomRight: box.bottomRight
+                    bottomRight: box.bottomRight,
+                    rangeStart: fullString.distance(from: fullString.startIndex, to: substringRange.lowerBound),
+                    rangeEnd: fullString.distance(from: fullString.startIndex, to: substringRange.upperBound)
                 ))
             }
         }
@@ -101,7 +105,9 @@ struct OCRService {
                 topLeft: observation.topLeft,
                 topRight: observation.topRight,
                 bottomLeft: observation.bottomLeft,
-                bottomRight: observation.bottomRight
+                bottomRight: observation.bottomRight,
+                rangeStart: 0,
+                rangeEnd: fullString.count
             ))
         }
 

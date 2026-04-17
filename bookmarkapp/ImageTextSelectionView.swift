@@ -29,6 +29,10 @@ struct IndexedWord {
     let topRight: CGPoint
     let bottomLeft: CGPoint
     let bottomRight: CGPoint
+    let lineIndex: Int
+    let lineText: String
+    let rangeStart: Int
+    let rangeEnd: Int
     let globalIndex: Int
 
     var centerY: CGFloat { (topLeft.y + bottomLeft.y) / 2 }
@@ -326,11 +330,15 @@ final class TextOverlayView: UIView, UIGestureRecognizerDelegate {
             let topRight: CGPoint
             let bottomLeft: CGPoint
             let bottomRight: CGPoint
+            let lineIndex: Int
+            let lineText: String
+            let rangeStart: Int
+            let rangeEnd: Int
             let lineCenterY: CGFloat
         }
 
         var rawWords: [RawWord] = []
-        for region in regions {
+        for (lineIndex, region) in regions.enumerated() {
             let lineCY = (region.topLeft.y + region.bottomLeft.y) / 2
             for w in region.words {
                 rawWords.append(RawWord(
@@ -339,6 +347,10 @@ final class TextOverlayView: UIView, UIGestureRecognizerDelegate {
                     topRight: w.topRight,
                     bottomLeft: w.bottomLeft,
                     bottomRight: w.bottomRight,
+                    lineIndex: lineIndex,
+                    lineText: region.text,
+                    rangeStart: w.rangeStart,
+                    rangeEnd: w.rangeEnd,
                     lineCenterY: lineCY
                 ))
             }
@@ -358,6 +370,10 @@ final class TextOverlayView: UIView, UIGestureRecognizerDelegate {
                 topRight: w.topRight,
                 bottomLeft: w.bottomLeft,
                 bottomRight: w.bottomRight,
+                lineIndex: w.lineIndex,
+                lineText: w.lineText,
+                rangeStart: w.rangeStart,
+                rangeEnd: w.rangeEnd,
                 globalIndex: i
             )
         }
@@ -509,13 +525,51 @@ final class TextOverlayView: UIView, UIGestureRecognizerDelegate {
             onSelectionChanged?("")
             return
         }
+
         let lo = min(anchor, end)
         let hi = max(anchor, end)
-        let selected = allWords
-            .filter { $0.globalIndex >= lo && $0.globalIndex <= hi }
-            .map { $0.text }
-            .joined(separator: " ")
-        onSelectionChanged?(selected)
+        let selectedWords = allWords.filter { $0.globalIndex >= lo && $0.globalIndex <= hi }
+        guard !selectedWords.isEmpty else {
+            onSelectionChanged?("")
+            return
+        }
+
+        var segments: [String] = []
+        var currentLineIndex = selectedWords[0].lineIndex
+        var currentLineText = selectedWords[0].lineText
+        var currentStart = selectedWords[0].rangeStart
+        var currentEnd = selectedWords[0].rangeEnd
+
+        for word in selectedWords.dropFirst() {
+            if word.lineIndex == currentLineIndex {
+                currentStart = min(currentStart, word.rangeStart)
+                currentEnd = max(currentEnd, word.rangeEnd)
+                continue
+            }
+
+            if let segment = substring(
+                in: currentLineText,
+                from: currentStart,
+                to: currentEnd
+            ) {
+                segments.append(segment)
+            }
+
+            currentLineIndex = word.lineIndex
+            currentLineText = word.lineText
+            currentStart = word.rangeStart
+            currentEnd = word.rangeEnd
+        }
+
+        if let segment = substring(
+            in: currentLineText,
+            from: currentStart,
+            to: currentEnd
+        ) {
+            segments.append(segment)
+        }
+
+        onSelectionChanged?(segments.joined(separator: "\n"))
     }
 
     private func clearSelection() {
@@ -569,5 +623,12 @@ final class TextOverlayView: UIView, UIGestureRecognizerDelegate {
     private func hideSelectionHandles() {
         startHandle.isHidden = true
         endHandle.isHidden = true
+    }
+
+    private func substring(in text: String, from start: Int, to end: Int) -> String? {
+        guard start >= 0, end >= start, end <= text.count else { return nil }
+        let startIndex = text.index(text.startIndex, offsetBy: start)
+        let endIndex = text.index(text.startIndex, offsetBy: end)
+        return String(text[startIndex..<endIndex])
     }
 }
