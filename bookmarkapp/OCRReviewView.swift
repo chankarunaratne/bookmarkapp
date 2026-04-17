@@ -65,13 +65,7 @@ struct OCRReviewView: View {
                     }
                 }
             } else {
-                ImageTextSelectionView(
-                    image: image,
-                    regions: regions,
-                    selectedText: $selectedText,
-                    hasSelection: $hasSelection
-                )
-                .ignoresSafeArea(edges: .bottom)
+                selectionContent
 
                 if hasSelection,
                    !selectedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -192,6 +186,48 @@ struct OCRReviewView: View {
 
             Spacer()
         }
+    }
+
+    private var selectionContent: some View {
+        GeometryReader { geometry in
+            let horizontalPadding: CGFloat = 16
+            let availableWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
+            let imageAspectRatio = image.size.width / max(image.size.height, 1)
+            let fittedHeight = availableWidth / max(imageAspectRatio, 0.01)
+            let maxStageHeight = max(geometry.size.height - 220, 240)
+            let stageHeight = min(fittedHeight, maxStageHeight)
+
+            VStack(spacing: 14) {
+                Text("Tap and hold to select text")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(AppColor.textSubdued)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 12)
+
+                ZStack {
+                    Color.black
+
+                    ImageTextSelectionView(
+                        image: image,
+                        regions: regions,
+                        selectedText: $selectedText,
+                        hasSelection: $hasSelection
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: stageHeight)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.26), radius: 18, x: 0, y: 8)
+            }
+            .padding(.horizontal, horizontalPadding)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        }
+        .ignoresSafeArea(edges: .bottom)
     }
 
     private func runOCR() async {
