@@ -1,0 +1,23 @@
+{
+  "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/BookPickerView.swift" : {
+    "const-values" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BookPickerView.swiftconstvalues",
+    "dependencies" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BookPickerView.d",
+    "diagnostics" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BookPickerView.dia",
+    "object" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BookPickerView.o",
+    "swift-dependencies" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BookPickerView.swiftdeps"
+  },
+  "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/BooksViews.swift" : {
+    "const-values" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BooksViews.swiftconstvalues",
+    "dependencies" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BooksViews.d",
+    "diagnostics" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BooksViews.dia",
+    "object" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BooksViews.o",
+    "swift-dependencies" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/BooksViews.swiftdeps"
+  },
+  "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/bookmarkappApp.swift" : {
+    "const-values" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/bookmarkappApp.swiftconstvalues",
+    "dependencies" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/bookmarkappApp.d",
+    "diagnostics" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/bookmarkappApp.dia",
+    "object" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/bookmarkappApp.o",
+    "swift-dependencies" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex/bookmarkapp.build/Debug-iphonesimulator/bookmarkapp.build/Objects-normal/x86_64/bookmarkappApp.swiftdeps"
+  }
+}

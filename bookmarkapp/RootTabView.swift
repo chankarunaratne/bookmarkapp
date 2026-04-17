@@ -21,6 +21,7 @@ struct RootTabView: View {
     @State private var ocrImageItem: OCRImageItem?
     @State private var showHighlightToast: Bool = false
     @State private var pendingHighlightToast: Bool = false
+    @State private var pendingCameraRetake: Bool = false
     
     var body: some View {
         ZStack {
@@ -55,6 +56,10 @@ struct RootTabView: View {
             }
         }
         .fullScreenCover(item: $ocrImageItem, onDismiss: {
+            if pendingCameraRetake {
+                pendingCameraRetake = false
+                showCamera = true
+            }
             if pendingHighlightToast {
                 pendingHighlightToast = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
@@ -69,8 +74,8 @@ struct RootTabView: View {
                 OCRReviewView(
                     image: item.image,
                     onRescan: {
+                        pendingCameraRetake = true
                         ocrImageItem = nil
-                        showCamera = true
                     }
                 )
             }
@@ -85,4 +90,3 @@ struct RootTabView: View {
     RootTabView()
         .modelContainer(for: [Book.self, Quote.self], inMemory: true)
 }
-

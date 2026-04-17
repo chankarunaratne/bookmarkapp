@@ -1,0 +1,1 @@
+@rpath/bookmarkapp.debug.dylib

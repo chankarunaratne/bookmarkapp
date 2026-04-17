@@ -395,6 +395,7 @@ struct BookDetailView: View {
     @State private var ocrImageItem: OCRImageItem?
     @State private var showHighlightToast: Bool = false
     @State private var pendingHighlightToast: Bool = false
+    @State private var pendingCameraRetake: Bool = false
     
     private var sortedQuotes: [Quote] {
         book.quotes.sorted { $0.createdAt > $1.createdAt }
@@ -540,6 +541,10 @@ struct BookDetailView: View {
             }
         }
         .fullScreenCover(item: $ocrImageItem, onDismiss: {
+            if pendingCameraRetake {
+                pendingCameraRetake = false
+                showCamera = true
+            }
             if pendingHighlightToast {
                 pendingHighlightToast = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
@@ -554,8 +559,8 @@ struct BookDetailView: View {
                 OCRReviewView(
                     image: item.image,
                     onRescan: {
+                        pendingCameraRetake = true
                         ocrImageItem = nil
-                        showCamera = true
                     },
                     preselectedBook: book
                 )

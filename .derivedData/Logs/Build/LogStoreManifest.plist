@@ -5,6 +5,49 @@
 	<key>logFormatVersion</key>
 	<integer>12</integer>
 	<key>logs</key>
-	<dict/>
+	<dict>
+		<key>5BAF24FB-CF1F-464B-A5AB-D6C2A94C47F1</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>5BAF24FB-CF1F-464B-A5AB-D6C2A94C47F1.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>E</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>1</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>bookmarkapp project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>bookmarkapp</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project bookmarkapp with scheme bookmarkapp</string>
+			<key>timeStartedRecording</key>
+			<real>798152476.12153602</real>
+			<key>timeStoppedRecording</key>
+			<real>798152484.24779904</real>
+			<key>title</key>
+			<string>Building project bookmarkapp with scheme bookmarkapp</string>
+			<key>uniqueIdentifier</key>
+			<string>5BAF24FB-CF1F-464B-A5AB-D6C2A94C47F1</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
