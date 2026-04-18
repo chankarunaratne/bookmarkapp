@@ -30,7 +30,7 @@ struct MyBooksView: View {
                         VStack(alignment: .leading, spacing: 0) {
                             LazyVGrid(columns: gridColumns, spacing: 14) {
                                 ForEach(filtered) { book in
-                                    NavigationLink(destination: BookDetailView(book: book)) {
+                                    NavigationLink(value: book) {
                                         LibraryBookCardView(book: book)
                                     }
                                     .buttonStyle(.plain)
@@ -43,6 +43,9 @@ struct MyBooksView: View {
                     }
                     .background(Color.white.ignoresSafeArea())
                 }
+            }
+            .navigationDestination(for: Book.self) { book in
+                BookDetailView(book: book)
             }
             .navigationTitle("My library")
             .toolbarTitleDisplayMode(.inlineLarge)
@@ -322,7 +325,7 @@ struct BooksListView: View {
                         }
                     } else {
                         ForEach(filtered) { book in
-                            NavigationLink(destination: BookDetailView(book: book)) {
+                            NavigationLink(value: book) {
                                 BookTileView(book: book)
                             }
                             .buttonStyle(.plain)
@@ -344,7 +347,7 @@ struct BookTileWithActions: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            NavigationLink(destination: BookDetailView(book: book)) {
+            NavigationLink(value: book) {
                 BookTileView(book: book)
             }
             .buttonStyle(.plain)
@@ -472,7 +475,7 @@ struct BookDetailView: View {
                                         .padding(.horizontal, 20)
                                 }
                                 
-                                NavigationLink(destination: QuoteDetailView(quote: quote)) {
+                                NavigationLink(value: quote) {
                                     QuoteRowView(quote: quote, onDelete: {
                                         quotePendingDeletion = quote
                                         isShowingDeleteConfirm = true
@@ -489,6 +492,9 @@ struct BookDetailView: View {
                 .frame(minHeight: sortedQuotes.isEmpty ? geometry.size.height : nil, alignment: .top)
                 .padding(.bottom, sortedQuotes.isEmpty ? 0 : 40)
             }
+        }
+        .navigationDestination(for: Quote.self) { quote in
+            QuoteDetailView(quote: quote)
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)

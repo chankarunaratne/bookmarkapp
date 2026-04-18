@@ -62,6 +62,12 @@ struct ContentView: View {
                     }
                 }
             }
+            .navigationDestination(for: Book.self) { book in
+                BookDetailView(book: book)
+            }
+            .navigationDestination(for: Quote.self) { quote in
+                QuoteDetailView(quote: quote)
+            }
             .navigationTitle("Home")
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
@@ -179,7 +185,7 @@ private struct HomeContentView: View {
                     
                     VStack(spacing: 20) {
                         ForEach(highlights, id: \.quote.id) { item in
-                            NavigationLink(destination: QuoteDetailView(quote: item.quote)) {
+                            NavigationLink(value: item.quote) {
                                 RecentHighlightCardView(
                                     book: item.book,
                                     quoteText: item.quote.text,
@@ -266,7 +272,7 @@ private struct RecentBooksCarouselView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(books) { book in
-                        NavigationLink(destination: BookDetailView(book: book)) {
+                        NavigationLink(value: book) {
                             RecentBookCardView(book: book)
                         }
                         .buttonStyle(.plain)
@@ -286,7 +292,7 @@ private struct RecentBooksCarouselView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(books) { book in
-                        NavigationLink(destination: BookDetailView(book: book)) {
+                        NavigationLink(value: book) {
                             RecentBookCardView(book: book)
                         }
                         .buttonStyle(.plain)
