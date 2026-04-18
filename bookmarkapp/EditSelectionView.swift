@@ -89,7 +89,8 @@ struct EditSelectionView: View {
             AddBookTextField(
                 label: "Page number",
                 placeholder: "Enter page number",
-                text: $pageNumber
+                text: $pageNumber,
+                keyboardType: .numbersAndPunctuation
             )
 
             AddBookTextField(

@@ -731,7 +731,7 @@ private struct QuoteRowView: View {
                 .font(.system(size: 18, weight: .regular, design: .serif))
                 .foregroundStyle(AppColor.textMuted) // #36394A
                 .lineSpacing(8) // ~32pt line height for 18pt text
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(5)
         }
     }
 }

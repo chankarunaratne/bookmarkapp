@@ -594,6 +594,7 @@ struct AddBookTextField: View {
     let placeholder: String
     @Binding var text: String
     var autocapitalization: TextInputAutocapitalization = .sentences
+    var keyboardType: UIKeyboardType = .default
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -610,6 +611,7 @@ struct AddBookTextField: View {
                 TextField("", text: $text)
                     .foregroundStyle(AppColor.textPrimary)
                     .textInputAutocapitalization(autocapitalization)
+                    .keyboardType(keyboardType)
             }
             .font(.system(size: 17, weight: .regular))
             .padding(.horizontal, 16)
