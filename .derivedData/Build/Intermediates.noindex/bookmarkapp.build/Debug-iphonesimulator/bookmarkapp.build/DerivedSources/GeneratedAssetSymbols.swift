@@ -79,6 +79,9 @@ extension DeveloperToolsSupport.ImageResource {
     /// The "tabbar-library" asset catalog image resource.
     static let tabbarLibrary = DeveloperToolsSupport.ImageResource(name: "tabbar-library", bundle: resourceBundle)
 
+    /// The "welcome-mockup" asset catalog image resource.
+    static let welcomeMockup = DeveloperToolsSupport.ImageResource(name: "welcome-mockup", bundle: resourceBundle)
+
 }
 
 // MARK: - Color Symbol Extensions -
@@ -262,6 +265,15 @@ extension AppKit.NSImage {
 #endif
     }
 
+    /// The "welcome-mockup" asset catalog image.
+    static var welcomeMockup: AppKit.NSImage {
+#if !targetEnvironment(macCatalyst)
+        .init(resource: .welcomeMockup)
+#else
+        .init()
+#endif
+    }
+
 }
 #endif
 
@@ -409,6 +421,15 @@ extension UIKit.UIImage {
     static var tabbarLibrary: UIKit.UIImage {
 #if !os(watchOS)
         .init(resource: .tabbarLibrary)
+#else
+        .init()
+#endif
+    }
+
+    /// The "welcome-mockup" asset catalog image.
+    static var welcomeMockup: UIKit.UIImage {
+#if !os(watchOS)
+        .init(resource: .welcomeMockup)
 #else
         .init()
 #endif

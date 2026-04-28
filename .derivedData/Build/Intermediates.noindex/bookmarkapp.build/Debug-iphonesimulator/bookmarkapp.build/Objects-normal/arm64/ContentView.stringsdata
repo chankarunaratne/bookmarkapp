@@ -1,0 +1,88 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/ContentView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Home",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save your first highlight",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scan some text and save it to a book.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save a highlight",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "My library",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 159
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recent highlights",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 181
+        }
+      },
+      {
+        "comment": "",
+        "key": "No highlights yet",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 217
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scan a page to save your first highlight.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 221
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save a highlight",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 229
+        }
+      },
+      {
+        "comment": "",
+        "key": "“%@”",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 487
+        }
+      }
+    ]
+  },
+  "version": 1
+}

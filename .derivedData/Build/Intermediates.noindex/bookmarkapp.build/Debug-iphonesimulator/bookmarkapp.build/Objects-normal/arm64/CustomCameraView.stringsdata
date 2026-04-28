@@ -1,0 +1,24 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/CustomCameraView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Camera",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld.",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 203
+        }
+      }
+    ]
+  },
+  "version": 1
+}

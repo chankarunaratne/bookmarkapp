@@ -13,13 +13,26 @@ import UIKit
 
 @main
 struct bookmarkappApp: App {
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+
     init() {
+        #if DEBUG
+        UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+        #endif
         configureTabBarAppearance()
     }
 
     var body: some Scene {
         WindowGroup {
-            RootTabView()
+            if hasCompletedOnboarding {
+                RootTabView()
+            } else {
+                WelcomeView {
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        hasCompletedOnboarding = true
+                    }
+                }
+            }
         }
         .modelContainer(for: [Book.self, Quote.self])
     }

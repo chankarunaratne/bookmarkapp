@@ -1,0 +1,400 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/BooksViews.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "My library",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 50
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add new book",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Create your first book",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "This is where your books will live. Create a\nbook to save and group your highlights.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 97
+        }
+      },
+      {
+        "comment": "",
+        "key": "Create a book",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "No books yet. Use Save flow to create one.",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 317
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search books",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 298
+        }
+      },
+      {
+        "comment": "",
+        "key": "MY BOOKS",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 305
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 310
+        }
+      },
+      {
+        "comment": "",
+        "key": "Book actions",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 366
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete this book?",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 379
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rename",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 367
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 370
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 380
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 383
+        }
+      },
+      {
+        "comment": "",
+        "key": "This will delete the book and all of its quotes. This action cannot be undone.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 385
+        }
+      },
+      {
+        "comment": "",
+        "key": "No highlights yet",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 416
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scan a page to save your first highlight.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 420
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save a highlight",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 428
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete this quote?",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 521
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete this book?",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 534
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete book",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 514
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 522
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 528
+        }
+      },
+      {
+        "comment": "",
+        "key": "This will delete the quote permanently. This action cannot be undone.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 532
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 535
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 539
+        }
+      },
+      {
+        "comment": "",
+        "key": "This will permanently delete the book and all of its highlights. This action cannot be undone.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 541
+        }
+      },
+      {
+        "comment": "",
+        "key": "No highlights yet",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 609
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld highlight%@",
+        "location": {
+          "startingColumn": 72,
+          "startingLine": 609
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 704
+        }
+      },
+      {
+        "comment": "",
+        "key": "Copy",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 710
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 718
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete this quote?",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 826
+        }
+      },
+      {
+        "comment": "",
+        "key": "Page %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 770
+        }
+      },
+      {
+        "comment": "",
+        "key": "Copy",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 805
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 813
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 819
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 827
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 836
+        }
+      },
+      {
+        "comment": "",
+        "key": "This will delete the quote permanently. This action cannot be undone.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 838
+        }
+      },
+      {
+        "comment": "",
+        "key": "@rememberlyapp",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 909
+        }
+      },
+      {
+        "comment": "",
+        "key": "“%@”",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 902
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1102
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rename Book",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1160
+        }
+      },
+      {
+        "comment": "",
+        "key": "Title",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1155
+        }
+      },
+      {
+        "comment": "",
+        "key": "Book title",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 1156
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 1164
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 1169
+        }
+      }
+    ]
+  },
+  "version": 1
+}

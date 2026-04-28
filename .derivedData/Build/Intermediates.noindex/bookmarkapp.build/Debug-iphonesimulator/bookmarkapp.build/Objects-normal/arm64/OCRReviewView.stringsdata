@@ -1,0 +1,88 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/OCRReviewView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Select highlight",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "Just a moment...",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 24
+        }
+      },
+      {
+        "comment": "",
+        "key": "There was an error scanning your page.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 36
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scan Book",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 54
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "Retake photo",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "No text found",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 151
+        }
+      },
+      {
+        "comment": "",
+        "key": "We couldn't read any text in the image. Please try again. Make sure you're in a well lit place and focus the page well in the view.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 156
+        }
+      },
+      {
+        "comment": "",
+        "key": "Try again",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 170
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tap and hold to select text",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 201
+        }
+      }
+    ]
+  },
+  "version": 1
+}

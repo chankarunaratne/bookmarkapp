@@ -1,0 +1,152 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/BookPickerView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Select book",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "No books yet. Add a new book to get started",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 44
+        }
+      },
+      {
+        "comment": "",
+        "key": "No books matching \"%@\"",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 52
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add new",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add quote to %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 195
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 212
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 216
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add book",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 303
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 288
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 289
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add manually",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 290
+        }
+      },
+      {
+        "comment": "",
+        "key": "No results found",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 361
+        }
+      },
+      {
+        "comment": "",
+        "key": "Try a different search or add your book manually",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 364
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cover color",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 469
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 575
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 611
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search to auto-fill book details",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 667
+        }
+      },
+      {
+        "comment": "",
+        "key": "Get the real cover, title, and author automatically",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 671
+        }
+      }
+    ]
+  },
+  "version": 1
+}

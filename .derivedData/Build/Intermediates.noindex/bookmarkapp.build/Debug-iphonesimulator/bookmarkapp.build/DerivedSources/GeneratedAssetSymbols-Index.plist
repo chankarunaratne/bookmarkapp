@@ -166,6 +166,16 @@
 			<key>swiftSymbol</key>
 			<string>tabbarLibrary</string>
 		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/chandima/Desktop/bookmarkapp/bookmarkapp/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameWelcomeMockup</string>
+			<key>relativePath</key>
+			<string>./welcome-mockup.imageset</string>
+			<key>swiftSymbol</key>
+			<string>welcomeMockup</string>
+		</dict>
 	</array>
 	<key>symbols</key>
 	<array/>

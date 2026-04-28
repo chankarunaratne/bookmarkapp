@@ -1,0 +1,32 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/RootTabView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Home",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "My library",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 36
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add highlight",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 40
+        }
+      }
+    ]
+  },
+  "version": 1
+}

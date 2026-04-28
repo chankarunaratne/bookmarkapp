@@ -1,0 +1,32 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/WelcomeView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Never lose a great\nhighlight again",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 34
+        }
+      },
+      {
+        "comment": "",
+        "key": "Capture, organize, and revisit the\npassages that matter most.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 47
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start saving highlights",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 73
+        }
+      }
+    ]
+  },
+  "version": 1
+}
