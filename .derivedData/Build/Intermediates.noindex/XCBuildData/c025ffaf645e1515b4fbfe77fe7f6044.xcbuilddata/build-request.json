@@ -16,24 +16,16 @@
   "hideShellScriptEnvironment" : false,
   "parameters" : {
     "action" : "build",
-    "activeArchitecture" : "undefined_arch",
+    "activeArchitecture" : "arm64",
     "activeRunDestination" : {
-      "disableOnlyActiveArch" : true,
-      "platform" : "iphoneos",
-      "sdk" : "iphoneos26.2",
-      "sdkVariant" : "iphoneos",
+      "disableOnlyActiveArch" : false,
+      "platform" : "iphonesimulator",
+      "sdk" : "iphonesimulator26.2",
+      "sdkVariant" : "iphonesimulator",
       "supportedArchitectures" : [
-        "armv4t",
-        "armv5",
-        "armv6",
-        "armv7",
-        "armv7f",
-        "armv7s",
-        "armv7k",
-        "arm64",
-        "arm64e"
+        "arm64"
       ],
-      "targetArchitecture" : "undefined_arch"
+      "targetArchitecture" : "arm64"
     },
     "arenaInfo" : {
       "buildIntermediatesPath" : "/Users/chandima/Desktop/bookmarkapp/.derivedData/Build/Intermediates.noindex",
@@ -54,9 +46,17 @@
       "synthesized" : {
         "table" : {
           "ACTION" : "build",
+          "ASSETCATALOG_FILTER_FOR_DEVICE_MODEL" : "iPhone17,1",
+          "ASSETCATALOG_FILTER_FOR_DEVICE_OS_VERSION" : "26.0",
+          "ASSETCATALOG_FILTER_FOR_THINNING_DEVICE_CONFIGURATION" : "iPhone17,1",
+          "BUILD_ACTIVE_RESOURCES_ONLY" : "YES",
           "ENABLE_PREVIEWS" : "NO",
           "ENABLE_XOJIT_PREVIEWS" : "YES",
-          "ONLY_ACTIVE_ARCH" : "YES"
+          "ONLY_ACTIVE_ARCH" : "YES",
+          "TARGET_DEVICE_IDENTIFIER" : "1AE6C41B-D3DC-41A6-9CEC-1A9DE6FCAE24",
+          "TARGET_DEVICE_MODEL" : "iPhone17,1",
+          "TARGET_DEVICE_OS_VERSION" : "26.0",
+          "TARGET_DEVICE_PLATFORM_NAME" : "iphonesimulator"
         }
       }
     }

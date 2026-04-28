@@ -54,6 +54,9 @@ static NSString * const ACImageNameTabbarHome AC_SWIFT_PRIVATE = @"tabbar-home";
 /// The "tabbar-library" asset catalog image resource.
 static NSString * const ACImageNameTabbarLibrary AC_SWIFT_PRIVATE = @"tabbar-library";
 
+/// The "welcome-mock" asset catalog image resource.
+static NSString * const ACImageNameWelcomeMock AC_SWIFT_PRIVATE = @"welcome-mock";
+
 /// The "welcome-mockup" asset catalog image resource.
 static NSString * const ACImageNameWelcomeMockup AC_SWIFT_PRIVATE = @"welcome-mockup";
 

@@ -32,7 +32,7 @@ struct WelcomeView: View {
 
             // Heading
             Text("Never lose a great\nhighlight again")
-                .font(.system(size: 28, weight: .bold, design: .default))
+                .font(.custom("Newsreader-Bold", size: 28))
                 .foregroundStyle(AppColor.textLoud)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
@@ -56,12 +56,23 @@ struct WelcomeView: View {
             Spacer()
                 .frame(height: 32)
 
-            // Mockup image
+            // Mockup image — wider, clipped at bottom with gradient fade
             Image("welcome-mock")
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: 280)
-                .shadow(color: .black.opacity(0.08), radius: 16, x: 0, y: 8)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 28)
+                .mask(
+                    VStack(spacing: 0) {
+                        Rectangle()
+                        LinearGradient(
+                            colors: [.white, .clear],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 80)
+                    }
+                )
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 20)
                 .animation(.easeOut(duration: 0.6).delay(0.4), value: appeared)
@@ -89,7 +100,7 @@ struct WelcomeView: View {
             .animation(.easeOut(duration: 0.5).delay(0.55), value: appeared)
 
             Spacer()
-                .frame(height: 48)
+                .frame(height: 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.white.ignoresSafeArea())

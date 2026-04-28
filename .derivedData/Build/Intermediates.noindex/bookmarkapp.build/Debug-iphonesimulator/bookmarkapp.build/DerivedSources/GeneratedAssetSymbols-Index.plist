@@ -170,6 +170,16 @@
 			<key>catalogPath</key>
 			<string>/Users/chandima/Desktop/bookmarkapp/bookmarkapp/Assets.xcassets</string>
 			<key>objcSymbol</key>
+			<string>ACImageNameWelcomeMock</string>
+			<key>relativePath</key>
+			<string>./welcome-mock.imageset</string>
+			<key>swiftSymbol</key>
+			<string>welcomeMock</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/chandima/Desktop/bookmarkapp/bookmarkapp/Assets.xcassets</string>
+			<key>objcSymbol</key>
 			<string>ACImageNameWelcomeMockup</string>
 			<key>relativePath</key>
 			<string>./welcome-mockup.imageset</string>

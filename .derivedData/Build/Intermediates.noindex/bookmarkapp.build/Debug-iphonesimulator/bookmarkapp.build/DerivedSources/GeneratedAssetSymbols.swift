@@ -79,6 +79,9 @@ extension DeveloperToolsSupport.ImageResource {
     /// The "tabbar-library" asset catalog image resource.
     static let tabbarLibrary = DeveloperToolsSupport.ImageResource(name: "tabbar-library", bundle: resourceBundle)
 
+    /// The "welcome-mock" asset catalog image resource.
+    static let welcomeMock = DeveloperToolsSupport.ImageResource(name: "welcome-mock", bundle: resourceBundle)
+
     /// The "welcome-mockup" asset catalog image resource.
     static let welcomeMockup = DeveloperToolsSupport.ImageResource(name: "welcome-mockup", bundle: resourceBundle)
 
@@ -265,6 +268,15 @@ extension AppKit.NSImage {
 #endif
     }
 
+    /// The "welcome-mock" asset catalog image.
+    static var welcomeMock: AppKit.NSImage {
+#if !targetEnvironment(macCatalyst)
+        .init(resource: .welcomeMock)
+#else
+        .init()
+#endif
+    }
+
     /// The "welcome-mockup" asset catalog image.
     static var welcomeMockup: AppKit.NSImage {
 #if !targetEnvironment(macCatalyst)
@@ -421,6 +433,15 @@ extension UIKit.UIImage {
     static var tabbarLibrary: UIKit.UIImage {
 #if !os(watchOS)
         .init(resource: .tabbarLibrary)
+#else
+        .init()
+#endif
+    }
+
+    /// The "welcome-mock" asset catalog image.
+    static var welcomeMock: UIKit.UIImage {
+#if !os(watchOS)
+        .init(resource: .welcomeMock)
 #else
         .init()
 #endif
