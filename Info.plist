@@ -4,7 +4,10 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Fonts/Newsreader-Bold.ttf</string>
+		<string>Fonts/Newsreader_24pt-Regular.ttf</string>
+		<string>Fonts/Newsreader_24pt-Medium.ttf</string>
+		<string>Fonts/Newsreader_24pt-Bold.ttf</string>
+		<string>Fonts/Newsreader_24pt-ExtraBold.ttf</string>
 	</array>
 </dict>
 </plist>

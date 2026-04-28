@@ -32,7 +32,7 @@ struct WelcomeView: View {
 
             // Heading
             Text("Never lose a great\nhighlight again")
-                .font(.custom("Newsreader-Bold", size: 28))
+                .font(.custom("Newsreader24pt-Bold", size: 24))
                 .foregroundStyle(AppColor.textLoud)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
@@ -56,12 +56,12 @@ struct WelcomeView: View {
             Spacer()
                 .frame(height: 32)
 
-            // Mockup image — wider, clipped at bottom with gradient fade
+            // Mockup image — sized to match subtitle width, clipped at bottom with gradient fade
             Image("welcome-mock")
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 28)
+                .padding(.horizontal, 20)
                 .mask(
                     VStack(spacing: 0) {
                         Rectangle()
@@ -70,7 +70,7 @@ struct WelcomeView: View {
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: 80)
+                        .frame(height: 60)
                     }
                 )
                 .opacity(appeared ? 1 : 0)
