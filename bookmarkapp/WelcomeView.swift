@@ -31,11 +31,13 @@ struct WelcomeView: View {
                 .frame(height: 28)
 
             // Heading
-            Text("Never lose a great\nhighlight again")
-                .font(.custom("Newsreader24pt-Bold", size: 24))
+            Text("Welcome to Rememberly")
+                .font(.custom("Newsreader24pt-Regular", size: 24))
                 .foregroundStyle(AppColor.textLoud)
                 .multilineTextAlignment(.center)
-                .lineSpacing(4)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .allowsTightening(true)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 12)
                 .animation(.easeOut(duration: 0.5).delay(0.2), value: appeared)
@@ -44,11 +46,13 @@ struct WelcomeView: View {
                 .frame(height: 8)
 
             // Subheading
-            Text("Save highlights from any physical book\nyou own. It's free and always will be.")
+            Text("Save highlights from any physical book")
                 .font(AppFont.emptyStateBody)
                 .foregroundStyle(AppColor.textSecondary)
                 .multilineTextAlignment(.center)
-                .lineSpacing(4)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .allowsTightening(true)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 12)
                 .animation(.easeOut(duration: 0.5).delay(0.3), value: appeared)
@@ -56,7 +60,7 @@ struct WelcomeView: View {
             Spacer()
                 .frame(height: 32)
 
-            // Mockup image — sized to match subtitle width, clipped at bottom with gradient fade
+            // Mockup image — sized to match subtitle width with a soft bottom fade.
             Image("welcome-mock")
                 .resizable()
                 .scaledToFit()
@@ -70,7 +74,7 @@ struct WelcomeView: View {
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: 60)
+                        .frame(height: 72)
                     }
                 )
                 .opacity(appeared ? 1 : 0)
