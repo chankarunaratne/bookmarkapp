@@ -16,7 +16,7 @@ colors:
   icon-default: "#404040"
   border-subtle: "#ECEFF3"
   border-strong: "#DFE1E7"
-  button-dark: "#1B1D20"
+  button-tint: "#007AFF"
   accent-gold: "#EBC658"
   accent-success: "#4CB14F"
   badge-rose: "#DBC1C1"
@@ -176,21 +176,19 @@ components:
     rounded: "{rounded.4xl}"
     padding: 24px
   button-primary:
-    backgroundColor: "{colors.button-dark}"
-    textColor: "{colors.surface}"
+    nativeStyle: "SwiftUI .glassProminent on iOS 26; .borderedProminent fallback"
+    tint: "{colors.button-tint}"
     typography: "{typography.label-button}"
     rounded: "{rounded.full}"
     height: 48px
     padding: 0 20px
-    shadow: "{shadows.button}"
   button-primary-compact:
-    backgroundColor: "{colors.button-dark}"
-    textColor: "{colors.surface}"
+    nativeStyle: "SwiftUI .glassProminent on iOS 26; .borderedProminent fallback"
+    tint: "{colors.button-tint}"
     typography: "{typography.label-button}"
     rounded: "{rounded.full}"
     height: 36px
     padding: 0 20px
-    shadow: "{shadows.button}"
   button-icon-glass:
     backgroundColor: "rgba(255, 255, 255, 0.15)"
     textColor: "{colors.surface}"
@@ -308,5 +306,5 @@ The capture flow lives in a black environment with bright white controls and lar
 - Do rely on rounded shapes, subtle borders, and soft shadows instead of heavy contrast blocks.
 - Don't introduce highly saturated brand colors across the general UI chrome.
 - Don't treat quotes like social feed content; they should read as excerpts from a page.
-- Don't replace the dark capsule CTA style with bright filled buttons on standard screens.
+- Use iOS system blue (`#007AFF`) for primary capsule CTAs on standard screens.
 - Don't make metadata compete with titles or quote text.

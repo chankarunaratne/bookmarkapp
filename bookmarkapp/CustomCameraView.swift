@@ -228,18 +228,11 @@ struct CustomCameraView: View {
                     Button(action: { model.handlePermissionCTA() }) {
                         Text(model.permissionButtonTitle)
                             .font(AppFont.buttonLabel)
-                            .foregroundStyle(.white)
                             .frame(height: 36)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 6)
-                            .background(
-                                Capsule()
-                                    .fill(AppColor.buttonDark)
-                                    .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
-                                    .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
-                            )
                     }
-                    .buttonStyle(.plain)
+                    .appPrimaryButtonStyle()
                 }
                 .padding(.horizontal, 40)
                 

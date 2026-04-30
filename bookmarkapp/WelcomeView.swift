@@ -87,24 +87,17 @@ struct WelcomeView: View {
             Button(action: onGetStarted) {
                 Text("Start saving highlights")
                     .font(AppFont.buttonLabel)
-                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(
-                        Capsule()
-                            .fill(AppColor.buttonDark)
-                            .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
-                            .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
-                    )
             }
-            .buttonStyle(.plain)
+            .appPrimaryButtonStyle()
             .padding(.horizontal, 20)
             .opacity(appeared ? 1 : 0)
             .offset(y: appeared ? 0 : 16)
             .animation(.easeOut(duration: 0.5).delay(0.55), value: appeared)
 
             Spacer()
-                .frame(height: 20)
+                .frame(height: 16)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.white.ignoresSafeArea())

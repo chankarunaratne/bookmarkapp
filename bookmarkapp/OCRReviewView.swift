@@ -79,19 +79,12 @@ struct OCRReviewView: View {
                         } label: {
                             Text("Next")
                                 .font(AppFont.buttonLabel)
-                                .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 48)
-                                .background(
-                                    Capsule()
-                                        .fill(AppColor.buttonDark)
-                                        .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
-                                        .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
-                                )
                         }
-                        .buttonStyle(.plain)
+                        .appPrimaryButtonStyle()
                         .padding(.horizontal, 20)
-                        .padding(.bottom, 34)
+                        .padding(.bottom, 16)
                     }
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .animation(.easeInOut, value: hasSelection)
@@ -169,18 +162,11 @@ struct OCRReviewView: View {
                 } label: {
                     Text("Try again")
                         .font(AppFont.buttonLabel)
-                        .foregroundStyle(.white)
                         .frame(height: 36)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 6)
-                        .background(
-                            Capsule()
-                                .fill(AppColor.buttonDark)
-                                .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
-                                .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
-                        )
                 }
-                .buttonStyle(.plain)
+                .appPrimaryButtonStyle()
             }
             .padding(.horizontal, 40)
 

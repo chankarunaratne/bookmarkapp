@@ -72,8 +72,8 @@ enum AppColor {
     /// Stronger card border – #DFE1E7 (used for quote cards)
     static let cardBorderStrong = Color(red: 0.875, green: 0.882, blue: 0.906)
     
-    /// Dark button fill – #1B1D20 (used for CTA buttons)
-    static let buttonDark = Color(red: 0.106, green: 0.114, blue: 0.125)
+    /// iOS system blue tint – #007AFF (used for primary CTA buttons)
+    static let buttonTint = Color(red: 0.000, green: 0.478, blue: 1.000)
     
     /// Gold accent – #EBC658 at 80% opacity (used for floating Add button)
     static let addButtonGold = Color(red: 235.0 / 255.0, green: 198.0 / 255.0, blue: 88.0 / 255.0)
@@ -86,6 +86,30 @@ enum AppColor {
     
     /// Text/Muted [600] – #36394A (used for quote body text)
     static let textMuted = Color(red: 0.212, green: 0.224, blue: 0.290)
+}
+
+// MARK: - Native Button Styles
+
+private struct AppPrimaryButtonModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .buttonStyle(.glassProminent)
+                .buttonBorderShape(.capsule)
+                .tint(AppColor.buttonTint)
+        } else {
+            content
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .tint(AppColor.buttonTint)
+        }
+    }
+}
+
+extension View {
+    func appPrimaryButtonStyle() -> some View {
+        modifier(AppPrimaryButtonModifier())
+    }
 }
 
 /// Shared gradients derived from the Figma design.

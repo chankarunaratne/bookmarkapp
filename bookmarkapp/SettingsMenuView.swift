@@ -90,15 +90,10 @@ struct SettingsMenuView: View {
             } label: {
                 Text("Share")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white)
                     .padding(.horizontal, 18)
                     .padding(.vertical, 9)
-                    .background(
-                        Capsule()
-                            .fill(AppColor.buttonDark)
-                    )
             }
-            .buttonStyle(.plain)
+            .appPrimaryButtonStyle()
         }
         .padding(16)
         .background(

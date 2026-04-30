@@ -110,17 +110,10 @@ struct EditSelectionView: View {
         } label: {
             Text("Select book")
                 .font(AppFont.buttonLabel)
-                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(
-                    Capsule()
-                        .fill(isSaveDisabled ? AppColor.textSubdued : AppColor.buttonDark)
-                        .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 0)
-                        .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 1)
-                )
         }
-        .buttonStyle(.plain)
+        .appPrimaryButtonStyle()
         .disabled(isSaveDisabled)
         .padding(.top, 4)
     }
