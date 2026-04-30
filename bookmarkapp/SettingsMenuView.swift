@@ -86,7 +86,7 @@ struct SettingsMenuView: View {
             Spacer(minLength: 0)
 
             Button {
-                safariURL = URL(string: "https://cg94.typeform.com/to/P0WT4Lks")
+                safariURL = URL(string: "https://forms.gle/A9ncvfmbPfSMkdUy9")
             } label: {
                 Text("Share")
                     .font(.system(size: 14, weight: .semibold))
