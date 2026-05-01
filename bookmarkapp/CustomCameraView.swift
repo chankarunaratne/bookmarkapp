@@ -40,17 +40,20 @@ struct CustomCameraView: View {
         .onAppear {
             model.checkPermissions()
             if model.cameraAuthorized {
-                fetchLatestPhoto()
+                refreshLatestPhotoIfAuthorized()
             }
         }
         .onChange(of: model.cameraAuthorized) { _, authorized in
             if authorized {
-                fetchLatestPhoto()
+                refreshLatestPhotoIfAuthorized()
+            } else {
+                latestPhoto = nil
             }
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 model.recheckAuthorization()
+                refreshLatestPhotoIfAuthorized()
             }
         }
         .onChange(of: model.capturedImage) { _, image in
@@ -124,8 +127,14 @@ struct CustomCameraView: View {
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
                                 .fill(Color(white: 0.2))
                                 .frame(width: 56, height: 56)
+                                .overlay(
+                                    Image(systemName: "photo")
+                                        .font(.system(size: 21, weight: .regular))
+                                        .foregroundStyle(.white.opacity(0.72))
+                                )
                         }
                     }
+                    .accessibilityLabel("Choose photo from library")
                     
                     Spacer()
                     
@@ -225,14 +234,27 @@ struct CustomCameraView: View {
                         )
                     }
                     
-                    Button(action: { model.handlePermissionCTA() }) {
-                        Text(model.permissionButtonTitle)
-                            .font(AppFont.buttonLabel)
-                            .frame(height: 36)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 6)
+                    VStack(spacing: 12) {
+                        Button(action: { model.handlePermissionCTA() }) {
+                            Text(model.permissionButtonTitle)
+                                .font(AppFont.buttonLabel)
+                                .frame(height: 36)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 6)
+                        }
+                        .appPrimaryButtonStyle()
+
+                        Button(action: { showPhotoPicker = true }) {
+                            Label("Choose from Library", systemImage: "photo")
+                                .font(AppFont.buttonLabel)
+                                .frame(height: 36)
+                                .padding(.horizontal, 18)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+                        .tint(AppColor.textPrimary)
                     }
-                    .appPrimaryButtonStyle()
                 }
                 .padding(.horizontal, 40)
                 
@@ -241,15 +263,13 @@ struct CustomCameraView: View {
         }
     }
     
-    private func fetchLatestPhoto() {
+    private func refreshLatestPhotoIfAuthorized() {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         if status == .authorized || status == .limited {
             loadLatestPhoto()
-        } else if status == .notDetermined {
-            PHPhotoLibrary.requestAuthorization(for: .readWrite) { newStatus in
-                if newStatus == .authorized || newStatus == .limited {
-                    loadLatestPhoto()
-                }
+        } else {
+            DispatchQueue.main.async {
+                latestPhoto = nil
             }
         }
     }
