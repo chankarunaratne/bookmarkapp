@@ -16,9 +16,6 @@ struct bookmarkappApp: App {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     init() {
-        #if DEBUG
-        UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
-        #endif
         configureTabBarAppearance()
     }
 
