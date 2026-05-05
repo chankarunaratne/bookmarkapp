@@ -41,11 +41,24 @@ struct BookPickerView: View {
                     }
                 } else if books.isEmpty {
                     Spacer()
-                    Text("No books yet. Add a new book to get started")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(AppColor.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
+                    VStack(spacing: 20) {
+                        Text("No books yet. Add a new book to get started")
+                            .font(.system(size: 16, weight: .regular))
+                            .foregroundStyle(AppColor.textSecondary)
+                            .multilineTextAlignment(.center)
+
+                        Button {
+                            isShowingAddBook = true
+                        } label: {
+                            Text("Add new book")
+                                .font(AppFont.buttonLabel)
+                                .frame(height: 36)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 6)
+                        }
+                        .appPrimaryButtonStyle()
+                    }
+                    .padding(.horizontal, 40)
                     Spacer()
                 } else if filteredBooks.isEmpty {
                     Spacer()

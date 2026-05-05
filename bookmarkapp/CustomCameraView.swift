@@ -238,8 +238,8 @@ struct CustomCameraView: View {
                         Button(action: { model.handlePermissionCTA() }) {
                             Text(model.permissionButtonTitle)
                                 .font(AppFont.buttonLabel)
+                                .frame(maxWidth: .infinity)
                                 .frame(height: 36)
-                                .padding(.horizontal, 20)
                                 .padding(.vertical, 6)
                         }
                         .appPrimaryButtonStyle()
@@ -247,14 +247,15 @@ struct CustomCameraView: View {
                         Button(action: { showPhotoPicker = true }) {
                             Label("Choose from Library", systemImage: "photo")
                                 .font(AppFont.buttonLabel)
+                                .frame(maxWidth: .infinity)
                                 .frame(height: 36)
-                                .padding(.horizontal, 18)
                                 .padding(.vertical, 6)
                         }
                         .buttonStyle(.bordered)
                         .buttonBorderShape(.capsule)
                         .tint(AppColor.textPrimary)
                     }
+                    .frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal, 40)
                 
@@ -408,7 +409,7 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     var permissionMessage: String {
         switch permissionState {
         case .notDetermined:
-            return "For Rememberly to work properly we need to access your camera so that it can capture the text. Please allow camera access below."
+            return "For Rememberly to work properly we need to access your camera so that it can capture the text you want to save"
         case .denied:
             return "Camera access is currently off for Rememberly. Update it in Settings, then come back here to keep scanning."
         case .restricted:
@@ -428,7 +429,7 @@ class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     }
 
     var permissionButtonTitle: String {
-        shouldShowPermissionSteps ? "Open Settings" : "Allow camera access"
+        shouldShowPermissionSteps ? "Open Settings" : "Continue"
     }
 
     private func openAppSettings() {
