@@ -6,7 +6,7 @@
 	<integer>12</integer>
 	<key>logs</key>
 	<dict>
-		<key>198FAEC2-B4D3-4BE6-AB1A-00A36B3F1974</key>
+		<key>9207E211-D11A-49DC-AE86-BC28B78ADF9F</key>
 		<dict>
 			<key>className</key>
 			<string>IDECommandLineBuildLog</string>
@@ -15,49 +15,7 @@
 			<key>domainType</key>
 			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
 			<key>fileName</key>
-			<string>198FAEC2-B4D3-4BE6-AB1A-00A36B3F1974.xcactivitylog</string>
-			<key>hasPrimaryLog</key>
-			<true/>
-			<key>primaryObservable</key>
-			<dict>
-				<key>highLevelStatus</key>
-				<string>E</string>
-				<key>totalNumberOfAnalyzerIssues</key>
-				<integer>0</integer>
-				<key>totalNumberOfErrors</key>
-				<integer>1</integer>
-				<key>totalNumberOfTestFailures</key>
-				<integer>0</integer>
-				<key>totalNumberOfWarnings</key>
-				<integer>2</integer>
-			</dict>
-			<key>schemeIdentifier-containerName</key>
-			<string>bookmarkapp project</string>
-			<key>schemeIdentifier-schemeName</key>
-			<string>bookmarkapp</string>
-			<key>schemeIdentifier-sharedScheme</key>
-			<integer>1</integer>
-			<key>signature</key>
-			<string>Building project bookmarkapp with scheme bookmarkapp</string>
-			<key>timeStartedRecording</key>
-			<real>799101239.73833096</real>
-			<key>timeStoppedRecording</key>
-			<real>799101240.65732896</real>
-			<key>title</key>
-			<string>Building project bookmarkapp with scheme bookmarkapp</string>
-			<key>uniqueIdentifier</key>
-			<string>198FAEC2-B4D3-4BE6-AB1A-00A36B3F1974</string>
-		</dict>
-		<key>FF1C22C6-AB8E-4386-8506-34F8E040AF8C</key>
-		<dict>
-			<key>className</key>
-			<string>IDECommandLineBuildLog</string>
-			<key>documentTypeString</key>
-			<string>&lt;nil&gt;</string>
-			<key>domainType</key>
-			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
-			<key>fileName</key>
-			<string>FF1C22C6-AB8E-4386-8506-34F8E040AF8C.xcactivitylog</string>
+			<string>9207E211-D11A-49DC-AE86-BC28B78ADF9F.xcactivitylog</string>
 			<key>hasPrimaryLog</key>
 			<true/>
 			<key>primaryObservable</key>
@@ -80,15 +38,57 @@
 			<key>schemeIdentifier-sharedScheme</key>
 			<integer>1</integer>
 			<key>signature</key>
-			<string>Building project bookmarkapp with scheme bookmarkapp</string>
+			<string>Building project bookmarkapp with scheme bookmarkapp and configuration Debug</string>
 			<key>timeStartedRecording</key>
-			<real>799101275.24707699</real>
+			<real>799975022.05608904</real>
 			<key>timeStoppedRecording</key>
-			<real>799101284.96648097</real>
+			<real>799975024.00640094</real>
 			<key>title</key>
-			<string>Building project bookmarkapp with scheme bookmarkapp</string>
+			<string>Building project bookmarkapp with scheme bookmarkapp and configuration Debug</string>
 			<key>uniqueIdentifier</key>
-			<string>FF1C22C6-AB8E-4386-8506-34F8E040AF8C</string>
+			<string>9207E211-D11A-49DC-AE86-BC28B78ADF9F</string>
+		</dict>
+		<key>CFA7767A-E0AD-46A4-91D2-CF9AF8297730</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>CFA7767A-E0AD-46A4-91D2-CF9AF8297730.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>bookmarkapp project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>bookmarkapp</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project bookmarkapp with scheme bookmarkapp and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>799976427.88913798</real>
+			<key>timeStoppedRecording</key>
+			<real>799976442.43260705</real>
+			<key>title</key>
+			<string>Building project bookmarkapp with scheme bookmarkapp and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>CFA7767A-E0AD-46A4-91D2-CF9AF8297730</string>
 		</dict>
 	</dict>
 </dict>

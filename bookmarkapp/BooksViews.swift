@@ -47,6 +47,9 @@ struct MyBooksView: View {
             .navigationDestination(for: Book.self) { book in
                 BookDetailView(book: book)
             }
+            .navigationDestination(for: Quote.self) { quote in
+                QuoteDetailView(quote: quote)
+            }
             .navigationTitle("My library")
             .toolbarTitleDisplayMode(.inlineLarge)
             .toolbar {
@@ -436,52 +439,16 @@ struct BookDetailView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    // MARK: – Book Header
-                    BookDetailHeaderView(book: book)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 16)
-                    
-                    if sortedQuotes.isEmpty {
-                        // MARK: – Empty State
-                        bookDetailEmptyStateView
-                            .padding(.horizontal, 20)
-                            .padding(.top, 24)
-                            .padding(.bottom, 20)
-                    } else {
-                        // MARK: – Quotes List
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(Array(sortedQuotes.enumerated()), id: \.element.id) { index, quote in
-                                if index > 0 {
-                                    Rectangle()
-                                        .fill(AppColor.cardBorder)
-                                        .frame(height: 1)
-                                        .padding(.horizontal, 20)
-                                }
-                                
-                                NavigationLink(value: quote) {
-                                    QuoteRowView(quote: quote, onDelete: {
-                                        quotePendingDeletion = quote
-                                        isShowingDeleteConfirm = true
-                                    })
-                                }
-                                .buttonStyle(.plain)
-                                .padding(.horizontal, 20)
-                                .padding(.top, index == 0 ? 24 : 20)
-                                .padding(.bottom, 20)
-                            }
-                        }
-                    }
-                }
-                .frame(minHeight: sortedQuotes.isEmpty ? geometry.size.height : nil, alignment: .top)
-                .padding(.bottom, sortedQuotes.isEmpty ? 0 : 40)
+        ScrollView(.vertical, showsIndicators: false) {
+            if sortedQuotes.isEmpty {
+                bookDetailScrollContent
+                    .containerRelativeFrame(.vertical, alignment: .top)
+            } else {
+                bookDetailScrollContent
+                    .padding(.bottom, 40)
             }
         }
-        .navigationDestination(for: Quote.self) { quote in
-            QuoteDetailView(quote: quote)
-        }
+        .defaultScrollAnchor(.top)
         .background(Color.white.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -560,6 +527,47 @@ struct BookDetailView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .highlightAdded)) { _ in
             pendingHighlightToast = true
+        }
+    }
+    
+    @ViewBuilder
+    private var bookDetailScrollContent: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // MARK: – Book Header
+            BookDetailHeaderView(book: book)
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+            
+            if sortedQuotes.isEmpty {
+                // MARK: – Empty State
+                bookDetailEmptyStateView
+                    .padding(.horizontal, 20)
+                    .padding(.top, 24)
+                    .padding(.bottom, 20)
+            } else {
+                // MARK: – Quotes List
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(sortedQuotes.enumerated()), id: \.element.id) { index, quote in
+                        if index > 0 {
+                            Rectangle()
+                                .fill(AppColor.cardBorder)
+                                .frame(height: 1)
+                                .padding(.horizontal, 20)
+                        }
+                        
+                        NavigationLink(value: quote) {
+                            QuoteRowView(quote: quote, onDelete: {
+                                quotePendingDeletion = quote
+                                isShowingDeleteConfirm = true
+                            })
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 20)
+                        .padding(.top, index == 0 ? 24 : 20)
+                        .padding(.bottom, 20)
+                    }
+                }
+            }
         }
     }
 }
@@ -779,6 +787,7 @@ struct QuoteDetailView: View {
             .padding(.top, 16)
             .padding(.bottom, 40)
         }
+        .defaultScrollAnchor(.top)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)

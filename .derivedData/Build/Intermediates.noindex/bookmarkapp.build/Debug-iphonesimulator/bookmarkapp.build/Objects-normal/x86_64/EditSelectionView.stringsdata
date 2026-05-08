@@ -1,0 +1,40 @@
+{
+  "source": "/Users/chandima/Desktop/bookmarkapp/bookmarkapp/EditSelectionView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Edit selection",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Highlight",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Additional details",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select book",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 111
+        }
+      }
+    ]
+  },
+  "version": 1
+}

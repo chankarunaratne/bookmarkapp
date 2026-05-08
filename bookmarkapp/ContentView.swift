@@ -19,19 +19,13 @@ struct ContentView: View {
     @Query(sort: \Quote.createdAt, order: .reverse) private var quotes: [Quote]
     @State private var showSettings = false
     
-    /// Most recent quote per book, ordered by quote recency.
+    /// Most recent highlights across all books.
     private var recentHighlights: [(book: Book, quote: Quote)] {
-        var seenBookIDs = Set<UUID>()
         var result: [(Book, Quote)] = []
         
         for quote in quotes {
             guard let book = quote.book else { continue }
-            let bookID = book.id
-            if seenBookIDs.contains(bookID) { continue }
-            
-            seenBookIDs.insert(bookID)
             result.append((book, quote))
-            
             if result.count >= 5 { break }
         }
         
@@ -44,8 +38,8 @@ struct ContentView: View {
                 if books.isEmpty {
                     emptyStateView
                 } else {
-                    GeometryReader { geometry in
-                        ScrollView(.vertical, showsIndicators: false) {
+                    ScrollView(.vertical, showsIndicators: false) {
+                        if recentHighlights.isEmpty {
                             VStack(alignment: .leading, spacing: 0) {
                                 HomeContentView(
                                     books: books,
@@ -55,18 +49,22 @@ struct ContentView: View {
                                 )
                                 .padding(.top, 20)
                             }
-                            .frame(minHeight: recentHighlights.isEmpty ? geometry.size.height : nil)
-                            .padding(.bottom, recentHighlights.isEmpty ? 0 : 40)
+                            .containerRelativeFrame(.vertical, alignment: .top)
+                        } else {
+                            VStack(alignment: .leading, spacing: 0) {
+                                HomeContentView(
+                                    books: books,
+                                    highlights: recentHighlights,
+                                    onSaveHighlight: onSaveHighlight,
+                                    onTapMyLibrary: onTapMyLibrary
+                                )
+                                .padding(.top, 20)
+                            }
+                            .padding(.bottom, 40)
                         }
-                        .background(Color.white.ignoresSafeArea())
                     }
+                    .background(Color.white.ignoresSafeArea())
                 }
-            }
-            .navigationDestination(for: Book.self) { book in
-                BookDetailView(book: book)
-            }
-            .navigationDestination(for: Quote.self) { quote in
-                QuoteDetailView(quote: quote)
             }
             .navigationTitle("Home")
             .toolbarTitleDisplayMode(.inlineLarge)
@@ -178,7 +176,7 @@ private struct HomeContentView: View {
                     
                     VStack(spacing: 20) {
                         ForEach(highlights, id: \.quote.id) { item in
-                            NavigationLink(value: item.quote) {
+                            NavigationLink(destination: QuoteDetailView(quote: item.quote)) {
                                 RecentHighlightCardView(
                                     book: item.book,
                                     quoteText: item.quote.text,
@@ -258,7 +256,7 @@ private struct RecentBooksCarouselView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(books) { book in
-                        NavigationLink(value: book) {
+                        NavigationLink(destination: BookDetailView(book: book)) {
                             RecentBookCardView(book: book)
                         }
                         .buttonStyle(.plain)
@@ -278,7 +276,7 @@ private struct RecentBooksCarouselView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(books) { book in
-                        NavigationLink(value: book) {
+                        NavigationLink(destination: BookDetailView(book: book)) {
                             RecentBookCardView(book: book)
                         }
                         .buttonStyle(.plain)

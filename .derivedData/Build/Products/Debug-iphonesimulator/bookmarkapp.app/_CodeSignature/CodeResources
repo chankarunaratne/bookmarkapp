@@ -14,11 +14,11 @@
 		</data>
 		<key>Assets.car</key>
 		<data>
-		wah0c1P9b11+pJLu5exg+7poNCM=
+		PA6NlaLkwoX+ekacebsgaNaODkw=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		Op4I/1kb5BBMI9U0XTBGAsf04KY=
+		WpqAvhnJcSjmUNs1U0p/Z5fLNhk=
 		</data>
 		<key>LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib</key>
 		<data>
@@ -36,17 +36,41 @@
 		<data>
 		VsZiizU2Ma6ugAIg1zC0ZgGhkC8=
 		</data>
+		<key>Newsreader_24pt-Bold.ttf</key>
+		<data>
+		WRowoSIkDpXVYCR/nz32Y/xwGhA=
+		</data>
+		<key>Newsreader_24pt-ExtraBold.ttf</key>
+		<data>
+		8G49D3GNnL42IPXXkkLz0Ne2jqk=
+		</data>
+		<key>Newsreader_24pt-Medium.ttf</key>
+		<data>
+		aG3dLUbRu/PEtoG1dmwsZn5zzDE=
+		</data>
+		<key>Newsreader_24pt-Regular.ttf</key>
+		<data>
+		ZX3Lt4hzETqWmm+0pZtc/dufIbE=
+		</data>
+		<key>Newsreader_36pt-Regular.ttf</key>
+		<data>
+		GQxB/sJq5YeYmQavT5RXL7lVn9o=
+		</data>
 		<key>PkgInfo</key>
 		<data>
 		n57qDP4tZfLD1rCS43W0B4LQjzE=
 		</data>
+		<key>PrivacyInfo.xcprivacy</key>
+		<data>
+		++alO9CwtGUBhB/QbXMbZpyyKVI=
+		</data>
 		<key>__preview.dylib</key>
 		<data>
-		dzFGCKNIevVODKGf8s5zGplj9pk=
+		/qQ0MOpcq5S74csPXBxiYOZAOKk=
 		</data>
 		<key>bookmarkapp.debug.dylib</key>
 		<data>
-		eiDkb0wyETToBTtuEtlnKI819EA=
+		fPS/MpLOLli/iOeTQOcWYJmZujY=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -69,7 +93,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			fwUDy2cPDCkLx/Vc80O9sLsIHtQanNgjkga91b4ra2U=
+			HRfLkHz1EYEHtsPPfLaixWtMgyCeZSP7w3Fd6zV6omg=
 			</data>
 		</dict>
 		<key>LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib</key>
@@ -100,18 +124,60 @@
 			gdkL5G7sSu+snPUHNS+WxIkNu8sPejkAkVRcHfBvFsY=
 			</data>
 		</dict>
+		<key>Newsreader_24pt-Bold.ttf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			YZLnlaIm8mulYNuV8BAYUb5YLyIKtghbTew6MNv/aAQ=
+			</data>
+		</dict>
+		<key>Newsreader_24pt-ExtraBold.ttf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			5PutAxXXV2ZlNcsdyPftcuVvbHbYbjm8S3+qvDJSmd8=
+			</data>
+		</dict>
+		<key>Newsreader_24pt-Medium.ttf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			LUz76oqW806OznWK0x0m+C7450KoFhMIc9wD2Odf/Vk=
+			</data>
+		</dict>
+		<key>Newsreader_24pt-Regular.ttf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			dGsjtYrHhMC2dMC+U4GqWSAptXHvcS4LKFpaXqv25tA=
+			</data>
+		</dict>
+		<key>Newsreader_36pt-Regular.ttf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			BDDxUclXAXcEYM8HpQO90yndAWR3dtDXeEn5vFruQrs=
+			</data>
+		</dict>
+		<key>PrivacyInfo.xcprivacy</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			rXQKvO5ySQsncB6ljovLgDzSVcL0kViPD7338D1tBbU=
+			</data>
+		</dict>
 		<key>__preview.dylib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			zjvpUtXZ4Kpa1k9BoqXtB5EPMIIgeI6Yd3khmKZVbhw=
+			4CcJ8tFHN/k4HTy+8MJUTrMJIoaX+caTKO6LASKyhJQ=
 			</data>
 		</dict>
 		<key>bookmarkapp.debug.dylib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			XK7iqhrr3NeHytjwD8tKfURXVldTRjzedhq1t+/4NCY=
+			Kpg3SMR3CoSZoj63vYvpSK7pIi2De3ztYMxTHXYoO2s=
 			</data>
 		</dict>
 	</dict>

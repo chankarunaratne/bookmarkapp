@@ -6,6 +6,12 @@
 #define AC_SWIFT_PRIVATE
 #endif
 
+/// The resource bundle ID.
+static NSString * const ACBundleID AC_SWIFT_PRIVATE = @"app.getrememberly.rememberly";
+
+/// The "AccentColor" asset catalog color resource.
+static NSString * const ACColorNameAccentColor AC_SWIFT_PRIVATE = @"AccentColor";
+
 /// The "LaunchLogo" asset catalog image resource.
 static NSString * const ACImageNameLaunchLogo AC_SWIFT_PRIVATE = @"LaunchLogo";
 
