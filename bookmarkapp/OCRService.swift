@@ -71,6 +71,65 @@ struct OCRService {
         }
     }
 
+    /// Converts OCR line output into prose that can wrap naturally in the UI.
+    static func cleanRecognizedText(_ text: String) -> String {
+        let normalizedText = text
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
+        let lines = normalizedText
+            .components(separatedBy: "\n")
+            .map { line in
+                line
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .replacingOccurrences(
+                        of: "[\\t ]+",
+                        with: " ",
+                        options: .regularExpression
+                    )
+            }
+
+        var paragraphs: [String] = []
+        var paragraphLines: [String] = []
+
+        func flushParagraph() {
+            guard !paragraphLines.isEmpty else { return }
+            paragraphs.append(cleanedParagraph(from: paragraphLines))
+            paragraphLines.removeAll()
+        }
+
+        for line in lines {
+            if line.isEmpty {
+                flushParagraph()
+            } else {
+                paragraphLines.append(line)
+            }
+        }
+
+        flushParagraph()
+
+        return paragraphs
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func cleanedParagraph(from lines: [String]) -> String {
+        var paragraph = ""
+
+        for line in lines {
+            if paragraph.isEmpty {
+                paragraph = line
+            } else if paragraph.last == "-" {
+                paragraph.removeLast()
+                paragraph += line
+            } else {
+                paragraph += " " + line
+            }
+        }
+
+        return paragraph
+    }
+
     /// Extracts word-level bounding quads from a recognized text candidate.
     /// Falls back to the full observation quad if word-level boxes aren't available.
     private static func extractWords(

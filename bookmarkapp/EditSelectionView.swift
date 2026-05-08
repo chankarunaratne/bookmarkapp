@@ -121,14 +121,14 @@ struct EditSelectionView: View {
     // MARK: - Save
 
     private func save(to book: Book) {
-        let trimmed = editedText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
+        let cleanedText = OCRService.cleanRecognizedText(editedText)
+        guard !cleanedText.isEmpty else { return }
 
         let trimmedPage = pageNumber.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedNote = notes.trimmingCharacters(in: .whitespacesAndNewlines)
 
         let quote = Quote(
-            text: trimmed,
+            text: cleanedText,
             page: trimmedPage.isEmpty ? nil : trimmedPage,
             note: trimmedNote.isEmpty ? nil : trimmedNote,
             book: book

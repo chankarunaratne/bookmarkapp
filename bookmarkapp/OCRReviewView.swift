@@ -72,9 +72,9 @@ struct OCRReviewView: View {
                     VStack {
                         Spacer()
                         Button {
-                            let trimmed = selectedText.trimmingCharacters(in: .whitespacesAndNewlines)
-                            guard !trimmed.isEmpty else { return }
-                            pendingSelectedText = trimmed
+                            let cleaned = OCRService.cleanRecognizedText(selectedText)
+                            guard !cleaned.isEmpty else { return }
+                            pendingSelectedText = cleaned
                             showEditSelection = true
                         } label: {
                             Text("Next")
