@@ -28,7 +28,8 @@ struct SettingsMenuView: View {
     private let linkItems: [(title: String, id: String)] = [
         ("Terms and Conditions", "terms"),
         ("Privacy Policy", "privacy"),
-        ("Contact Us", "contact")
+        ("Contact Us", "contact"),
+        ("Rate the App", "rate")
     ]
 
     var body: some View {
@@ -160,8 +161,16 @@ struct SettingsMenuView: View {
             safariURL = URL(string: "https://getrememberly.app/privacy-policy")
         case "contact":
             openSupportEmail()
+        case "rate":
+            openAppStoreReview()
         default:
             break
+        }
+    }
+    
+    private func openAppStoreReview() {
+        if let url = URL(string: "https://apps.apple.com/app/id6762345678?action=write-review") {
+            openURL(url)
         }
     }
 
